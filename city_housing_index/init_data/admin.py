@@ -9,11 +9,11 @@ from city.enums import CityArea
 from index.admin.addinfo import AddNewMonth
 
 def UpdataDatabase(year:int, month:int):
-    for i in range(2006,year):
-            for j in range(1,13):
-                AddNewMonth(i,j)
-        for i in range(1,month):
-            AddNewMonth(year,i)
+    for i in range(20006,year):
+        for j in range(1,13):
+            AddNewMonth(i,j)
+    for i in range(1,month):
+        AddNewMonth(year,i)
     return True
 
 def UpdataCityIndex():
