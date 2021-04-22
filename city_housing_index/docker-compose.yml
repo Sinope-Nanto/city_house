@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+
+  db:
+    image: mysql:5.7
+    ports:
+      - '3306:3306'
+    environment:
+       MYSQL_DATABASE: 'hku_project'
+       MYSQL_USER: 'ec2'
+       MYSQL_PASSWORD: 'hX8gmZOBVFSyzuDlCDPU'
+       MYSQL_ROOT_PASSWORD: 'hX8gmZOBVFSyzuDlCDPU'
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
