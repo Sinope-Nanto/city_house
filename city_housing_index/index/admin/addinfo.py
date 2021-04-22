@@ -99,17 +99,6 @@ def getDataInfo(year:int,month:int,city:int):
 
 def AddNewMonth(year :int, month:int):
     #add city part
-    city_list = City.objects.filter(ifin40=True)
-    for city in city_list:
-        newline = CalculateResult(year=year, month=month, city_or_area=True,city= int(city.code))
-        newline.save()
-    for i in range(0,CityArea.num_of_item_40):
-        newline = CalculateResult(year=year, month=month, city_or_area=False, area=i)
-        newline.save()
-    return True
-
-def AddNewMonthbase09(year :int, month:int):
-    #add city part
     city_list = City.objects.filter(ifin90=True)
     for city in city_list:
         newline = CalculateResult(year=year, month=month, city_or_area=True,city= int(city.code))
@@ -117,6 +106,7 @@ def AddNewMonthbase09(year :int, month:int):
     for i in range(0,CityArea.num_of_item_90):
         newline = CalculateResult(year=year, month=month, city_or_area=False, area=i)
         newline.save()
+    return True
 
 def UploadCityInfoToDatabase(year,month,city):
     re = getDataInfo(year,month,city)

@@ -19,3 +19,4 @@ jsonfield==3.1.0
 xlrd==1.2.0
 openpyxl==3.0.4
 sklearn==0.0
+matplotlib
