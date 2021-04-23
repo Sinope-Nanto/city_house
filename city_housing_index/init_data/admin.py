@@ -9,7 +9,7 @@ from city.enums import CityArea
 from index.admin.addinfo import AddNewMonth
 
 def UpdataDatabase(year:int, month:int):
-    for i in range(20006,year):
+    for i in range(2006,year):
         for j in range(1,13):
             AddNewMonth(i,j)
     for i in range(1,month):
@@ -17,8 +17,8 @@ def UpdataDatabase(year:int, month:int):
     return True
 
 def UpdataCityIndex():
-    data_file = open('media/init_data/cityindexdata.csv',encoding='utf-8')
-    volumn_file = open('media/init_data/cityvolumndata.csv',encoding='utf-8')
+    data_file = open('media/init_data/cityindexdata.csv')
+    volumn_file = open('media/init_data/cityvolumndata.csv')
     code = 1
     while True:
         data = data_file.readline()
@@ -49,53 +49,51 @@ def UpdataCityIndex():
                     datarow.year_on_year_index = float(data_list[i])/float(data_list[i-12]) - 1
                 except ZeroDivisionError:
                     datarow.year_on_year_index = 0
-            datarow.index_value_base09 = float(data_list[i])/float(data_list[38])
+            datarow.index_value_base09 = float(data_list[i])/float(data_list[38])*100
             datarow.save()
     return True
 
 def UpdataTotalData():
-    data_file = open('media/init_data/totaldata.csv',encoding='utf-8')
+    data_file = open('media/init_data/totaldata.csv')
     data = []
+    data_90 = []
     for i in range(0,18):
         data.append(data_file.readline().split(','))
+    for i in range(18,36):
+        data_90.append(data_file.readline().split(','))
     for i in range(1,len(data[0])):
         year = (i-1)//12 + 2006
         month = (i-1)%12 + 1 
         try:
             dataline = CalculateResult.objects.get(year=year,month=month,city_or_area=False,area=CityArea.QUNGUO)
+            dataline_90 = CalculateResult.objects.get(year=year,month=month,city_or_area=False,area=CityArea.QUANGUO_90)
         except ObjectDoesNotExist:
-            return APIResponse.create_fail(code=404,msg='对应月份未被上载')
-        dataline.index_value = float(data[6][i])
-        dataline.index_value_under90 = float(data[9][i])
-        dataline.index_value_above144 = float(data[11][i])
-        dataline.index_value_90144 = float(data[10][i])
-        dataline.trade_volume = int(data[0][i])
-        dataline.trade_volume_under_90 = int(data[1][i])
-        dataline.trade_volume_above_144 = int(data[3][i])
-        dataline.trade_volume_90_144 = int(data[2][i])
-        dataline.index_value_base09 = float(data[18][i])
-        dataline.index_value_under90_base09 = float(data[19][i])
-        dataline.index_value_90144_base09 = float(data[20][i])
-        dataline.index_value_above144_base09 = float(data[21][i])
+            return False
         
-        if i < 2:
-            pass
-        else:
-            dataline.volume_chain = float(data[5][i])
-            dataline.chain_index = float(data[8][i])
-            dataline.chain_index_above144 = float(data[17][i])
-            dataline.chain_index_under90 = float(data[13][i])
-            dataline.chain_index_90144 = float(data[15][i])
-        
-        if i < 13:
-            pass
-        else:
-            dataline.volume_year_on_year = float(data[4][i])
-            dataline.year_on_year_index = float(data[7][i])
-            dataline.year_on_year_index_above144 = float(data[16][i])
-            dataline.year_on_year_index_under90 = float(data[12][i])
-            dataline.year_on_year_index_90144 = float(data[14][i])
+        var_order = [
+            dataline.trade_volume, dataline.trade_volume_under_90, dataline.trade_volume_90_144, dataline.trade_volume_above_144,
+            dataline.index_value, dataline.index_value_under90, dataline.index_value_90144, dataline.index_value_above144,
+            dataline.volume_year_on_year, dataline.volume_chain, dataline.year_on_year_index, dataline.chain_index,
+            dataline.year_on_year_index_under90, dataline.chain_index_under90,
+            dataline.year_on_year_index_90144, dataline.chain_index_above144,
+            dataline.year_on_year_index_above144, dataline.chain_index_above144            
+        ]
+        var_order_90 = [
+            dataline_90.trade_volume, dataline_90.trade_volume_under_90, dataline_90.trade_volume_90_144, dataline_90.trade_volume_above_144,
+            dataline_90.index_value_base09, dataline_90.index_value_under90_base09, dataline_90.index_value_90144_base09, dataline_90.index_value_above144_base09,
+            dataline_90.volume_year_on_year, dataline_90.volume_chain, dataline_90.year_on_year_index, dataline_90.chain_index,
+            dataline_90.year_on_year_index_under90, dataline_90.chain_index_under90,
+            dataline_90.year_on_year_index_90144, dataline_90.chain_index_above144,
+            dataline_90.year_on_year_index_above144, dataline_90.chain_index_above144                
+        ]
+        for j in range(0,4):
+            var_order[j] = int(data[j][i])
+            var_order_90[j] = int(data_90[j][i])
+        for j in range(4,18):
+            var_order[j] = float(data[j][i])
+            var_order_90[j] = float(data_90[j][i])
         dataline.save()
+        dataline_90.save()
     return True
 
 def UpdataCityList():
@@ -120,37 +118,22 @@ def UpdataCityList():
 def UpdataAreaIndex():
     data_file = open('media/init_data/areadata.csv',encoding='utf-8')
     data = []
-    for i in range(0,13):
+    for i in range(0,84):
         data.append(data_file.readline().split(','))
     for i in range(1,len(data[0])):
         year = (i-1)//12 + 2006
         month = (i-1)%12 + 1
-        east = CalculateResult.objects.get(city_or_area=False,area=CityArea.DONGBU,year=year,month=month)
-        west = CalculateResult.objects.get(city_or_area=False,area=CityArea.XIBU,year=year,month=month)
-        mid = CalculateResult.objects.get(city_or_area=False,area=CityArea.ZHONGBU,year=year,month=month)
-        csj = CalculateResult.objects.get(city_or_area=False,area=CityArea.CHANGSANJIAO,year=year,month=month)
-        csj.index_value = float(data[12][i])
-        east.trade_volume = int(data[0][i])
-        east.index_value = float(data[3][i])
-        west.trade_volume = int(data[2][i])
-        west.index_value = float(data[5][i])
-        mid.index_value = float(data[4][i])
-        mid.trade_volume = int(data[1][i])
-        if i < 13:
-            pass
-        else:
-            east.year_on_year_index = float(data[6][i])
-            
-            west.year_on_year_index = float(data[10][i])
-            mid.year_on_year_index = float(data[8][i])
-        if i < 2:
-            pass
-        else:
-            east.chain_index = float(data[7][i])
-            west.chain_index = float(data[11][i])
-            mid.chain_index = float(data[9][i])
-        csj.save()
-        east.save()
-        west.save()
-        mid.save()
+        data_row = []
+        for area in range(CityArea.DONGBU,CityArea.num_of_item_90 - 1):
+            data_row.append(CalculateResult.objects.get(city_or_area=False,area=area,year=year,month=month))
+        for area in range(0,21):
+            data_row[area].trade_volume = int(data[4*area][i])
+            if area < 4:
+                data_row[area].index_value = float(data[4*area + 1][i])
+            else:
+                data_row[area].index_value_base09 = float(data[4*area + 1][i])
+            data_row[area].year_on_year_index = float(data[4*area + 2][i])
+            data_row[area].chain_index = float(data[4*area + 3][i])
+        for row in data_row:
+            row.save()
     return True   
