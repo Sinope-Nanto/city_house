@@ -75,7 +75,7 @@ def UpdataTotalData():
             "index_value", "index_value_under90", "index_value_90144", "index_value_above144",
             "volume_year_on_year", "volume_chain", "year_on_year_index", "chain_index",
             "year_on_year_index_under90", "chain_index_under90",
-            "year_on_year_index_90144", "chain_index_above144",
+            "year_on_year_index_90144", "chain_index_90144",
             "year_on_year_index_above144", "chain_index_above144"           
         ]
         var_order_90 = [
@@ -83,7 +83,7 @@ def UpdataTotalData():
             "index_value_base09", "index_value_under90_base09", "index_value_90144_base09", "index_value_above144_base09",
             "volume_year_on_year", "volume_chain", "year_on_year_index", "chain_index",
             "year_on_year_index_under90", "chain_index_under90",
-            "year_on_year_index_90144", "chain_index_above144",
+            "year_on_year_index_90144", "chain_index_90144",
             "year_on_year_index_above144", "chain_index_above144"                
         ]
         for j in range(0,4):

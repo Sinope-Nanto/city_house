@@ -3,6 +3,12 @@ from openpyxl.styles import Side, Border,PatternFill, colors, Font, Alignment
 from openpyxl.drawing.image import Image
 import time
 
+from docx.oxml.ns import qn
+from docx import Document
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.shared import Pt,Cm
+
 class GenExcelReport:
     def __init__(self,url):
         self.edge = Side(style='thin', color='000000')
@@ -481,3 +487,1175 @@ class GenExcelReport:
         # 添加排序功能
         citysort.auto_filter.ref = "A2:J" + str(colmax-1)
         citysort.auto_filter.add_sort_condition("A3:A"+ str(colmax -1))
+
+class GenWordReport:
+    def __init__(self,url):
+        self.url = url
+        self.doc = Document()
+    
+    #生成封面
+    def Firstpage(self, year:int, month:int, **kwargs):
+        title = str(year) + '年' + str(month) + '月全国40个重点城市“城房指数”月报'
+        self.doc.add_paragraph('')
+        self.doc.add_paragraph('')
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run(title)
+        tit.font.name = '黑体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '黑体')
+        tit.font.size = Pt(28)
+        tit.font.bold = True
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('（试行）')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(20)
+        self.doc.add_paragraph('')
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('全国40个重点城市各月“城房指数”汇总值')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+
+        p = self.doc.add_paragraph()
+        pic = p.add_run().add_picture(kwargs['index_image_url'])
+        pic.height = Cm(10.96)
+        pic.width =  Cm(17.65)
+
+        self.doc.add_section(start_type = None)
+    
+    def Secondpage(self, year:int, month:int, citylist:list, **kwargs):
+        #参数列表:['index', 'chain', 'year_on_year', 'city_name', 'city_chain', 'city_year_on_year']
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('简要说明')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(20)
+        tit.font.bold = True
+
+        p = self.doc.add_paragraph()
+        l = len(kwargs['index'])
+        index = float('%.2f'%kwargs['index'][l - 1])
+        chain = float('%.2f'%(kwargs['chain'][l - 1]*100))
+        year_on_year = float('%.2f'%(kwargs['year_on_year'][l - 1]*100))
+        s = 0
+        if chain < 0:
+            str1 = '下降' + str(-chain) + '%'
+        else:
+            str1 = '上涨' + str(chain) + '%'
+        if year_on_year < 0:
+            str2 = '下降' + str(-year_on_year) + '%。'
+        else:
+            str2 = '上涨' + str(year_on_year) + '%。'
+        zero = []
+        for i in range(len(citylist)):
+            if float(kwargs['city_index'][i]) == 0:
+                zero.append(i)
+        if len(zero) == 0:
+            s = 0
+            add = p.add_run('  ' + str(year) + '年' + str(month) + '月”城房指数“全国汇总值为' + str(index) + '点，同比' + str1 + '，环比' + str2)
+            add.font.name = '仿宋_GB2312'
+            add.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            add.font.size = Pt(14)
+        else:
+            s = 1
+            add = p.add_run('  ' + str(year) + '年' + str(month) + '月”城房指数“全国')
+            add.font.name = '仿宋_GB2312'
+            add.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            add.font.size = Pt(14)
+
+            add = p.add_run('1')
+            add.font.superscript = True
+            add.font.name = '仿宋_GB2312'
+            add.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            add.font.size = Pt(14)
+
+            add = p.add_run('汇总值为' + str(index) + '点，同比' + str1 + '，环比' + str2)
+            add.font.name = '仿宋_GB2312'
+            add.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            add.font.size = Pt(14)
+        #统计环比涨跌
+
+        l = len(citylist)
+        higher = []
+        num_higher = 0
+        higher_than_5 = []
+        num_lower = 0
+        lower = []
+        lower_than_5 = []
+        for i in range(l):
+            if float(kwargs['city_chain'][i]) > 0:
+                higher.append(i)
+                num_higher+=1
+                if float(kwargs['city_chain'][i]) > 0.05:
+                    higher_than_5.append(i)
+            elif float(kwargs['city_chain'][i]) < 0:
+                lower.append(i)
+                num_lower+=1
+                if float(kwargs['city_chain'][i]) < -0.05:
+                    lower_than_5.append(i)
+        #环比涨幅
+
+        p = self.doc.add_paragraph()
+        if num_higher == 0:
+            tit = p.add_run('  没有任何一个城市的“城房指数”环比上涨；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run('  有' + str(num_higher) + '个城市的“城房指数”环比上涨，')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+            if len(higher_than_5) == 0:
+                tit = p.add_run('但涨幅均在5%以内；')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+            else:
+                tit = p.add_run('其中')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+
+                for i in range(len(higher_than_5)):
+                    s += 1
+                    str1 = '(' + str(float('%.2f' % (kwargs['city_chain'][higher_than_5[i]] * 100)))
+                    if i != (len(higher_than_5) - 1):
+                        tit = p.add_run(citylist[higher_than_5[i]])
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                        tit = p.add_run(str(s))
+                        tit.font.superscript = True
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                        tit = p.add_run(str1 + '%）、')
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+                    else:
+                        tit = p.add_run(citylist[higher_than_5[i]])
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                        tit = p.add_run(str(s))
+                        tit.font.superscript = True
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                        tit = p.add_run(str1 + '%）')
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                tit = p.add_run(str(len(higher_than_5)) + '个城市涨幅超过5%；')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+        #环比跌幅
+
+        if num_lower == 0:
+            tit = p.add_run('  没有任何一个城市的“城房指数”环比下降；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run('有' + str(num_lower) + '个城市的“城房指数”环比下降，')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+            if len(lower_than_5) == 0:
+                tit = p.add_run('但降幅均在5%以内；')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+            else:
+                tit = p.add_run('其中')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+
+                for i in range(len(lower_than_5)):
+                    s += 1
+                    str1 = '(' + str(float('%.2f' % (kwargs['city_chain'][lower_than_5[i]] * 100)))
+                    if i != (len(lower_than_5) - 1):
+                        tit = p.add_run(citylist[lower_than_5[i]])
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                        tit = p.add_run(str(s))
+                        tit.font.superscript = True
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                        tit = p.add_run(str1 + '%）、')
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+                    else:
+                        tit = p.add_run(citylist[lower_than_5[i]])
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                        tit = p.add_run(str(s))
+                        tit.font.superscript = True
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                        tit = p.add_run(str1 + '%）')
+                        tit.font.name = '仿宋_GB2312'
+                        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                        tit.font.size = Pt(14)
+
+                tit = p.add_run(str(len(lower_than_5)) + '个城市降幅超过5%。')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+        #统计同比涨降
+
+        higher = []
+        num_higher = 0
+        higher_than_15 = []
+        num_lower = 0
+        lower = []
+        lower_than_15 = []
+        for i in range(l):
+            if float(kwargs['city_year_on_year'][i]) > 0:
+                higher.append(i)
+                num_higher += 1
+                if float(kwargs['city_year_on_year'][i]) > 0.15:
+                    higher_than_15.append(i)
+            elif float(kwargs['city_year_on_year'][i]) < 0:
+                lower.append(i)
+                num_lower += 1
+                if float(kwargs['city_year_on_year'][i]) < -0.15:
+                    lower_than_15.append(i)
+        # 同比涨幅
+
+        p = self.doc.add_paragraph()
+        if num_higher == 0:
+            tit = p.add_run('  没有任何一个城市的“城房指数”同比上涨；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run('  有' + str(num_higher) + '个城市的“城房指数”同比上涨，')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+            if len(higher_than_15) == 0:
+                tit = p.add_run('但涨幅均在15%以内；')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+            else:
+                tit = p.add_run('其中')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+
+                for i in range(len(higher_than_15)):
+                    str1 = '(' + str(float('%.2f' % (kwargs['city_year_on_year'][higher_than_15[i]] * 100)))
+                    if i != (len(higher_than_15) - 1):
+                        tit = p.add_run(citylist[higher_than_15[i]] + str1 + '%）、')
+                    else:
+                        tit = p.add_run(citylist[higher_than_15[i]] + str1 + '%）')
+                    tit.font.name = '仿宋_GB2312'
+                    tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                    tit.font.size = Pt(14)
+
+                tit = p.add_run(str(len(higher_than_15)) + '个城市涨幅超过15%；')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+        # 同比跌幅
+
+        if num_lower == 0:
+            tit = p.add_run('  没有任何一个城市的“城房指数”同比下降；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run('有' + str(num_lower) + '个城市的“城房指数”同比下降，')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+            if len(lower_than_15) == 0:
+                tit = p.add_run('但降幅均在15%以内；')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+            else:
+                tit = p.add_run('其中')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+
+                for i in range(len(lower_than_15)):
+                    str1 = '(' + str(float('%.2f' % (kwargs['city_year_on_year'][lower_than_15[i]] * 100)))
+                    if i != (len(lower_than_15) - 1):
+                        tit = p.add_run(citylist[lower_than_15[i]] + str1 + '%）、')
+                    else:
+                        tit = p.add_run(citylist[lower_than_15[i]] + str1 + '%）')
+                    tit.font.name = '仿宋_GB2312'
+                    tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                    tit.font.size = Pt(14)
+
+                tit = p.add_run(str(len(lower_than_15)) + '个城市降幅超过15%。')
+                tit.font.name = '仿宋_GB2312'
+                tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                tit.font.size = Pt(14)
+        #插入图片
+
+        p = self.doc.add_paragraph()
+        pic = p.add_run().add_picture(kwargs['chain_image_url'])
+        pic.height = Cm(5.46)
+        pic.width = Cm(14.67)
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('图1 40城市“城房指数”同比变化图')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+        # 脚注
+
+        p = self.doc.add_paragraph()
+        tit = p.add_run('注：')
+        tit.font.name = '宋体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+        tit.font.size = Pt(9)
+        tit.font.bold = True
+        # 脚注正文
+
+        if len(zero) != 0:
+            p = self.doc.add_paragraph()
+            tit = p.add_run('1')
+            tit.font.name = '宋体'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+            tit.font.size = Pt(9)
+
+            for i in range(len(zero)):
+                if i != len(zero) - 1:
+                    tit = p.add_run(citylist[zero[i]] + '、')
+                    tit.font.name = '宋体'
+                    tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+                    tit.font.size = Pt(9)
+                else:
+                    tit = p.add_run(citylist[zero[i]] + ':因指数软件问题无法计算，清华技术已经在研发新的软件来替换现有软件的不足。')
+                    tit.font.name = '宋体'
+                    tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+                    tit.font.size = Pt(9)
+
+        self.doc.add_page_break()
+
+        p = self.doc.add_paragraph()
+        pic = p.add_run().add_picture(kwargs['yearonyear_image_url'])
+        pic.height = Cm(5.23)
+        pic.width = Cm(14.65)
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('图2 40城市“城房指数”环比变化图')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+
+        self.doc.add_section(start_type = None)
+
+    def Charts(self, year:int, month:int, citylist:list, **kwargs):
+
+        #数据从2008年1月开始
+        p = self.doc.add_paragraph()
+        section = self.doc.sections[2]
+        section.left_margin = Cm(0)
+        section.right_margin = Cm(0)
+        if  int(((year - 2008) * 12 + month) // 2) == 0:
+            row_num = int(((year - 2008) * 12 + month) // 2)
+        else:
+            row_num = int(((year - 2008) * 12 + month) // 2) + 1
+        r_num = row_num
+        row_num = int((int((row_num - 24) // 25) + 2) + int(row_num))
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('表1 全国40个重点城市“城房指数”各月汇总值')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+
+        #表1
+        table = self.doc.add_table(row_num, 8)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.width = Cm(18.62)
+        data_row = 1
+        for i in range(row_num):
+            if  ((i == 0) or (((i + 1) % 26) == 0)):
+
+                p = table.cell(i, 0).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                run = p.add_run(u'月份')
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 1).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                run = p.add_run(u'指数值')
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 2).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                run = p.add_run(u'环比')
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 3).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                run = p.add_run(u'同比')
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 4).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                run = p.add_run(u'月份')
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 5).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                run = p.add_run(u'指数值')
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 6).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                run = p.add_run(u'环比')
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 7).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                run = p.add_run(u'同比')
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+
+            else:
+                p = table.cell(i, 0).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                m = str(int(data_row) % 12)
+                if m == '0':
+                    m = '12'
+                y = (int(data_row) // 12) + 2008
+                if (int(data_row) % 12) == 0:
+                    y -= 1
+                y = str(y)
+                str1 = y + '年' + m + '月'
+                run = p.add_run(u'%s'%str1)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 1).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f'%kwargs['index'][data_row - 1]))
+                run = p.add_run(u'%s'%data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 2).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % (float(kwargs['chain'][data_row - 1]) * 100))) + "%"
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 3).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % (float(kwargs['year_on_year'][data_row - 1]) * 100))) + "%"
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                if  i != row_num - 1:
+                    p = table.cell(i, 4).paragraphs[0]
+                    p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    m = str(int(data_row + r_num) % 12)
+                    if m == '0':
+                        m = '12'
+                    y = (int(data_row + r_num) // 12) + 2008
+                    if (int(data_row + r_num) % 12) == 0:
+                        y -= 1
+                    y = str(y)
+                    str1 = y + '年' + m + '月'
+                    run = p.add_run(u'%s' % str1)
+                    run.font.name = '仿宋_GB2312'
+                    run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                    run.font.size = Pt(10)
+
+                    p = table.cell(i, 5).paragraphs[0]
+                    p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    data = str(float('%.2f' % kwargs['index'][data_row + r_num - 1]))
+                    run = p.add_run(u'%s' % data)
+                    run.font.name = '仿宋_GB2312'
+                    run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                    run.font.size = Pt(10)
+
+                    p = table.cell(i, 6).paragraphs[0]
+                    p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    data = str(float('%.2f' % (float(kwargs['chain'][data_row + r_num - 1]) * 100))) + "%"
+                    run = p.add_run(u'%s' % data)
+                    run.font.name = '仿宋_GB2312'
+                    run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                    run.font.size = Pt(10)
+
+                    p = table.cell(i, 7).paragraphs[0]
+                    p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    data = str(float('%.2f' % (float(kwargs['year_on_year'][data_row + r_num - 1]) * 100))) + "%"
+                    run = p.add_run(u'%s' % data)
+                    run.font.name = '仿宋_GB2312'
+                    run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                    run.font.size = Pt(10)
+
+                data_row += 1
+
+        self.doc.add_page_break()
+
+        #表2
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('表2 %s年%s月40个重点城市“城房指数”'%(str(year),str(month)))
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+
+        table = self.doc.add_table(21, 8)
+
+        #kwargs['city_index']:当月城市“城房指数”值的列表，按城市顺序排列，'city_chain'以及'city_year_on_year'以此类推
+        for i in range(21):
+            if i != 0:
+                p = table.cell(i, 0).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(citylist[i - 1])     
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 1).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f'%kwargs['city_index'][i - 1]))
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 2).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % (float(kwargs['city_chain'][i - 1]) * 100))) + "%"
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 3).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % (float(kwargs['city_year_on_year'][i - 1]) * 100))) + "%"
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 4).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(citylist[i + 19])
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 5).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % kwargs['city_index'][i + 19]))
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 6).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % (float(kwargs['city_chain'][i + 19]) * 100))) + "%"
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 7).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % (float(kwargs['city_year_on_year'][i + 19]) * 100))) + "%"
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+            else:
+                p = table.cell(i, 0).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '城市'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 1).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '指数值'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 2).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '环比'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 3).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '同比'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 4).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '城市'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 5).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '指数值'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 6).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '环比'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 7).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '同比'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+        self.doc.add_page_break()
+
+        #表3
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('表3 %s年%s月40个重点城市“城房指数”样本量' % (str(year), str(month)))
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+
+        table = self.doc.add_table(21, 8)
+
+        # kwargs['city_index']:当月城市“城房指数”值的列表，按城市顺序排列，'city_chain'以及'city_year_on_year'以此类推
+        # kwargs['city_index_1']:上月城市“城房指数”值的列表，按城市顺序排列
+        # kwargs['city_index_2']:两个月前城市“城房指数”值的列表，按城市顺序排列
+        for i in range(21):
+            if i != 0:
+                p = table.cell(i, 0).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(citylist[i - 1])
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 1).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % kwargs['city_index'][i - 1]))
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 2).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % kwargs['city_index_1'][i - 1]))
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 3).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % kwargs['city_index_2'][i - 1]))
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 4).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(citylist[i + 19])
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 5).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % kwargs['city_index'][i + 19]))
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 6).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % kwargs['city_index_1'][i + 19]))
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+                p = table.cell(i, 7).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(float('%.2f' % kwargs['city_index_2'][i + 19]))
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+
+            else:
+                if int(month) == 2:
+                    mon = [12, 1, 2]
+                elif int(month) == 1:
+                    mon = [11, 12, 1]
+                else:
+                    mon = [int(month) - 2, int(month) - 1, int(month)]
+
+                p = table.cell(i, 0).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '城市'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 1).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(mon[0]) + '月样本量'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 2).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(mon[1]) + '月样本量'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 3).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(mon[2]) + '月样本量'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 4).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = '城市'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 5).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(mon[0]) + '月样本量'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 6).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(mon[1]) + '月样本量'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+
+                p = table.cell(i, 7).paragraphs[0]
+                p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                data = str(mon[2]) + '月样本量'
+                run = p.add_run(u'%s' % data)
+                run.font.name = '仿宋_GB2312'
+                run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+                run.font.size = Pt(10)
+                run.font.bold = True
+        self.doc.add_section(start_type = None)
+
+    def Attach(self, year:int, month:int, citylist:list, **kwargs):
+
+        section = self.doc.sections[3]
+        section.left_margin = Cm(3.18)
+        section.right_margin = Cm(3.18)
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('附：' + str(year) + '年' + str(month) + '月各子市场“城房指数”变化情况')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+
+        #一
+        p = self.doc.add_paragraph()
+        tit = p.add_run('一、东中西区域子市场')
+        tit.font.name = '黑体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '黑体')
+        tit.font.size = Pt(14)
+
+        p = self.doc.add_paragraph()
+        tit = p.add_run('   东中西区域子市场中，东部地区指数')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        tit = p.add_run(str(kwargs['east_index'][len(kwargs['east_index']) - 1]) + '点，同比')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        if float(kwargs['east_year_on_year'][len(kwargs['east_index']) - 1]) > 0:
+            tit = p.add_run('上涨' + str(float('%.2f' %(kwargs['east_year_on_year'][len(kwargs['east_index']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['east_year_on_year'][len(kwargs['east_index']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        if float(kwargs['east_chain'][len(kwargs['east_index']) - 1]) > 0:
+            tit = p.add_run('上涨' + str(float('%.2f' %(kwargs['east_chain'][len(kwargs['east_index']) - 1])) * 100) + '%；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['east_chain'][len(kwargs['east_index']) - 1])) * 100) + '%；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        tit = p.add_run('中部地区指数')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        tit = p.add_run(str(kwargs['mid_index'][len(kwargs['mid_index']) - 1]) + '点，同比')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        if float(kwargs['mid_year_on_year'][len(kwargs['mid_index']) - 1]) > 0:
+            tit = p.add_run(
+                '上涨' + str(float('%.2f' % (kwargs['mid_year_on_year'][len(kwargs['mid_index']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['mid_year_on_year'][len(kwargs['mid_index']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        if float(kwargs['mid_chain'][len(kwargs['mid_index']) - 1]) > 0:
+            tit = p.add_run('上涨' + str(float('%.2f' % (kwargs['mid_chain'][len(kwargs['mid_index']) - 1])) * 100) + '%；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['mid_chain'][len(kwargs['mid_index']) - 1])) * 100) + '%；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        tit = p.add_run('西部地区指数')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        tit = p.add_run(str(kwargs['west_index'][len(kwargs['west_index']) - 1]) + '点，同比')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        if float(kwargs['west_year_on_year'][len(kwargs['west_index']) - 1]) > 0:
+            tit = p.add_run(
+                '上涨' + str(float('%.2f' % (kwargs['west_year_on_year'][len(kwargs['west_index']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['west_year_on_year'][len(kwargs['west_index']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        if float(kwargs['west_chain'][len(kwargs['west_index']) - 1]) > 0:
+            tit = p.add_run('上涨' + str(float('%.2f' % (kwargs['west_chain'][len(kwargs['west_index']) - 1])) * 100) + '%。')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['west_chain'][len(kwargs['west_index']) - 1])) * 100) + '%。')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        p = self.doc.add_paragraph()
+        pic = p.add_run().add_picture(kwargs['index_by_block_image_url'])
+        pic.height = Cm(6.17)
+        pic.width = Cm(14.63)
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('附图1 东中西区域子市场走势图')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+
+        #二
+
+        p = self.doc.add_paragraph()
+        tit = p.add_run('二、各面积子市场')
+        tit.font.name = '黑体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '黑体')
+        tit.font.size = Pt(14)
+
+        p = self.doc.add_paragraph()
+        tit = p.add_run('   各面积子市场中，“90平方米以下”指数')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        tit = p.add_run(str(kwargs['index_under_90'][len(kwargs['index_under_90']) - 1]) + '点，同比')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        if float(kwargs['year_on_year_under_90'][len(kwargs['index_under_90']) - 1]) > 0:
+            tit = p.add_run(
+                '上涨' + str(float('%.2f' % (kwargs['year_on_year_under_90'][len(kwargs['index_under_90']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['year_on_year_under_90'][len(kwargs['index_under_90']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        if float(kwargs['chain_under_90'][len(kwargs['index_under_90']) - 1]) > 0:
+            tit = p.add_run('上涨' + str(float('%.2f' % (kwargs['chain_under_90'][len(kwargs['index_under_90']) - 1])) * 100) + '%；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['chain_under_90'][len(kwargs['index_under_90']) - 1])) * 100) + '%；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        tit = p.add_run('“90至144平方米”指数')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        tit = p.add_run(str(kwargs['index_90_144'][len(kwargs['index_90_144']) - 1]) + '点，同比')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        if float(kwargs['year_on_year_90_144'][len(kwargs['index_90_144']) - 1]) > 0:
+            tit = p.add_run(
+                '上涨' + str(float('%.2f' % (kwargs['year_on_year_90_144'][len(kwargs['index_90_144']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['year_on_year_90_144'][len(kwargs['index_90_144']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        if float(kwargs['chain_90_144'][len(kwargs['index_90_144']) - 1]) > 0:
+            tit = p.add_run('上涨' + str(float('%.2f' % (kwargs['chain_90_144'][len(kwargs['index_90_144']) - 1])) * 100) + '%；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['chain_90_144'][len(kwargs['index_90_144']) - 1])) * 100) + '%；')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        tit = p.add_run('“144平方米以上”指数')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        tit = p.add_run(str(kwargs['index_above_144'][len(kwargs['index_above_144']) - 1]) + '点，同比')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+
+        if float(kwargs['year_on_year_above_144'][len(kwargs['index_above_144']) - 1]) > 0:
+            tit = p.add_run(
+                '上涨' + str(float('%.2f' % (kwargs['year_on_year_above_144'][len(kwargs['index_above_144']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['year_on_year_above_144'][len(kwargs['index_above_144']) - 1])) * 100) + '%，环比')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        if float(kwargs['chain_above_144'][len(kwargs['index_above_144']) - 1]) > 0:
+            tit = p.add_run('上涨' + str(float('%.2f' % (kwargs['chain_above_144'][len(kwargs['index_above_144']) - 1])) * 100) + '%。')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+        else:
+            tit = p.add_run(
+                '下降' + str(float('%.2f' % (-kwargs['chain_above_144'][len(kwargs['index_above_144']) - 1])) * 100) + '%。')
+            tit.font.name = '仿宋_GB2312'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+            tit.font.size = Pt(14)
+
+        p = self.doc.add_paragraph()
+        pic = p.add_run().add_picture(kwargs['index_by_buildarea_image_url'])
+        pic.height = Cm(6.17)
+        pic.width = Cm(14.63)
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('附图2 各面积子市场走势图')
+        tit.font.name = '仿宋_GB2312'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
+        tit.font.size = Pt(14)
+        tit.font.bold = True
+        #附注
+
+        p = self.doc.add_paragraph()
+        tit = p.add_run('附注')
+        tit.font.name = '宋体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+        tit.font.size = Pt(10)
+        tit.font.bold = True
+
+        p = self.doc.add_paragraph()
+        tit = p.add_run('东部地区包括北京、天津、石家庄、沈阳、大连、上海、南京、无锡、苏州、杭州、宁波、温州、福州、厦门、济南、青岛、广州、深圳、海'
+                        '口、三亚等20个城市。中部地区包括太原、长春、哈尔滨、合肥、南昌、郑州、武汉、长沙等8个城市。西部地区包括呼和浩特、南宁、北海'
+                        '、重庆、成都、贵阳、昆明、西安、兰州、西宁、银川、乌鲁木齐等12个城市。')
+        tit.font.name = '宋体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+        tit.font.size = Pt(10)
+    
+    def EndReport(self):
+        self.doc.save(self.url)

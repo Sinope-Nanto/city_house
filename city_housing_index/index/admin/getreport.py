@@ -4,6 +4,7 @@ from city.models import City
 from city.enums import CityArea
 
 from index.admin.genreport import GenExcelReport
+from index.admin.genreport import GenWordReport
 
 
 def getLastNMonth(year,month,num):
@@ -220,4 +221,102 @@ def getReport(year:int,month:int):
         return False
     report.EndReport()
 
+    return True
+
+def getWordReport(year:int, month:int):
+    city_list = []
+    city_code_list = []
+    for city in City.objects.filter(ifin40=True):
+        city_list.append(city.name)
+        city_code_list.append(city.code)
+    report = GenWordReport('media/report/'+'40_city_report_'+str(year)+'_'+str(month)+'.docx')
+    # try:
+    # 取全国数据
+
+    kwargs = {}
+    kwargs['index'] = []
+    kwargs['chain'] = []
+    kwargs['year_on_year'] = []
+    for y in range(2008,year):
+        for m in range(1,13):
+            total_index = CalculateResult.objects.get(city_or_area=False, area=CityArea.QUNGUO, year=y, month=m)
+            kwargs['index'].append(total_index.index_value)
+            kwargs['chain'].append(total_index.chain_index)
+            kwargs['year_on_year'].append(total_index.year_on_year_index)
+    for m in range(1,month + 1):
+        total_index = CalculateResult.objects.get(city_or_area=False, area=CityArea.QUNGUO, year=year, month=m)
+        kwargs['index'].append(total_index.index_value)
+        kwargs['chain'].append(total_index.chain_index)
+        kwargs['year_on_year'].append(total_index.year_on_year_index)
+
+    total_index = CalculateResult.objects.get(city_or_area=False, area=CityArea.QUNGUO, year=year, month=month)
+    kwargs['index_under_90'] = [total_index.index_value_under90]
+    kwargs['chain_under_90'] = [total_index.chain_index_under90]
+    kwargs['year_on_year_under_90'] = [total_index.year_on_year_index_under90]
+
+    kwargs['index_90_144'] = [total_index.index_value_90144]
+    kwargs['chain_90_144'] = [total_index.chain_index_90144]
+    kwargs['year_on_year_90_144'] = [total_index.year_on_year_index_90144]
+
+    kwargs['index_above_144'] = [total_index.index_value_above144]
+    kwargs['chain_above_144'] = [total_index.chain_index_above144]
+    kwargs['year_on_year_above_144'] = [total_index.year_on_year_index_above144]
+
+    city_chain = []
+    city_year_on_year = []
+    city_index = []
+    city_index_1 = []
+    city_index_2 = []
+    for city_code in city_code_list:
+        city_info = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
+
+        last_year,last_month = getLastNMonth(year,month,1)
+        last_city_info = CalculateResult.objects.get(city_or_area=True, city=city_code, year=last_year, month=last_month)
+        city_index_1.append(last_city_info.index_value)
+
+        last_year,last_month = getLastNMonth(year,month,2)
+        last_city_info = CalculateResult.objects.get(city_or_area=True, city=city_code, year=last_year, month=last_month)
+        city_index_2.append(last_city_info.index_value)
+
+        city_chain.append(city_info.chain_index)
+        city_year_on_year.append(city_info.year_on_year_index)
+        city_index.append(city_info.index_value)
+    
+    kwargs['city_chain'] = city_chain
+    kwargs['city_year_on_year'] = city_year_on_year
+    kwargs['city_index'] = city_index
+    kwargs['city_index_1'] = city_index_1
+    kwargs['city_index_2'] = city_index_2
+
+    east_data = CalculateResult.objects.get(city_or_area=False, area=CityArea.DONGBU, year=year, month=month)
+    mid_data = CalculateResult.objects.get(city_or_area=False, area=CityArea.ZHONGBU, year=year, month=month)
+    west_data = CalculateResult.objects.get(city_or_area=False, area=CityArea.XIBU, year=year, month=month)
+    kwargs['east_index'] = [east_data.index_value]
+    kwargs['east_chain'] = [east_data.chain_index]
+    kwargs['east_year_on_year'] = [east_data.year_on_year_index]
+
+    kwargs['mid_index'] = [mid_data.index_value]
+    kwargs['mid_chain'] = [mid_data.chain_index]
+    kwargs['mid_year_on_year'] = [mid_data.year_on_year_index]
+
+    kwargs['west_index'] = [west_data.index_value]
+    kwargs['west_chain'] = [west_data.chain_index]
+    kwargs['west_year_on_year'] = [west_data.year_on_year_index]    
+
+    kwargs['index_image_url'] = 'media/image/' + str(year) + '_' + str(month) + 'index.png'
+    kwargs['chain_image_url'] = 'media/image/' + str(year) + '_' + str(month) + 'chainplot.png'
+    kwargs['yearonyear_image_url'] = 'media/image/' + str(year) + '_' + str(month) + 'yearonyearplot.png'
+    kwargs['index_by_block_image_url'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_block.png'
+    kwargs['index_by_buildarea_image_url'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_buildarea.png'
+    
+
+    report.Firstpage(year, month,**kwargs)
+    report.Secondpage(year,month,city_list,**kwargs)
+    report.Charts(year,month,city_list,**kwargs)
+    report.Attach(year,month,city_list,**kwargs)
+        
+
+    report.EndReport()
+    # except:
+    #     return False
     return True
