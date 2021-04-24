@@ -71,27 +71,27 @@ def UpdataTotalData():
             return False
         
         var_order = [
-            dataline.trade_volume, dataline.trade_volume_under_90, dataline.trade_volume_90_144, dataline.trade_volume_above_144,
-            dataline.index_value, dataline.index_value_under90, dataline.index_value_90144, dataline.index_value_above144,
-            dataline.volume_year_on_year, dataline.volume_chain, dataline.year_on_year_index, dataline.chain_index,
-            dataline.year_on_year_index_under90, dataline.chain_index_under90,
-            dataline.year_on_year_index_90144, dataline.chain_index_above144,
-            dataline.year_on_year_index_above144, dataline.chain_index_above144            
+            "trade_volume", "trade_volume_under_90", "trade_volume_90_144", "trade_volume_above_144",
+            "index_value", "index_value_under90", "index_value_90144", "index_value_above144",
+            "volume_year_on_year", "volume_chain", "year_on_year_index", "chain_index",
+            "year_on_year_index_under90", "chain_index_under90",
+            "year_on_year_index_90144", "chain_index_above144",
+            "year_on_year_index_above144", "chain_index_above144"           
         ]
         var_order_90 = [
-            dataline_90.trade_volume, dataline_90.trade_volume_under_90, dataline_90.trade_volume_90_144, dataline_90.trade_volume_above_144,
-            dataline_90.index_value_base09, dataline_90.index_value_under90_base09, dataline_90.index_value_90144_base09, dataline_90.index_value_above144_base09,
-            dataline_90.volume_year_on_year, dataline_90.volume_chain, dataline_90.year_on_year_index, dataline_90.chain_index,
-            dataline_90.year_on_year_index_under90, dataline_90.chain_index_under90,
-            dataline_90.year_on_year_index_90144, dataline_90.chain_index_above144,
-            dataline_90.year_on_year_index_above144, dataline_90.chain_index_above144                
+            "trade_volume", "trade_volume_under_90", "trade_volume_90_144", "trade_volume_above_144",
+            "index_value_base09", "index_value_under90_base09", "index_value_90144_base09", "index_value_above144_base09",
+            "volume_year_on_year", "volume_chain", "year_on_year_index", "chain_index",
+            "year_on_year_index_under90", "chain_index_under90",
+            "year_on_year_index_90144", "chain_index_above144",
+            "year_on_year_index_above144", "chain_index_above144"                
         ]
         for j in range(0,4):
-            var_order[j] = int(data[j][i])
-            var_order_90[j] = int(data_90[j][i])
+            setattr(dataline,var_order[j],int(data[j][i]))
+            setattr(dataline_90,var_order_90[j],int(data_90[j][i]))
         for j in range(4,18):
-            var_order[j] = float(data[j][i])
-            var_order_90[j] = float(data_90[j][i])
+            setattr(dataline,var_order[j],float(data[j][i]))
+            setattr(dataline_90,var_order_90[j],float(data_90[j][i]))
         dataline.save()
         dataline_90.save()
     return True
