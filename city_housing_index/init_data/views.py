@@ -10,50 +10,6 @@ from init_data.admin import UpdataCityList
 from init_data.admin import UpdataAreaIndex
 # Create your views here.
 
-# class InitCityViews(APIView):
-    
-#     def get(self,request):
-#         if UpdataCityList():
-#             return APIResponse.create_success()
-#         else:
-#             return APIResponse.create_fail(code=500,msg='Unknowed error')
-
-
-# class InitTotalViews(APIView):
-#     def get(self,request):
-#         if UpdataTotalData():
-#             return APIResponse.create_success()
-#         else:
-#             return APIResponse.create_fail(code=500,msg='Unknowed error')
-
-# class InitAreaViews(APIView):
-    
-#     def get(self,request):
-
-#         if UpdataAreaIndex():
-#             return APIResponse.create_success()
-#         else:
-#             return APIResponse.create_fail(code=500,msg='unkowned error')
-
-# class InitCityIndexViews(APIView):
-
-#     def get(self,request):
-#         if UpdataCityIndex():
-#             return APIResponse.create_success()
-#         else:
-#             return APIResponse.create_fail(code=500,msg='Unknowed error')
-
-# class InitDatabaseViews(APIView):
-
-#     def post(self,request):
-#         year = int(request.data['year'])
-#         month = int(request.data['month'])
-#         if UpdataDatabase(year,month):
-#             return APIResponse.create_success()
-#         else:
-#             return APIResponse.create_fail(code=500,msg='Unknowed error')
-
-
 class InitSystemViews(APIView):
 
     def post(self,request):
