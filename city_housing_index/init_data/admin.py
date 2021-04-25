@@ -17,8 +17,8 @@ def UpdataDatabase(year:int, month:int):
     return True
 
 def UpdataCityIndex():
-    data_file = open('media/init_data/cityindexdata.csv')
-    volumn_file = open('media/init_data/cityvolumndata.csv')
+    data_file = open('media/init_data/cityindexdata.csv', encoding='gbk')
+    volumn_file = open('media/init_data/cityvolumndata.csv', encoding='gbk')
     code = 1
     while True:
         data = data_file.readline()
@@ -54,7 +54,7 @@ def UpdataCityIndex():
     return True
 
 def UpdataTotalData():
-    data_file = open('media/init_data/totaldata.csv')
+    data_file = open('media/init_data/totaldata.csv', encoding='gbk')
     data = []
     data_90 = []
     for i in range(0,18):
@@ -139,7 +139,7 @@ def UpdataAreaIndex():
     return True
 
 def UpdataBaseprice_06():
-    data_file = open('media/init_data/basedata.csv')
+    data_file = open('media/init_data/basedata.csv', encoding='gbk')
     while True:
         row = data_file.readline()
         if row == '':
