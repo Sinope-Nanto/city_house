@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from utils.api_response import APIResponse
 
 from index.models import CityIndex
+from city.models import City
 
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
@@ -40,10 +41,17 @@ class AddNewMonthLine(APIView):
 
 
 class UpdataCityInfoView(APIView):
-
     def post(self,request):
-        if UploadCityInfoToDatabase(int(request.data['year']),int(request.data['month']),int(request.data['city'])):
-            return APIResponse.create_success()
+        city_list = City.objects.filter(ifin90=True)
+        unloadcitylist = []
+        for city in city_list:
+            if UploadCityInfoToDatabase(int(request.data['year']),int(request.data['month']),city.code):
+                pass
+            else:
+                unloadcitylist.append(city.name)
+        if len(unloadcitylist) == 0:
+            return APIResponse.create_success(data='所有城市均已上传')
         else:
-            return APIResponse.create_fail(code=404,msg='file don\'t exist')
+            return APIResponse.create_success(data='未上传城市有:' +str(unloadcitylist))
+            
 

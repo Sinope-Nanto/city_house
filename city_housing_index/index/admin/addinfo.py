@@ -1,5 +1,6 @@
 from django.contrib import admin
 from index.models import CalculateResult
+from django.core.exceptions import ObjectDoesNotExist
 from index.models import CityIndex
 from city.models import City
 from city.enums import CityArea
@@ -101,10 +102,16 @@ def AddNewMonth(year :int, month:int):
     #add city part
     city_list = City.objects.filter(ifin90=True)
     for city in city_list:
-        newline = CalculateResult(year=year, month=month, city_or_area=True,city= int(city.code))
+        try:
+            newline = CalculateResult.objects.get(year=year, month=month, city_or_area=True,city= int(city.code))
+        except ObjectDoesNotExist:
+            newline = CalculateResult(year=year, month=month, city_or_area=True,city= int(city.code))
         newline.save()
     for i in range(0,CityArea.num_of_item_90):
-        newline = CalculateResult(year=year, month=month, city_or_area=False, area=i)
+        try:
+            newline = CalculateResult.objects.get(year=year, month=month, city_or_area=False, area=i)
+        except ObjectDoesNotExist:
+            newline = CalculateResult(year=year, month=month, city_or_area=False, area=i)
         newline.save()
     return True
 
@@ -112,6 +119,11 @@ def UploadCityInfoToDatabase(year,month,city):
     re = getDataInfo(year,month,city)
     if re == 0:
         return False
+    try:
+        row = CityIndex.objects.get(year=year,month=month,city=city)
+        row.delete()
+    except ObjectDoesNotExist:
+        pass
     newline = CityIndex(year=year, 
     month=month, 
     city=city,

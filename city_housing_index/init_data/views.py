@@ -8,6 +8,7 @@ from init_data.admin import UpdataCityIndex
 from init_data.admin import UpdataTotalData
 from init_data.admin import UpdataCityList
 from init_data.admin import UpdataAreaIndex
+from init_data.admin import UpdataBaseprice_06
 # Create your views here.
 
 class InitSystemViews(APIView):
@@ -20,7 +21,8 @@ class InitSystemViews(APIView):
         UpdataTotalData()
         UpdataCityIndex()
         UpdataAreaIndex()
-
+        UpdataBaseprice_06()
+        
         return APIResponse.create_success()
 
 

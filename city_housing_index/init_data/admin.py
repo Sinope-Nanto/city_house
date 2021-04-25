@@ -136,4 +136,22 @@ def UpdataAreaIndex():
             data_row[area].chain_index = float(data[4*area + 3][i])
         for row in data_row:
             row.save()
-    return True   
+    return True
+
+def UpdataBaseprice_06():
+    data_file = open('media/init_data/basedata.csv')
+    while True:
+        row = data_file.readline()
+        if row == '':
+            break
+        data = row.split(',')
+        if data[0] == '1':
+            data_row = CalculateResult.objects.get(city_or_area=True,city=int(data[1]),year=2006,month=1)
+            data_row.price = float(data[3])
+        else:
+            data_row = CalculateResult.objects.get(city_or_area=False,area=int(data[2]),year=2006,month=1)
+            data_row.price = float(data[3])
+            data_row.price_under_90 = float(data[4])
+            data_row.price_90_144 = float(data[5])
+            data_row.price_above_144 = float(data[6])
+        data_row.save()
