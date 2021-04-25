@@ -506,9 +506,6 @@ class GenWordReport:
         self.url = url
         self.doc = Document()
     
-
-
-
     #生成封面
     def Firstpage(self, year:int, month:int, **kwargs):
         title = str(year) + '年' + str(month) + '月全国40个重点城市“城房指数”月报'
@@ -1706,5 +1703,104 @@ class GenWordReport:
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
         tit.font.size = Pt(10)
     
+    def EndReport(self):
+        self.doc.save(self.url)
+
+class GenWordPicture:
+
+    def __init__(self,url):
+        self.url = url
+        self.doc = Document()    
+
+
+    def genpicdoc(self, year:int, month:int, citylist: list, **kwargs):
+
+        # kwargs['city_index_url']:list city index
+        # kwargs['total_index_url']:str
+        # kwargs['total_year_on_year_url']:str
+        # kwargs['total_chain_url']:str
+        # kwargs['index_block']:str
+        # kwargs['index_area']:str
+
+        for i in range(40):
+            p = self.doc.add_paragraph()
+            p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            pic = p.add_run().add_picture(kwargs['city_index_url'][i])
+            pic.height = Cm(8.11)
+            pic.width = Cm(14.01)
+            p = self.doc.add_paragraph()
+            p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            tit = p.add_run('图' + str(i + 1) + '  ' + citylist[i] + '市“城房指数”（2006.1~' + str(year) + '.' + str(month) + '）')
+            tit.font.name = '宋体'
+            tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+            tit.font.size = Pt(10.5)
+        #图41
+        
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        pic = p.add_run().add_picture(kwargs['total_index_url'])
+        pic.height = Cm(7.98)
+        pic.width = Cm(19.03)
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('图41  40城市“城房指数”（2006.1~' + str(year) + '.' + str(month) + '）')
+        tit.font.name = '宋体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+        tit.font.size = Pt(10.5)
+        #图42
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        pic = p.add_run().add_picture(kwargs['total_year_on_year_url'])
+        pic.height = Cm(4.83)
+        pic.width = Cm(17.06)
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('图42  40城市“城房指数”同比变化（2006.1~' + str(year) + '.' + str(month) + '）')
+        tit.font.name = '宋体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+        tit.font.size = Pt(10.5)
+        # 图43
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        pic = p.add_run().add_picture(kwargs['total_chain_url'])
+        pic.height = Cm(4.83)
+        pic.width = Cm(17.06)
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('图43  40城市“城房指数”环比变化（2006.1~' + str(year) + '.' + str(month) + '）')
+        tit.font.name = '宋体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+        tit.font.size = Pt(10.5)
+        # 图44
+        
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        pic = p.add_run().add_picture(kwargs['index_block'])
+        pic.height = Cm(8.17)
+        pic.width = Cm(18.99)
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('图44  40城市东中西区域“城房指数”（2006.1~' + str(year) + '.' + str(month) + '）')
+        tit.font.name = '宋体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+        tit.font.size = Pt(10.5)
+        # 图45
+        
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        pic = p.add_run().add_picture(kwargs['index_area'])
+        pic.height = Cm(8.17)
+        pic.width = Cm(18.99)
+        p = self.doc.add_paragraph()
+        p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        tit = p.add_run('图45  40城市各面积子市场“城房指数”（2006.1~' + str(year) + '.' + str(month) + '）')
+        tit.font.name = '宋体'
+        tit.element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')
+        tit.font.size = Pt(10.5)
+
+
     def EndReport(self):
         self.doc.save(self.url)

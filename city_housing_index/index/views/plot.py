@@ -95,12 +95,3 @@ def plot(year,month):
             city_vol.append(data[i].trade_volume)
         p.plot_vol_index(volume=city_vol,index=city_index,saveurl=('media/image/'+str(year)+'_'+str(month)+'volindex_'+city.code+'.png'))
     return True
-
-
-
-
-class PlotViews(APIView):
-
-    def post(self,request):
-        plot(int(request.data['year']),int(request.data['month']))
-        return APIResponse.create_success()      

@@ -16,13 +16,23 @@ class DownloadReoprt(APIView):
     def post(self,request):
         year = int(request.data['year'])
         month = int(request.data['month'])
-        filename = 'media/report/'+'40_city_report_'+str(year)+'_'+str(month)+'.xlsx'
-        try:
-            report = open(filename,'rb')
-        except FileNotFoundError:
-            return APIResponse.create_fail(code=404,msg='report not found')
-        response = HttpResponse(report)
-        response['Content-Type'] = 'application/octet-stream'
-        response['Content-Disposition'] = 'attachment;filename={year}年{month}月40城市指数汇总及图表.xlsx'.format(year = str(year), month=str(month))
-        report.close()
-        return response
+        filename = []
+        filename.append('media/report/'+'40_city_report_'+str(year)+'_'+str(month)+'.docx')
+        filename.append('media/report/'+'40_city_report_'+str(year)+'_'+str(month)+'.xlsx')
+        filename.append('media/report/'+'90_city_report_'+str(year)+'_'+str(month)+'.docx')
+        filename.append('media/report/'+'90_city_report_'+str(year)+'_'+str(month)+'.xlsx')
+        filename.append('media/report/'+'40_city_picture_'+str(year)+'_'+str(month)+'.docx')
+        filename.append('media/report/'+'90_city_picture_'+str(year)+'_'+str(month)+'.docx')
+        s = io.BytesIO()
+        zip = zipfile.ZipFile(s, 'w')
+        for f in filename:
+            try:
+                zip.write(f,f.split('/')[2])
+            except:
+                return APIResponse.create_fail(code=404,msg='report not found')
+        zip.close()
+        s.seek(0)
+        wrapper = FileWrapper(s)
+        response = HttpResponse(wrapper, content_type='application/zip')
+        response['Content-Disposition'] = 'attachment; filename={}.zip'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
+        return response 
