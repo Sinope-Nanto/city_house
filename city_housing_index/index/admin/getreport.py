@@ -267,18 +267,26 @@ def getWordReport(year:int, month:int):
     city_index = []
     city_index_1 = []
     city_index_2 = []
+
+    city_volume = []
+    city_volume_1 = []
+    city_volume_2 = []
+
     for city_code in city_code_list:
         city_info = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
 
         last_year,last_month = getLastNMonth(year,month,1)
         last_city_info = CalculateResult.objects.get(city_or_area=True, city=city_code, year=last_year, month=last_month)
         city_index_1.append(last_city_info.index_value)
+        city_volume_1.append(last_city_info.trade_volume)
 
         last_year,last_month = getLastNMonth(year,month,2)
         last_city_info = CalculateResult.objects.get(city_or_area=True, city=city_code, year=last_year, month=last_month)
         city_index_2.append(last_city_info.index_value)
+        city_volume_2.append(last_city_info.trade_volume)
 
         city_chain.append(city_info.chain_index)
+        city_volume.append(city_info.trade_volume)
         city_year_on_year.append(city_info.year_on_year_index)
         city_index.append(city_info.index_value)
     
@@ -287,6 +295,9 @@ def getWordReport(year:int, month:int):
     kwargs['city_index'] = city_index
     kwargs['city_index_1'] = city_index_1
     kwargs['city_index_2'] = city_index_2
+    kwargs['city_volume'] = city_volume
+    kwargs['city_volume_1'] = city_volume_1
+    kwargs['city_volume_2'] = city_volume_2
 
     east_data = CalculateResult.objects.get(city_or_area=False, area=CityArea.DONGBU, year=year, month=month)
     mid_data = CalculateResult.objects.get(city_or_area=False, area=CityArea.ZHONGBU, year=year, month=month)
