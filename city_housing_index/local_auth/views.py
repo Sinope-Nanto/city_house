@@ -31,7 +31,7 @@ class LoginView(APIView):
         token, user_profile = create_token(mobile)
         return APIResponse.create_success(data={
             "token": token,
-            "user_id": user_profile.user_id,
+            # "user_id": user_profile.user_id,
             "name": user_profile.name,
             "admin": user_profile.is_admin()
         })
