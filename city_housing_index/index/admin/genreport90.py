@@ -1200,7 +1200,7 @@ class GenWordReport90:
                     run.font.name = '仿宋_GB2312'
                     run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
                     run.font.size = Pt(10)
-                    if '城市' in city_list_4[i - 1]:
+                    if '城市' in citylist_4[i - 1]:
                         run.font.bold = True
                         b = True
                     if float(city_index[i - 1]) != 0:
@@ -1324,7 +1324,7 @@ class GenWordReport90:
                     run.font.name = '仿宋_GB2312'
                     run.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
                     run.font.size = Pt(10)
-                    if '城市' in city_list_4[i - 2]:
+                    if '城市' in citylist_4[i - 2]:
                         run.font.bold = True
                         b = True
 

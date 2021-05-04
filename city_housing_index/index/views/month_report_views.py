@@ -18,7 +18,14 @@ class GenReportViews(APIView):
         year = int(request.data['year'])
         month = int(request.data['month'])
         plot(year,month)
-        if getReport(year,month) and getReport90(year,month) and getWordReport(year,month) and getWordReport90(year,month) and getWordPicture(year,month) and getWordPicture90(year,month):
+        if (
+        getReport(year,month) 
+        and getReport90(year,month) 
+        and getWordReport(year,month) 
+        and getWordReport90(year,month) 
+        and getWordPicture(year,month) 
+        and getWordPicture90(year,month)
+        ):
             return APIResponse.create_success()
         else:
             return APIResponse.create_fail(code=404,msg="some sourence does not exist")
