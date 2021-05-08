@@ -35,8 +35,9 @@ def list_upload_files(user):
     data_file_queryset = DataFile.objects.filter(user=user, deleted=False)
     raw_data = DataFileSerializer(data_file_queryset, many=True).data
 
-    city_id_list = [item["city_id"] for item in raw_data]
-    city_queryset = City.objects.filter(id__in=city_id_list)
+    city_id_list = [str(item["city_id"]) for item in raw_data]
+    city_queryset = City.objects.filter(code__in=city_id_list)
+    # city_queryset = City.objects.filter(id__in=city_id_list)
 
     city_data_list = CitySerializer(city_queryset, many=True).data
 
