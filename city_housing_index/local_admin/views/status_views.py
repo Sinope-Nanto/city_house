@@ -10,7 +10,7 @@ from local_admin.permissions import CityIndexAdminPermission
 
 def GetUploadStatus():
     text = City.objects.all()
-    data = []
+    data_list = []
     for i in text:
         upload = DataFile.objects.filter(city_id = i.code)
         exist = False
@@ -21,8 +21,8 @@ def GetUploadStatus():
             if int(data[0]) == datetime.datetime.now().year and int(data[1]) == datetime.datetime.now().month:
                 exist = True
                 break
-        data.append({'id':i.code,'name':i.name,'upload_status':exist})
-    return data
+        data_list.append({'id':i.code,'name':i.name,'upload_status':exist})
+    return data_list
 class UploadStatusViews(APIView):
     # authentication_classes = [CityIndexAuthentication]
     # permission_classes = [CityIndexAdminPermission]
