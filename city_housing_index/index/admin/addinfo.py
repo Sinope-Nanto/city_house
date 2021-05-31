@@ -120,18 +120,18 @@ def AddNewMonth(year: int, month: int):
     return True
 
 
-def UploadCityInfoToDatabase(year, month, city):
-    re = getDataInfo(year, month, city)
+def UploadCityInfoToDatabase(year, month, city_id):
+    re = getDataInfo(year, month, city_id)
     if re == 0:
         return False
     try:
-        row = CityIndex.objects.get(year=year, month=month, city=city)
+        row = CityIndex.objects.get(year=year, month=month, city=city_id)
         row.delete()
     except ObjectDoesNotExist:
         pass
     newline = CityIndex(year=year,
                         month=month,
-                        city=city,
+                        city=city_id,
                         price=re['price'],
                         trade_volume=re['trade_volume'],
                         area_volume=re['area_volume'],
