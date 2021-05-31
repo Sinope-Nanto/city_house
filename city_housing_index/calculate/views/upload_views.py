@@ -10,7 +10,7 @@ from calculate.domains.upload_domain import create_upload_file, list_upload_file
 
 
 class DataFileUploadView(ViewSet):
-    # authentication_classes = [CityIndexAuthentication]
+    authentication_classes = [CityIndexAuthentication]
     serializer_class = DataFileSerializer
     queryset = DataFile.objects.all()
 
@@ -25,8 +25,7 @@ class DataFileUploadView(ViewSet):
         city_id = request.data["city_id"]
         start = request.data["start"]
         end = request.data["end"]
-        print(type(file))
-        print(file.content_type)
+        print(request.user.id)
 
         ret, msg = create_upload_file(user, file, name, code, city_id, start, end)
         if not ret:

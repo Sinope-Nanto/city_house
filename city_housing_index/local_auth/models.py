@@ -41,12 +41,12 @@ class UserProfile(models.Model):
         return cls.objects.filter(status=UserStatus.WAIT_CHECK)
 
     @classmethod
-    def get_by_user(cls, user):
-        return cls.objects.get(user=user)
+    def get_by_user(cls, user_id):
+        return cls.objects.get(user_id=user_id)
 
     @classmethod
-    def get_by_user_id(cls, user_id):
-        return cls.objects.get(user_id=user_id)
+    def get_by_user_id(cls, user_id_id):
+        return cls.objects.get(user_id_id=user_id_id)
 
 
 class UserSession(models.Model):
