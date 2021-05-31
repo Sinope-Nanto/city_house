@@ -7,8 +7,8 @@ from city.models import City
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
 
-from index.admin.addinfo import AddNewMonth
-from index.admin.addinfo import UploadCityInfoToDatabase
+from index.admin.addinfo import add_new_month
+from index.admin.addinfo import upload_city_info_to_database
 
 
 class UpLoadIndexView(APIView):
@@ -34,7 +34,7 @@ class AddNewMonthLine(APIView):
 
     def post(self, request):
         try:
-            AddNewMonth(int(request.data['year']), int(request.data['month']))
+            add_new_month(int(request.data['year']), int(request.data['month']))
             return APIResponse.create_success()
         except ValueError:
             return APIResponse.create_fail(code=400, msg='bad request')
@@ -45,7 +45,7 @@ class UpdataCityInfoView(APIView):
         city_list = City.objects.filter(ifin90=True)
         unloadcitylist = []
         for city in city_list:
-            if UploadCityInfoToDatabase(int(request.data['year']), int(request.data['month']), city.code):
+            if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.code):
                 pass
             else:
                 unloadcitylist.append(city.name)

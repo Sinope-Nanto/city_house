@@ -8,7 +8,7 @@ from calculate.models import DataFile
 import openpyxl
 
 
-def getDataInfo(year: int, month: int, city: int):
+def get_data_info(year: int, month: int, city: int):
     datafile_list = DataFile.objects.filter(city_id=city)
     url = ''
     exist = False
@@ -100,7 +100,7 @@ def getDataInfo(year: int, month: int, city: int):
     return re
 
 
-def AddNewMonth(year: int, month: int):
+def add_new_month(year: int, month: int):
     # add city part
     city_list = City.objects.filter(ifin90=True)
     for city in city_list:
@@ -118,8 +118,8 @@ def AddNewMonth(year: int, month: int):
     return True
 
 
-def UploadCityInfoToDatabase(year, month, city):
-    re = getDataInfo(year, month, city)
+def upload_city_info_to_database(year, month, city):
+    re = get_data_info(year, month, city)
     if re == 0:
         return False
     try:

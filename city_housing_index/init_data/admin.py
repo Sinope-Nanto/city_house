@@ -6,15 +6,15 @@ from city.models import City
 from django.core.exceptions import ObjectDoesNotExist
 from index.models import CalculateResult
 from city.enums import CityArea
-from index.admin.addinfo import AddNewMonth
+from index.admin.addinfo import add_new_month
 
 
 def UpdataDatabase(year: int, month: int):
     for i in range(2006, year):
         for j in range(1, 13):
-            AddNewMonth(i, j)
+            add_new_month(i, j)
     for i in range(1, month):
-        AddNewMonth(year, i)
+        add_new_month(year, i)
     return True
 
 
