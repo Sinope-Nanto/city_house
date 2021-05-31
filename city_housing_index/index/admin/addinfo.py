@@ -7,9 +7,10 @@ from city.enums import CityArea
 from calculate.models import DataFile
 import openpyxl
 
-def getDataInfo(year:int,month:int,city:int):
+
+def getDataInfo(year: int, month: int, city: int):
     datafile_list = DataFile.objects.filter(city_id=city)
-    url =''
+    url = ''
     exist = False
     for datafile in datafile_list:
         time = datafile.start.split('-')
@@ -37,20 +38,20 @@ def getDataInfo(year:int,month:int,city:int):
     total_price_under_90 = 0
     total_price_90_144 = 0
     total_price_above_144 = 0
-    
+
     volume_under_90 = 0
     volume_90_144 = 0
     volume_above_144 = 0
 
     fromdata = {}
-    for i in range(1,num_col+1):
-        col_name.append(sheet.cell(row = 1, column = i).value.upper())
+    for i in range(1, num_col + 1):
+        col_name.append(sheet.cell(row=1, column=i).value.upper())
         fromdata[col_name[i - 1]] = []
-        for j in range(2,num_row + 1): 
-            fromdata[col_name[i - 1]].append(sheet.cell(row = j,column=i).value)
-    for i in range(0,num_row - 1):
+        for j in range(2, num_row + 1):
+            fromdata[col_name[i - 1]].append(sheet.cell(row=j, column=i).value)
+    for i in range(0, num_row - 1):
         area = float(fromdata['UNIT_AREA'][i])
-        price = area *float(fromdata['UNIT_PRICE'][i])
+        price = area * float(fromdata['UNIT_PRICE'][i])
         total_area += area
         total_price += price
         if area < 0.9:
@@ -66,48 +67,49 @@ def getDataInfo(year:int,month:int,city:int):
             total_price_above_144 += price
             volume_above_144 += 1
     try:
-        price = total_price/total_area
+        price = total_price / total_area
     except ZeroDivisionError:
         price = 0
     try:
-        price_under_90 = total_price_under_90/total_area_under_90
+        price_under_90 = total_price_under_90 / total_area_under_90
     except ZeroDivisionError:
         price_under_90 = 0
     try:
-        price_90_144 = total_price_90_144/total_area_90_144
+        price_90_144 = total_price_90_144 / total_area_90_144
     except ZeroDivisionError:
         price_90_144 = 0
     try:
-        price_above_144 = total_price_above_144/total_area_above_144
+        price_above_144 = total_price_above_144 / total_area_above_144
     except ZeroDivisionError:
         price_above_144 = 0
-    
+
     re = {
-        'trade_volume' : num_row - 1,
-        'volume_under_90' : volume_under_90,
-        'volume_90_144' : volume_90_144,
-        'volume_above_144' : volume_above_144,
-        'price' : price,
-        'area_volume' : total_area,
-        'area_volume_under_90' : total_area_under_90,
-        'area_volume_above_144' : total_area_above_144,
-        'area_volume_90_144' : total_area_90_144,
-        'price_under_90' : price_under_90,
-        'price_above_144' : price_above_144,
-        'price_90_144' :price_90_144
+        'trade_volume': num_row - 1,
+        'volume_under_90': volume_under_90,
+        'volume_90_144': volume_90_144,
+        'volume_above_144': volume_above_144,
+        'price': price,
+        'area_volume': total_area,
+        'area_volume_under_90': total_area_under_90,
+        'area_volume_above_144': total_area_above_144,
+        'area_volume_90_144': total_area_90_144,
+        'price_under_90': price_under_90,
+        'price_above_144': price_above_144,
+        'price_90_144': price_90_144
     }
     return re
 
-def AddNewMonth(year :int, month:int):
-    #add city part
+
+def AddNewMonth(year: int, month: int):
+    # add city part
     city_list = City.objects.filter(ifin90=True)
     for city in city_list:
         try:
-            newline = CalculateResult.objects.get(year=year, month=month, city_or_area=True,city= int(city.code))
+            newline = CalculateResult.objects.get(year=year, month=month, city_or_area=True, city=int(city.code))
         except ObjectDoesNotExist:
-            newline = CalculateResult(year=year, month=month, city_or_area=True,city= int(city.code))
+            newline = CalculateResult(year=year, month=month, city_or_area=True, city=int(city.code))
         newline.save()
-    for i in range(0,CityArea.num_of_item_90):
+    for i in range(0, CityArea.num_of_item_90):
         try:
             newline = CalculateResult.objects.get(year=year, month=month, city_or_area=False, area=i)
         except ObjectDoesNotExist:
@@ -115,30 +117,30 @@ def AddNewMonth(year :int, month:int):
         newline.save()
     return True
 
-def UploadCityInfoToDatabase(year,month,city):
-    re = getDataInfo(year,month,city)
+
+def UploadCityInfoToDatabase(year, month, city):
+    re = getDataInfo(year, month, city)
     if re == 0:
         return False
     try:
-        row = CityIndex.objects.get(year=year,month=month,city=city)
+        row = CityIndex.objects.get(year=year, month=month, city=city)
         row.delete()
     except ObjectDoesNotExist:
         pass
-    newline = CityIndex(year=year, 
-    month=month, 
-    city=city,
-    price=re['price'],
-    trade_volume=re['trade_volume'],
-    area_volume=re['area_volume'],
-    area_volume_under_90=re['area_volume_under_90'],
-    area_volume_above_144=re['area_volume_above_144'],
-    area_volume_90_144=re['area_volume_90_144'],
-    price_under_90=re['price_under_90'],
-    price_above_144=re['price_above_144'],
-    price_90_144=re['price_90_144'],
-    trade_volume_under_90=re['volume_under_90'],
-    trade_volume_above_144=re['volume_above_144'],
-    trade_volume_90_144=re['volume_90_144'])
+    newline = CityIndex(year=year,
+                        month=month,
+                        city=city,
+                        price=re['price'],
+                        trade_volume=re['trade_volume'],
+                        area_volume=re['area_volume'],
+                        area_volume_under_90=re['area_volume_under_90'],
+                        area_volume_above_144=re['area_volume_above_144'],
+                        area_volume_90_144=re['area_volume_90_144'],
+                        price_under_90=re['price_under_90'],
+                        price_above_144=re['price_above_144'],
+                        price_90_144=re['price_90_144'],
+                        trade_volume_under_90=re['volume_under_90'],
+                        trade_volume_above_144=re['volume_above_144'],
+                        trade_volume_90_144=re['volume_90_144'])
     newline.save()
     return True
-    

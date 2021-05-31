@@ -6,7 +6,7 @@ from city.models import City
 from city.enums import CityArea
 
 
-def CalculateCityIndex(city_id:int,year:int,month:int):
+def CalculateCityIndex(city_id: int, year: int, month: int):
     index = 0
     index_under_90 = 0
     index_above_144 = 0
@@ -39,22 +39,22 @@ def CalculateCityIndex(city_id:int,year:int,month:int):
         now_trade_volumn_under_90 = 0
         now_trade_volumn_90_144 = 0
         now_trade_volumn_above_144 = 0
-    
+
     base = CalculateResult.objects.get(city_or_area=True, city=city_id, year=2006, month=1)
-    try: 
-        index = now_price/base.price
+    try:
+        index = now_price / base.price
     except ZeroDivisionError:
         index = 0
     try:
-        index_90_144 = now_price_90_144/base.price_90_144
+        index_90_144 = now_price_90_144 / base.price_90_144
     except ZeroDivisionError:
         index_90_144 = 0
     try:
-        index_above_144 = now_price_above_144/base.price_above_144
+        index_above_144 = now_price_above_144 / base.price_above_144
     except ZeroDivisionError:
         index_above_144 = 0
     try:
-        index_under_90 = now_price_under_90/base.price_under_90
+        index_under_90 = now_price_under_90 / base.price_under_90
     except ZeroDivisionError:
         index_under_90 = 0
 
@@ -76,7 +76,8 @@ def CalculateCityIndex(city_id:int,year:int,month:int):
     result.save()
     return True
 
-def CalculateAreaIndex(areaType:str,areaID:int, year:int, month:int):
+
+def CalculateAreaIndex(areaType: str, areaID: int, year: int, month: int):
     if areaType == 'block':
         city_list = City.objects.filter(block=areaID, ifin40=True)
     elif areaType == 'area':
@@ -122,19 +123,19 @@ def CalculateAreaIndex(areaType:str,areaID:int, year:int, month:int):
         except ObjectDoesNotExist:
             pass
     try:
-        bar_price = total_price/total_number
+        bar_price = total_price / total_number
     except ZeroDivisionError:
         bar_price = 0
     try:
-        bar_price_under_90 = total_price_under_90/total_number_under_90
+        bar_price_under_90 = total_price_under_90 / total_number_under_90
     except ZeroDivisionError:
         bar_price_under_90 = 0
     try:
-        bar_price_90_144 = total_price_90_144/total_number_90_144
+        bar_price_90_144 = total_price_90_144 / total_number_90_144
     except ZeroDivisionError:
         bar_price_90_144 = 0
     try:
-        bar_price_above_144 = total_price_above_144/total_number_above_144
+        bar_price_above_144 = total_price_above_144 / total_number_above_144
     except ZeroDivisionError:
         bar_price_above_144 = 0
     result = CalculateResult.objects.get(city_or_area=False, area=areaID, year=year, month=month)
@@ -152,26 +153,23 @@ def CalculateAreaIndex(areaType:str,areaID:int, year:int, month:int):
     result.area_volume_under_90 = total_number_under_90
     result.area_volume_above_144 = total_number_90_144
     result.area_volume_90_144 = total_number_above_144
-    
+
     base = CalculateResult.objects.get(city_or_area=False, area=areaID, year=2006, month=1)
     try:
-        result.index_value = bar_price/base.price
+        result.index_value = bar_price / base.price
     except ZeroDivisionError:
-        result.index_value = 0 
+        result.index_value = 0
     try:
-        result.index_value_under90 = bar_price_under_90/base.price_under_90
+        result.index_value_under90 = bar_price_under_90 / base.price_under_90
     except ZeroDivisionError:
         result.index_value_under90 = 0
     try:
-        result.index_value_90144 = bar_price_90_144/base.price_90_144
+        result.index_value_90144 = bar_price_90_144 / base.price_90_144
     except ZeroDivisionError:
         result.index_value_90144 = 0
     try:
-        result.index_value_above144 = bar_price_above_144/base.price_above_144
+        result.index_value_above144 = bar_price_above_144 / base.price_above_144
     except ZeroDivisionError:
         result.index_value_above144 = 0
     result.save()
     return True
-
-
-

@@ -12,20 +12,21 @@ from index.admin.getreport import getWordPicture
 from index.admin.getreport import getWordPicture90
 from index.views.plot import plot
 
+
 class GenReportViews(APIView):
 
-    def post(self,request):
+    def post(self, request):
         year = int(request.data['year'])
         month = int(request.data['month'])
-        plot(year,month)
+        plot(year, month)
         if (
-        getReport(year,month) 
-        and getReport90(year,month) 
-        and getWordReport(year,month) 
-        and getWordReport90(year,month) 
-        and getWordPicture(year,month) 
-        and getWordPicture90(year,month)
+                getReport(year, month)
+                and getReport90(year, month)
+                and getWordReport(year, month)
+                and getWordReport90(year, month)
+                and getWordPicture(year, month)
+                and getWordPicture90(year, month)
         ):
             return APIResponse.create_success()
         else:
-            return APIResponse.create_fail(code=404,msg="some sourence does not exist")
+            return APIResponse.create_fail(code=404, msg="some sourence does not exist")
