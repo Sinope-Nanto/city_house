@@ -52,7 +52,7 @@ class DownLoadbyIDViews(APIView):
 
     def get(self, request, fileid):
         data_file = DataFile.objects.get(id=fileid)
-        download_url = settings.SITE_DOMAIN + data_file.url
+        download_url = settings.SITE_DOMAIN + data_file.file.url
         return APIResponse.create_success(data=download_url)
 
 
