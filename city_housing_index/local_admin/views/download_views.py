@@ -52,7 +52,7 @@ class DownLoadbyIDViews(APIView):
 class DownLoadbyTime(APIView):
     authentication_classes = [CityIndexAuthentication]
     permission_classes = [CityIndexAdminPermission]
-    def get(self,request):
+    def post(self,request):
         year = request.data['year']
         month = request.data['month']
         try:
@@ -82,7 +82,7 @@ class DownLoadbyTime(APIView):
 class DownLoadbyCity(APIView):
     authentication_classes = [CityIndexAuthentication]
     permission_classes = [CityIndexAdminPermission]
-    def get(self,request):
+    def post(self,request):
         city = request.data['city']
         try:
             city_int = int(city)
@@ -102,7 +102,7 @@ class DownLoadbyCity(APIView):
 class DownLoadbyCityTime(APIView):
     authentication_classes = [CityIndexAuthentication]
     permission_classes = [CityIndexAdminPermission]
-    def get(self,request):
+    def post(self,request):
         city = request.data['city']
         year = request.data['year']
         month = request.data['month']
