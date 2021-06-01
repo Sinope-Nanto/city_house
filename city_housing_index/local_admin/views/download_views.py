@@ -13,10 +13,7 @@ from local_admin.views.files_views import get_file_list
 
 
 def getIP():
-    f = open('setting.txt')
-    re = f.readline()
-    f.close()
-    return re
+    return
 
 
 # 将用户请求的文件打包为zip并提供下载
@@ -54,7 +51,9 @@ class DownLoadbyIDViews(APIView):
     permission_classes = [CityIndexAdminPermission]
 
     def get(self, request, fileid):
-        return APIResponse.create_success(data='http://' + getIP() + '/v1/admin/download_files/' + str(fileid))
+        data_file = DataFile.objects.get(id=fileid)
+        download_url = settings.SITE_DOMAIN + data_file.url
+        return APIResponse.create_success(data=download_url)
 
 
 # 返回用户要求的数据的下载地址 by time
