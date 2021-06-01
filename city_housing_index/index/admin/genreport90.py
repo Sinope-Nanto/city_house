@@ -7,15 +7,16 @@ from docx.oxml.ns import qn
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.shared import Pt,Cm
+from docx.shared import Pt, Cm
 
 
 class GenExcelReport90:
-    def __init__(self,url):
+    def __init__(self, url):
         self.edge = Side(style='thin', color='000000')
         self.border = Border(top=self.edge, bottom=self.edge, left=self.edge, right=self.edge)
         self.url = url
         self.report = openpyxl.Workbook()
+
     def create_report(self):
         indexsummary = self.report.active
         indexsummary.title = '指数汇总'
@@ -40,24 +41,26 @@ class GenExcelReport90:
         line = self.report.create_sheet()
         line.title = '各线城市子市场'
 
-        return 
+        return
+
     def EndReport(self):
         self.report.save(self.url)
 
     def to_date(self, temp):
-        year = int(temp)//12 + 6
-        month = int(temp)%12 + 1
+        year = int(temp) // 12 + 6
+        month = int(temp) % 12 + 1
         return str(year).zfill(2) + '-' + str(month).zfill(2)
 
+
 class GenWordReport90:
-    def __init__(self,url):
+    def __init__(self, url):
         self.url = url
         self.doc = Document()
-    
+
     def EndReport(self):
         self.doc.save(self.url)
 
-    def Firstpage(self, year:int, month:int, **kwargs):
+    def Firstpage(self, year: int, month: int, **kwargs):
         title = str(year) + '年' + str(month) + '月全国90个重点城市“城房指数”月报'
         self.doc.add_paragraph('')
         self.doc.add_paragraph('')
@@ -88,9 +91,9 @@ class GenWordReport90:
         p = self.doc.add_paragraph()
         pic = p.add_run().add_picture(kwargs['index_image_url_90'])
         pic.height = Cm(10.96)
-        pic.width =  Cm(17.65)
+        pic.width = Cm(17.65)
 
-        self.doc.add_section(start_type = None)
+        self.doc.add_section(start_type=None)
 
     def Secondpage(self, year: int, month: int, citylist: list, **kwargs):
         # 参数列表:['index_90', 'chain_90', 'year_on_year_90', 'city_name_90', 'city_chain_90', 'city_year_on_year_90']
@@ -626,7 +629,7 @@ class GenWordReport90:
 
         # kwargs['city_index_90']:当月城市“城房指数”值的列表，按城市顺序排列，'city_chain_90'以及'city_year_on_year_90'以此类推
         for i in range(47):
-            if ((i != 0) and (i!=45)):
+            if ((i != 0) and (i != 45)):
                 p = table.cell(i, 0).paragraphs[0]
                 p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
                 data = str(citylist[i - 1])
@@ -1160,10 +1163,10 @@ class GenWordReport90:
         # kwargs['city_index_90_1']:一线城市“城房指数”的列表，按城市顺序排列，第一项为汇总的指数值
         # 'city_chain_90_1'以及'city_year_on_year_90_1'以此类推
         # kwargs['cityname_1']:一线城市名，第一项为“一线城市”，以此类推
-        citylist_4=[]
-        city_index=[]
-        city_chain=[]
-        city_year_on_year=[]
+        citylist_4 = []
+        city_index = []
+        city_chain = []
+        city_year_on_year = []
 
         for i in range(len(kwargs['city_index_90_1'])):
             citylist_4.append(kwargs['cityname_1'][i])
@@ -1548,27 +1551,31 @@ class GenWordReport90:
 
         if float(kwargs['east_year_on_year_90'][len(kwargs['east_index_90']) - 1]) > 0:
             tit = p.add_run('上涨' + str(
-                float('%.2f' % (float(kwargs['east_year_on_year_90'][len(kwargs['east_index_90']) - 1]) * 100))) + '%，环比')
+                float(
+                    '%.2f' % (float(kwargs['east_year_on_year_90'][len(kwargs['east_index_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
                 '下降' + str(float(
-                    '%.2f' % (float(-kwargs['east_year_on_year_90'][len(kwargs['east_index_90']) - 1]) * 100))) + '%，环比')
+                    '%.2f' % (float(
+                        -kwargs['east_year_on_year_90'][len(kwargs['east_index_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
         if float(kwargs['east_chain_90'][len(kwargs['east_index_90']) - 1]) > 0:
             tit = p.add_run(
-                '上涨' + str(float('%.2f' % (float(kwargs['east_chain_90'][len(kwargs['east_index_90']) - 1]) * 100))) + '%；')
+                '上涨' + str(
+                    float('%.2f' % (float(kwargs['east_chain_90'][len(kwargs['east_index_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
-                '下降' + str(float('%.2f' % (-float(kwargs['east_chain_90'][len(kwargs['east_index_90']) - 1]) * 100))) + '%；')
+                '下降' + str(
+                    float('%.2f' % (-float(kwargs['east_chain_90'][len(kwargs['east_index_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1586,27 +1593,31 @@ class GenWordReport90:
         if float(kwargs['mid_year_on_year_90'][len(kwargs['mid_index_90']) - 1]) > 0:
             tit = p.add_run(
                 '上涨' + str(
-                    float('%.2f' % (float(kwargs['mid_year_on_year_90'][len(kwargs['mid_index_90']) - 1]) * 100))) + '%，环比')
+                    float('%.2f' % (
+                                float(kwargs['mid_year_on_year_90'][len(kwargs['mid_index_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
                 '下降' + str(
-                    float('%.2f' % (-float(kwargs['mid_year_on_year_90'][len(kwargs['mid_index_90']) - 1]) * 100))) + '%，环比')
+                    float('%.2f' % (-float(
+                        kwargs['mid_year_on_year_90'][len(kwargs['mid_index_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
         if float(kwargs['mid_chain_90'][len(kwargs['mid_index_90']) - 1]) > 0:
             tit = p.add_run(
-                '上涨' + str(float('%.2f' % (float(kwargs['mid_chain_90'][len(kwargs['mid_index_90']) - 1]) * 100))) + '%；')
+                '上涨' + str(
+                    float('%.2f' % (float(kwargs['mid_chain_90'][len(kwargs['mid_index_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
-                '下降' + str(float('%.2f' % (-float(kwargs['mid_chain_90'][len(kwargs['mid_index_90']) - 1]) * 100))) + '%；')
+                '下降' + str(
+                    float('%.2f' % (-float(kwargs['mid_chain_90'][len(kwargs['mid_index_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1624,27 +1635,31 @@ class GenWordReport90:
         if float(kwargs['west_year_on_year_90'][len(kwargs['west_index_90']) - 1]) > 0:
             tit = p.add_run(
                 '上涨' + str(
-                    float('%.2f' % (float(kwargs['west_year_on_year_90'][len(kwargs['west_index_90']) - 1]) * 100))) + '%，环比')
+                    float('%.2f' % (float(
+                        kwargs['west_year_on_year_90'][len(kwargs['west_index_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
                 '下降' + str(float(
-                    '%.2f' % (-float(kwargs['west_year_on_year_90'][len(kwargs['west_index_90']) - 1]) * 100))) + '%，环比')
+                    '%.2f' % (-float(
+                        kwargs['west_year_on_year_90'][len(kwargs['west_index_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
         if float(kwargs['west_chain_90'][len(kwargs['west_index_90']) - 1]) > 0:
             tit = p.add_run(
-                '上涨' + str(float('%.2f' % (float(kwargs['west_chain_90'][len(kwargs['west_index_90']) - 1]) * 100))) + '%。')
+                '上涨' + str(
+                    float('%.2f' % (float(kwargs['west_chain_90'][len(kwargs['west_index_90']) - 1]) * 100))) + '%。')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
-                '下降' + str(float('%.2f' % (-float(kwargs['west_chain_90'][len(kwargs['west_index_90']) - 1]) * 100))) + '%。')
+                '下降' + str(
+                    float('%.2f' % (-float(kwargs['west_chain_90'][len(kwargs['west_index_90']) - 1]) * 100))) + '%。')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1683,7 +1698,8 @@ class GenWordReport90:
         if float(kwargs['year_on_year_under_90_90'][len(kwargs['index_under_90_90']) - 1]) > 0:
             tit = p.add_run(
                 '上涨' + str(float('%.2f' % (
-                            float(kwargs['year_on_year_under_90_90'][len(kwargs['index_under_90_90']) - 1]) * 100))) + '%，环比')
+                        float(
+                            kwargs['year_on_year_under_90_90'][len(kwargs['index_under_90_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1697,14 +1713,16 @@ class GenWordReport90:
 
         if float(kwargs['chain_under_90_90'][len(kwargs['index_under_90_90']) - 1]) > 0:
             tit = p.add_run('上涨' + str(
-                float('%.2f' % (float(kwargs['chain_under_90_90'][len(kwargs['index_under_90_90']) - 1]) * 100))) + '%；')
+                float(
+                    '%.2f' % (float(kwargs['chain_under_90_90'][len(kwargs['index_under_90_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
                 '下降' + str(
-                    float('%.2f' % (-float(kwargs['chain_under_90_90'][len(kwargs['index_under_90_90']) - 1]) * 100))) + '%；')
+                    float('%.2f' % (-float(
+                        kwargs['chain_under_90_90'][len(kwargs['index_under_90_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1722,14 +1740,16 @@ class GenWordReport90:
         if float(kwargs['year_on_year_90_144_90'][len(kwargs['index_90_144_90']) - 1]) > 0:
             tit = p.add_run(
                 '上涨' + str(float(
-                    '%.2f' % (float(kwargs['year_on_year_90_144_90'][len(kwargs['index_90_144_90']) - 1]) * 100))) + '%，环比')
+                    '%.2f' % (float(
+                        kwargs['year_on_year_90_144_90'][len(kwargs['index_90_144_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
                 '下降' + str(float(
-                    '%.2f' % (-float(kwargs['year_on_year_90_144_90'][len(kwargs['index_90_144_90']) - 1]) * 100))) + '%，环比')
+                    '%.2f' % (-float(
+                        kwargs['year_on_year_90_144_90'][len(kwargs['index_90_144_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1743,7 +1763,8 @@ class GenWordReport90:
         else:
             tit = p.add_run(
                 '下降' + str(
-                    float('%.2f' % (-float(kwargs['chain_90_144_90'][len(kwargs['index_90_144_90']) - 1]) * 100))) + '%；')
+                    float(
+                        '%.2f' % (-float(kwargs['chain_90_144_90'][len(kwargs['index_90_144_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1753,7 +1774,8 @@ class GenWordReport90:
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
         tit.font.size = Pt(14)
 
-        tit = p.add_run(str(float('%.2f' % kwargs['index_above_144_90'][len(kwargs['index_above_144_90']) - 1])) + '点，同比')
+        tit = p.add_run(
+            str(float('%.2f' % kwargs['index_above_144_90'][len(kwargs['index_above_144_90']) - 1])) + '点，同比')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
         tit.font.size = Pt(14)
@@ -1775,13 +1797,15 @@ class GenWordReport90:
 
         if float(kwargs['chain_above_144_90'][len(kwargs['index_above_144_90']) - 1]) > 0:
             tit = p.add_run('上涨' + str(
-                float('%.2f' % (float(kwargs['chain_above_144_90'][len(kwargs['index_above_144_90']) - 1]) * 100))) + '%。')
+                float('%.2f' % (
+                            float(kwargs['chain_above_144_90'][len(kwargs['index_above_144_90']) - 1]) * 100))) + '%。')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run('下降' + str(
-                float('%.2f' % (-float(kwargs['chain_above_144_90'][len(kwargs['index_above_144_90']) - 1]) * 100))) + '%。')
+                float('%.2f' % (
+                            -float(kwargs['chain_above_144_90'][len(kwargs['index_above_144_90']) - 1]) * 100))) + '%。')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1807,14 +1831,15 @@ class GenWordReport90:
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '黑体')
         tit.font.size = Pt(14)
 
-        #东北地区指数
+        # 东北地区指数
         p = self.doc.add_paragraph()
         tit = p.add_run('    七区域子市场中，东北地区指数')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
         tit.font.size = Pt(14)
 
-        tit = p.add_run(str(float('%.2f' % kwargs['index_northeast_90'][len(kwargs['index_northeast_90']) - 1])) + '点，同比')
+        tit = p.add_run(
+            str(float('%.2f' % kwargs['index_northeast_90'][len(kwargs['index_northeast_90']) - 1])) + '点，同比')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
         tit.font.size = Pt(14)
@@ -1822,7 +1847,8 @@ class GenWordReport90:
         if float(kwargs['year_on_year_northeast_90'][len(kwargs['index_northeast_90']) - 1]) > 0:
             tit = p.add_run(
                 '上涨' + str(float('%.2f' % (
-                            float(kwargs['year_on_year_northeast_90'][len(kwargs['index_northeast_90']) - 1]) * 100))) + '%，环比')
+                        float(kwargs['year_on_year_northeast_90'][
+                                  len(kwargs['index_northeast_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1836,19 +1862,21 @@ class GenWordReport90:
 
         if float(kwargs['chain_northeast_90'][len(kwargs['index_northeast_90']) - 1]) > 0:
             tit = p.add_run('上涨' + str(
-                float('%.2f' % (float(kwargs['chain_northeast_90'][len(kwargs['index_northeast_90']) - 1]) * 100))) + '%；')
+                float('%.2f' % (
+                            float(kwargs['chain_northeast_90'][len(kwargs['index_northeast_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
                 '下降' + str(
-                    float('%.2f' % (-float(kwargs['chain_northeast_90'][len(kwargs['index_northeast_90']) - 1]) * 100))) + '%；')
+                    float('%.2f' % (-float(
+                        kwargs['chain_northeast_90'][len(kwargs['index_northeast_90']) - 1]) * 100))) + '%；')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
-        #华北地区指数
+        # 华北地区指数
         tit = p.add_run('华北地区指数')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
@@ -1862,14 +1890,16 @@ class GenWordReport90:
         if float(kwargs['year_on_year_north_90'][len(kwargs['index_north_90']) - 1]) > 0:
             tit = p.add_run(
                 '上涨' + str(float(
-                    '%.2f' % (float(kwargs['year_on_year_north_90'][len(kwargs['index_north_90']) - 1]) * 100))) + '%，环比')
+                    '%.2f' % (float(
+                        kwargs['year_on_year_north_90'][len(kwargs['index_north_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run(
                 '下降' + str(float(
-                    '%.2f' % (-float(kwargs['year_on_year_north_90'][len(kwargs['index_north_90']) - 1]) * 100))) + '%，环比')
+                    '%.2f' % (-float(
+                        kwargs['year_on_year_north_90'][len(kwargs['index_north_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -1888,7 +1918,7 @@ class GenWordReport90:
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
-        #华东地区指数
+        # 华东地区指数
         tit = p.add_run('华东地区指数')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
@@ -1927,7 +1957,7 @@ class GenWordReport90:
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
-        #华中地区指数
+        # 华中地区指数
         tit = p.add_run('华中地区指数')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
@@ -1966,7 +1996,7 @@ class GenWordReport90:
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
-        #华南地区指数
+        # 华南地区指数
         tit = p.add_run('华南地区指数')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
@@ -2005,13 +2035,14 @@ class GenWordReport90:
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
-        #西南地区指数
+        # 西南地区指数
         tit = p.add_run('西南地区指数')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
         tit.font.size = Pt(14)
 
-        tit = p.add_run(str(float('%.2f' % kwargs['index_southwest_90'][len(kwargs['index_southwest_90']) - 1])) + '点，同比')
+        tit = p.add_run(
+            str(float('%.2f' % kwargs['index_southwest_90'][len(kwargs['index_southwest_90']) - 1])) + '点，同比')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
         tit.font.size = Pt(14)
@@ -2033,24 +2064,27 @@ class GenWordReport90:
 
         if float(kwargs['chain_southwest_90'][len(kwargs['index_southwest_90']) - 1]) > 0:
             tit = p.add_run('上涨' + str(
-                float('%.2f' % (float(kwargs['chain_southwest_90'][len(kwargs['index_southwest_90']) - 1]) * 100))) + '%。')
+                float('%.2f' % (
+                            float(kwargs['chain_southwest_90'][len(kwargs['index_southwest_90']) - 1]) * 100))) + '%。')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run('下降' + str(
-                float('%.2f' % (-float(kwargs['chain_southwest_90'][len(kwargs['index_southwest_90']) - 1]) * 100))) + '%。')
+                float('%.2f' % (
+                            -float(kwargs['chain_southwest_90'][len(kwargs['index_southwest_90']) - 1]) * 100))) + '%。')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
-        #西北地区指数
+        # 西北地区指数
         tit = p.add_run('西北地区指数')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
         tit.font.size = Pt(14)
 
-        tit = p.add_run(str(float('%.2f' % kwargs['index_northwest_90'][len(kwargs['index_northwest_90']) - 1])) + '点，同比')
+        tit = p.add_run(
+            str(float('%.2f' % kwargs['index_northwest_90'][len(kwargs['index_northwest_90']) - 1])) + '点，同比')
         tit.font.name = '仿宋_GB2312'
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
         tit.font.size = Pt(14)
@@ -2072,13 +2106,15 @@ class GenWordReport90:
 
         if float(kwargs['chain_northwest_90'][len(kwargs['index_northwest_90']) - 1]) > 0:
             tit = p.add_run('上涨' + str(
-                float('%.2f' % (float(kwargs['chain_northwest_90'][len(kwargs['index_northwest_90']) - 1]) * 100))) + '%。')
+                float('%.2f' % (
+                            float(kwargs['chain_northwest_90'][len(kwargs['index_northwest_90']) - 1]) * 100))) + '%。')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
         else:
             tit = p.add_run('下降' + str(
-                float('%.2f' % (-float(kwargs['chain_northwest_90'][len(kwargs['index_northwest_90']) - 1]) * 100))) + '%。')
+                float('%.2f' % (
+                            -float(kwargs['chain_northwest_90'][len(kwargs['index_northwest_90']) - 1]) * 100))) + '%。')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -2107,7 +2143,7 @@ class GenWordReport90:
         tit.element.rPr.rFonts.set(qn('w:eastAsia'), '黑体')
         tit.font.size = Pt(14)
 
-        #一线城市
+        # 一线城市
         p = self.doc.add_paragraph()
         tit = p.add_run('    各线城市子市场中，“一线城市”指数')
         tit.font.name = '仿宋_GB2312'
@@ -2151,7 +2187,7 @@ class GenWordReport90:
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
 
-        #二线城市
+        # 二线城市
         p = self.doc.add_paragraph()
         tit = p.add_run('“二线城市”指数')
         tit.font.name = '仿宋_GB2312'
@@ -2341,7 +2377,7 @@ class GenWordReport90:
             tit = p.add_run(
                 '上涨' + str(
                     float('%.2f' % (
-                                float(kwargs['chang_year_on_year_90'][len(kwargs['chang_index_90']) - 1]) * 100))) + '%，环比')
+                            float(kwargs['chang_year_on_year_90'][len(kwargs['chang_index_90']) - 1]) * 100))) + '%，环比')
             tit.font.name = '仿宋_GB2312'
             tit.element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             tit.font.size = Pt(14)
@@ -2476,6 +2512,7 @@ class GenWordReport90:
 
     def EndReport(self):
         self.doc.save(self.url)
+
 
 class GenWordPicture90:
 
