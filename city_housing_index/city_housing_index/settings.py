@@ -121,7 +121,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -180,6 +180,8 @@ LOGGING = {
         },
     }
 }
+
+SITE_DOMAIN = "http://182.92.239.90:80"
 
 if DEBUG:
     # make all loggers use the console.
