@@ -1,4 +1,6 @@
 from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
+
 from .domain import *
 
 from utils.api_response import APIResponse
@@ -37,16 +39,19 @@ class LoginView(APIView):
         })
 
 
-class RegisterView(APIView):
+class RegisterView(ViewSet):
 
-    def post(self, request):
-        post_data = request.data
+    def create(self, request):
+        mobile = request.data['mobile']
+        name = request.data['name']
+        city = int(request.data['city'])
+        identity = request.data['identity']
+        identity_image = request.FILES.get('identity_image')
 
-        mobile = post_data["mobile"]
         if check_login_mobile(mobile):
             return APIResponse.create_fail(400, "该手机号已被注册")
 
-        created, msg = register(**post_data)
+        created, msg = register(mobile=mobile, name=name, city=city, identity=identity, identity_image=identity_image)
 
         if not created:
             return APIResponse.create_fail(400, msg)
