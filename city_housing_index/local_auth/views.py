@@ -40,6 +40,7 @@ class LoginView(APIView):
 
 
 class RegisterView(ViewSet):
+    queryset = UserProfile.objects.all()
 
     def create(self, request):
         mobile = request.data['mobile']
