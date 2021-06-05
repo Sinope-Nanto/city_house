@@ -388,12 +388,24 @@ def getReport90(year: int, month: int):
         kwargs['under_90_volumn'].append(datarow['QUANGUO'][i].trade_volume_under_90)
         kwargs['90_144_volumn'].append(datarow['QUANGUO'][i].trade_volume_90_144)
         kwargs['above_144_volumn'].append(datarow['QUANGUO'][i].trade_volume_above_144)
+        kwargs['index'].append(datarow['QUANGUO'][i].index_value_base09)
         kwargs['index_under_90'].append(datarow['QUANGUO'][i].index_value_under90_base09)
         kwargs['index_90_144'].append(datarow['QUANGUO'][i].index_value_90144_base09)
         kwargs['index_above_144'].append(datarow['QUANGUO'][i].index_value_above144_base09)
+        if i > 11:
+            kwargs['volumn_year_on_year'].append(datarow['QUANGUO'][i].volume_year_on_year)
+            kwargs['year_on_year'].append(datarow['QUANGUO'][i].year_on_year_index)
+            kwargs['year_on_year_under_90'].append(datarow['QUANGUO'][i].year_on_year_index_under90)
+            kwargs['year_on_year_90_144'].append(datarow['QUANGUO'][i].year_on_year_index_90144)
+            kwargs['year_on_year_above_144'].append(datarow['QUANGUO'][i].year_on_year_index_above144)
+        if i > 0:
+            kwargs['volumn_chain'].append(datarow['QUANGUO'][i].volume_chain)
+            kwargs['chain'].append(datarow['QUANGUO'][i].chain_index)
+            kwargs['chain_under_90'].append(datarow['QUANGUO'][i].chain_index_under90)
+            kwargs['chain_90_144'].append(datarow['QUANGUO'][i].chain_index_90144)
+            kwargs['chain_above_144'].append(datarow['QUANGUO'][i].chain_index_above144)        
 
         
-
     report.EndReport()
     return True
 
