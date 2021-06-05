@@ -565,9 +565,9 @@ def getWordPicture90(year: int, month: int):
     for city in City.objects.filter(ifin90=True):
         city_list.append(city.name)
         city_code_list.append(city.code)
-    kwargs['city_index_url'] = []
+    kwargs['city_index_url_90'] = []
     for code in city_code_list:
-        kwargs['city_index_url'].append(
+        kwargs['city_index_url_90'].append(
             'media/image/' + str(year) + '_' + str(month) + 'volindex_' + str(code) + '.png')
     kwargs['total_index_url'] = 'media/image/' + str(year) + '_' + str(month) + 'index_90.png'
     kwargs['total_year_on_year_url'] = 'media/image/' + str(year) + '_' + str(month) + 'yearonyearplot_90.png'
