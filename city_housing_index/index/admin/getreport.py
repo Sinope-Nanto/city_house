@@ -346,7 +346,54 @@ def getWordReport(year: int, month: int):
 
 def getReport90(year: int, month: int):
     report = GenExcelReport90('media/report/' + '90_city_report_' + str(year) + '_' + str(month) + '.xlsx')
+
     report.create_report()
+    keylist = ['volumn', 'east_volumn', 'mid_volumn', 'west_volumn',
+                 'under_90_volumn', '90_144_volumn', 'above_144_volumn',
+                 'DONGBEI_volumn', 'HUABEI_volumn', 'HUADONG_volumn', 'HUAZHONG_volumn', 'HUANAN_volumn', 'XINAN_volumn', 'XIBEI_volumn', 
+                 'firstline_volumn', 'secondline_volumn', 'thirdline_volumn', 'forth_volumn', 'ZSJ_volumn', 'CSJ_volumn', 'HBH_volumn',
+                 'index', 'east_index', 'mid_index', 'west_index',
+                 'index_under_90', 'index_90_144', 'index_above_144',
+                 'DONGBEI_index', 'HUABEI_index', 'HUADONG_index', 'HUAZHONG_index', 'HUANAN_index', 'XINAN_index', 'XIBEI_index', 
+                 'firstline_index', 'secondline_index', 'thirdline_index', 'forth_index', 'ZSJ_index', 'CSJ_index', 'HBH_index',
+                 'volumn_year_on_year',
+                 'year_on_year', 'east_year_on_year', 'mid_year_on_year', 'west_year_on_year',
+                 'year_on_year_under_90', 'year_on_year_90_144', 'year_on_year_above_144',
+                 'DONGBEI_year_on_year', 'HUABEI_year_on_year', 'HUADONG_year_on_year', 'HUAZHONG_year_on_year', 'HUANAN_year_on_year', 'XINAN_year_on_year', 'XIBEI_year_on_year', 
+                 'firstline_year_on_year', 'secondline_year_on_year', 'thirdline_year_on_year', 'forth_year_on_year', 'ZSJ_year_on_year', 'CSJ_year_on_year', 'HBH_year_on_year',
+                 'volumn_chain',
+                 'chain', 'east_chain', 'mid_chain', 'west_chain',
+                 'chain_under_90', 'chain_90_144', 'chain_above_144',
+                 'DONGBEI_chain', 'HUABEI_chain', 'HUADONG_chain', 'HUAZHONG_chain', 'HUANAN_chain', 'XINAN_chain', 'XIBEI_chain', 
+                 'firstline_chain', 'secondline_chain', 'thirdline_chain', 'forth_chain', 'ZSJ_chain', 'CSJ_chain', 'HBH_chain']
+    kwargs = {}
+    for key in keylist:
+        kwargs[key] = []
+    # 取区域数据
+    datarow = {}
+    dataList = ['QUANGUO','east','mid','west','DONGBEI','HUABEI','HUADONG','HUAZHONG','HUANAN','XINAN','XIBEI'
+    ,'firstline','secondline','thirdline','forth','ZSJ','CSJ','HBH']
+    for i in dataList:
+        datarow[i] = []
+    areaList = [CityArea.QUANGUO_90] + [i for i in range(CityArea.DONGBU_90, CityArea.QUANGUO_90)]
+    for i in range(0, len(dataList)):
+        for y in range(2009, year):
+            for m in range(1, 13):
+                datarow[dataList[i]].append(CalculateResult.objects.get(city_or_area=False, area=areaList[i], year=y, month=m))
+        for m in range(1, month + 1):
+            datarow[dataList[i]].append(CalculateResult.objects.get(city_or_area=False, area=areaList[i], year=year, month=m))
+    # 填入全国数据
+    for i in range(0, len(datarow[dataList[0]])):
+        kwargs['volumn'].append(datarow['QUANGUO'][i].trade_volume)
+        kwargs['under_90_volumn'].append(datarow['QUANGUO'][i].trade_volume_under_90)
+        kwargs['90_144_volumn'].append(datarow['QUANGUO'][i].trade_volume_90_144)
+        kwargs['above_144_volumn'].append(datarow['QUANGUO'][i].trade_volume_above_144)
+        kwargs['index_under_90'].append(datarow['QUANGUO'][i].index_value_under90_base09)
+        kwargs['index_90_144'].append(datarow['QUANGUO'][i].index_value_90144_base09)
+        kwargs['index_above_144'].append(datarow['QUANGUO'][i].index_value_above144_base09)
+
+        
+
     report.EndReport()
     return True
 
@@ -500,8 +547,23 @@ def getWordReport90(year: int, month: int):
 
 def getWordPicture90(year: int, month: int):
     report = GenWordPicture90('media/report/' + '90_city_picture_' + str(year) + '_' + str(month) + '.docx')
-
-    report.EndReport()
+    city_list = []
+    city_code_list = []
+    kwargs = {}
+    for city in City.objects.filter(ifin90=True):
+        city_list.append(city.name)
+        city_code_list.append(city.code)
+    kwargs['city_index_url'] = []
+    for code in city_code_list:
+        kwargs['city_index_url'].append(
+            'media/image/' + str(year) + '_' + str(month) + 'volindex_' + str(code) + '.png')
+    kwargs['total_index_url'] = 'media/image/' + str(year) + '_' + str(month) + 'index_90.png'
+    kwargs['total_year_on_year_url'] = 'media/image/' + str(year) + '_' + str(month) + 'yearonyearplot_90.png'
+    kwargs['total_chain_url'] = 'media/image/' + str(year) + '_' + str(month) + 'chainplot_90.png'
+    kwargs['index_block'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_block_c_90.png'
+    kwargs['index_area'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_buildarea_c_90.png'
+    report.genpicdoc(year, month, city_list, **kwargs)
+    report.EndReport()        
     return True
 
 
