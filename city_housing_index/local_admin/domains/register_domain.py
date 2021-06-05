@@ -1,6 +1,7 @@
 from local_auth.models import UserProfile
 from local_auth.serializers import UserProfileSerializer
 from django.contrib.auth.models import User
+from django.conf import settings
 
 def get_waiting_register_list():
     user_profiles = UserProfile.get_waiting_list()
@@ -12,7 +13,7 @@ def get_waiting_register_detail(user_id):
 
     ret_dict = UserProfileSerializer(user_profile).data
     ret_dict["identity"] = user_profile.identity
-    ret_dict["identity_image"] = user_profile.identity_image.url
+    ret_dict["identity_image"] = settings.SITE_DOMAIN + user_profile.identity_image.url
 
     return ret_dict
 

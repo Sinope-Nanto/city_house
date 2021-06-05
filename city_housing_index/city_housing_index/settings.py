@@ -145,6 +145,8 @@ CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+SITE_DOMAIN = "http://182.92.239.90:80"
+
 import djcelery
 
 djcelery.setup_loader()
