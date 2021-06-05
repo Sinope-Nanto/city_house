@@ -47,9 +47,574 @@ class GenExcelReport90:
         self.report.save(self.url)
 
     def to_date(self, temp):
-        year = int(temp) // 12 + 6
+        year = int(temp) // 12 + 9
         month = int(temp) % 12 + 1
         return str(year).zfill(2) + '-' + str(month).zfill(2)
+
+    def IndexSummary(self, **kwargs):
+        # 参数列表:['volumn', 'east_volumn', 'mid_volumn', 'west_volumn',
+        #             'under_90_volumn', '90_144_volumn', 'above_144_volumn',
+        #             'DONGBEI_volumn', 'HUABEI_volumn', 'HUADONG_volumn', 'HUAZHONG_volumn', 'HUANAN_volumn', 'XINAN_volumn', 'XIBEI_volumn', 
+        #             'firstline_volumn', 'secondline_volumn', 'thirdline_volumn', 'forth_volumn', 'ZSJ_volumn', 'CSJ_volumn', 'HBH_volumn',
+        #             'index', 'east_index', 'mid_index', 'west_index',
+        #             'index_under_90', 'index_90_144', 'index_above_144',
+        #             'DONGBEI_index', 'HUABEI_index', 'HUADONG_index', 'HUAZHONG_index', 'HUANAN_index', 'XINAN_index', 'XIBEI_index', 
+        #             'firstline_index', 'secondline_index', 'thirdline_index', 'forth_index', 'ZSJ_index', 'CSJ_index', 'HBH_index',
+        #             'volumn_year_on_year',
+        #              'year_on_year', 'east_year_on_year', 'mid_year_on_year', 'west_year_on_year',
+        #              'year_on_year_under_90', 'year_on_year_90_144', 'year_on_year_above_144',
+        #              'DONGBEI_year_on_year', 'HUABEI_year_on_year', 'HUADONG_year_on_year', 'HUAZHONG_year_on_year', 'HUANAN_year_on_year', 'XINAN_year_on_year', 'XIBEI_year_on_year', 
+        #              'firstline_year_on_year', 'secondline_year_on_year', 'thirdline_year_on_year', 'forth_year_on_year', 'ZSJ_year_on_year', 'CSJ_year_on_year', 'HBH_year_on_year',
+        #              'volumn_chain',
+        #              'chain', 'east_chain', 'mid_chain', 'west_chain',
+        #              'chain_under_90', 'chain_90_144', 'chain_above_144',
+        #              'DONGBEI_chain', 'HUABEI_chain', 'HUADONG_chain', 'HUAZHONG_chain', 'HUANAN_chain', 'XINAN_chain', 'XIBEI_chain', 
+        #              'firstline_chain', 'secondline_chain', 'thirdline_chain', 'forth_chain', 'ZSJ_chain', 'CSJ_chain', 'HBH_chain']
+
+        # 表格基本格式设置
+        indexsummary = self.report['指数汇总']
+        indexsummary.freeze_panes = 'C1'
+        indexsummary.column_dimensions['A'].width = 20.0
+        titlefont = Font(u'宋体', size=12, bold=True, color='000000')
+        datafont = Font(u'宋体', size=10, bold=True, color='000000')
+        grayfill = PatternFill("solid", fgColor='00C0C0C0')
+        yellowfill = PatternFill("solid", fgColor='FFFFFF00')
+        col_max = len(kwargs['volumn']) + 2
+
+        # 表头文字设置
+        titlelist = ['交易量', '指数汇总结果', '新子指数系统交易量','新子指数系统指数结果']
+        rowlist = [1, 15, 43, 60]
+        for i in range(0, 4):
+            c = indexsummary.cell(row=rowlist[i], column=1)
+            c.value = titlelist[i]
+            c.font = titlefont
+
+        # 表格颜色填充
+        grayrow = [1, 15, 43, 60]
+        yellowrow = [24, 25, 28, 29, 33, 38, 39, 70, 71, 74, 75, 78, 79, 
+        82, 83, 91, 92, 95, 96, 105, 106, 109, 110]
+        for j in range(1, col_max):
+            for i in grayrow:
+                c = indexsummary.cell(row=i, column=j)
+                c.fill = grayfill
+            for i in yellowrow:
+                c = indexsummary.cell(row=i, column=j)
+                c.fill = yellowfill
+
+        # 表格边框加粗
+        borderrow = [i for i in range(2, 10)] + [11, 12] + [i for i in range(16, 21)] + [i for i in range(22, 30)]
+        + [31, 32, 33, 34] + [i for i in range(36, 42)] + [i for i in range(44, 59)] + [i for i in range(61, 69)] 
+        + [i for i in range(70, 84)] + [i for i in range(85, 90)] + [i for i in range(91, 99)] + [i for i in range(100, 104)]
+        + [i for i in range(105, 111)]
+        for i in borderrow:
+            for j in range(1, col_max):
+                c = indexsummary.cell(row=i, column=j)
+                c.border = self.border
+
+        # 日期填入
+        datarow = [2, 16, 31, 44, 61, 85, 100]
+        for j in datarow:
+            for i in range(2, col_max):
+                c = indexsummary.cell(row=j, column=i)
+                c.value = self.to_date(i - 2)
+                c.font = datafont
+
+        # 表头单元格合并
+        indexsummary.merge_cells('A1:B1')
+        indexsummary.merge_cells('A15:B15')
+        indexsummary.merge_cells('A43:B43')
+        indexsummary.merge_cells('A60:B60')
+
+        # 填入表行名
+        int_row_name = ['全国', '东部', '中部', '西部', '90以下', '90-144', '144以上', '东北', '华北', '华东', '华中', '华南'
+        , '西南', '西北', '一线城市', '二线城市', '三线城市', '四线城市', '珠三角', '长三角', '环渤海']
+        float_row_name = ['全国', '东部', '中部', '西部', '90以下', '90-144', '144以上', '东北', '华北', '华东', '华中', '华南'
+        , '西南', '西北', '一线城市', '二线城市', '三线城市', '四线城市', '珠三角', '长三角', '环渤海']
+        year_row_name = ['全国交易量同比变化', '全国同比涨幅', '东部同比涨幅', '中部同比涨幅', '西部同比涨幅',
+                         '90以下同比涨幅', '90-144同比涨幅', '144以上同比涨幅', '东北同比涨幅', '华北同比涨幅', '华东同比涨幅', '华中同比涨幅', '华南同比涨幅',
+                         '西南同比涨幅', '西北同比涨幅', '一线城市同比涨幅', '二线城市同比涨幅', '三线城市同比涨幅', '四线城市同比涨幅', 
+                         '珠三角同比涨幅', '长三角同比涨幅', '环渤海同比涨幅']
+        chain_row_name = ['全国交易量环比变化', '全国环比涨幅', '东部环比涨幅', '中部环比涨幅', '西部环比涨幅',
+                          '90以下环比涨幅', '90-144环比涨幅', '144以上环比涨幅', '东北环比涨幅', '华北环比涨幅', '华东环比涨幅', '华中环比涨幅', '华南环比涨幅',
+                         '西南环比涨幅', '西北环比涨幅', '一线城市环比涨幅', '二线城市环比涨幅', '三线城市环比涨幅', '四线城市环比涨幅', 
+                         '珠三角环比涨幅', '长三角环比涨幅', '环渤海环比涨幅']
+        int_row_list = [i for i in range(3, 10)] + [i for i in range(45, 59)]
+        float_row_list = [17, 18, 19, 20, 32, 33, 34] + [i for i in range(62, 69)] + [i for i in range(86, 90)] 
+        + [101, 102, 103] 
+        year_row_list = [11, 22, 24, 26, 28, 36, 38, 40, 70, 72, 74, 76, 78, 80, 82, 91, 93, 95, 97, 105, 107, 109]
+        chain_row_list = [(i + 1) for i in year_row_list]
+
+        rowname = int_row_name + float_row_name + year_row_name + chain_row_name
+        rowlist = int_row_list + float_row_list + year_row_list + chain_row_list
+
+        for i in range(0, len(rowname)):
+            c = indexsummary.cell(row=rowlist[i], column=1)
+            c.value = rowname[i]
+            c.font = datafont
+
+        # 填入整数型数据
+        data_name = ['volumn', 'east_volumn', 'mid_volumn', 'west_volumn',
+                     'under_90_volumn', '90_144_volumn', 'above_144_volumn',
+                     'DONGBEI_volumn', 'HUABEI_volumn', 'HUADONG_volumn', 'HUAZHONG_volumn', 'HUANAN_volumn', 'XINAN_volumn', 'XIBEI_volumn', 
+                     'firstline_volumn', 'secondline_volumn', 'thirdline_volumn', 'forth_volumn', 'ZSJ_volumn', 'CSJ_volumn', 'HBH_volumn']
+        for i in range(0, len(int_row_list)):
+            for j in range(2, col_max):
+                c = indexsummary.cell(row=int_row_list[i], column=j)
+                c.value = kwargs[data_name[i]][j - 2]
+                c.font = datafont
+
+        # 填入浮点数型数据
+        data_name = ['index', 'east_index', 'mid_index', 'west_index',
+                     'index_under_90', 'index_90_144', 'index_above_144',
+                     'DONGBEI_index', 'HUABEI_index', 'HUADONG_index', 'HUAZHONG_index', 'HUANAN_index', 'XINAN_index', 'XIBEI_index', 
+                     'firstline_index', 'secondline_index', 'thirdline_index', 'forth_index', 'ZSJ_index', 'CSJ_index', 'HBH_index']
+        for i in range(0, len(float_row_list)):
+            for j in range(2, col_max):
+                c = indexsummary.cell(row=float_row_list[i], column=j)
+                c.value = float('%.2f' % kwargs[data_name[i]][j - 2])
+                c.font = datafont
+
+        # 填入同比数据
+        data_name = ['volumn_year_on_year',
+                     'year_on_year', 'east_year_on_year', 'mid_year_on_year', 'west_year_on_year',
+                     'year_on_year_under_90', 'year_on_year_90_144', 'year_on_year_above_144',
+                     'DONGBEI_year_on_year', 'HUABEI_year_on_year', 'HUADONG_year_on_year', 'HUAZHONG_year_on_year', 'HUANAN_year_on_year', 'XINAN_year_on_year', 'XIBEI_year_on_year', 
+                     'firstline_year_on_year', 'secondline_year_on_year', 'thirdline_year_on_year', 'forth_year_on_year', 'ZSJ_year_on_year', 'CSJ_year_on_year', 'HBH_year_on_year']
+        for i in range(0, len(year_row_list)):
+            for j in range(2, 14):
+                c = indexsummary.cell(row=year_row_list[i], column=j)
+                c.value = '——'
+                c.font = datafont
+            for j in range(14, col_max):
+                c = indexsummary.cell(row=year_row_list[i], column=j)
+                c.value = '{:.2%}'.format(kwargs[data_name[i]][j - 14])
+                c.font = datafont
+
+        # 填入环比数据
+        data_name = ['volumn_chain',
+                     'chain', 'east_chain', 'mid_chain', 'west_chain',
+                     'chain_under_90', 'chain_90_144', 'chain_above_144',
+                     'DONGBEI_chain', 'HUABEI_chain', 'HUADONG_chain', 'HUAZHONG_chain', 'HUANAN_chain', 'XINAN_chain', 'XIBEI_chain', 
+                     'firstline_chain', 'secondline_chain', 'thirdline_chain', 'forth_chain', 'ZSJ_chain', 'CSJ_chain', 'HBH_chain']
+        for i in range(0, len(year_row_list)):
+            c = indexsummary.cell(row=chain_row_list[i], column=2)
+            c.value = '——'
+            c.font = datafont
+            for j in range(3, col_max):
+                c = indexsummary.cell(row=chain_row_list[i], column=j)
+                c.value = '{:.2%}'.format(kwargs[data_name[i]][j - 3])
+                c.font = datafont
+    
+    def RadioPlot(self, **kwargs):
+        # 参数列表:['index','year_on_year','chain','year_on_year_plot','chain_plot']
+
+        # 表格基本格式设置
+        radioplot = self.report['全国指数同比环比图']
+        titlefont = Font(u'宋体', size=12, bold=True, color='000000')
+        datafont = Font(u'宋体', size=10, bold=False, color='000000')
+        bluefill = PatternFill("solid", fgColor='FFC0D9D9')
+        rowmax = len(kwargs['index']) + 2
+
+        # 填充颜色
+        for i in range(1, 5):
+            c = radioplot.cell(row=1, column=i)
+            c.fill = bluefill
+
+        # 表格边框加粗
+        for i in range(1, rowmax):
+            for j in range(1, 5):
+                c = radioplot.cell(row=i, column=j)
+                c.border = self.border
+
+        # 填入表头
+        c = radioplot.cell(row=1, column=2)
+        c.value = '指数'
+        c.font = titlefont
+        c = radioplot.cell(row=1, column=3)
+        c.value = '环比'
+        c.font = titlefont
+        c = radioplot.cell(row=1, column=4)
+        c.value = '同比'
+        c.font = titlefont
+
+        # 填入日期
+        for i in range(2, rowmax):
+            c = radioplot.cell(row=i, column=1)
+            c.value = self.to_date(i - 2)
+            c.font = titlefont
+
+        # 填入数据
+        for i in range(2, rowmax):
+            c = radioplot.cell(row=i, column=2)
+            c.value = float('%.2f' % kwargs['index'][i - 2])
+            c.font = datafont
+
+            c = radioplot.cell(row=i, column=3)
+            if i < 3:
+                c.value = '——'
+            else:
+                c.value = float('%.2f' % (kwargs['chain'][i - 3] * 100))
+            c.font = datafont
+
+            c = radioplot.cell(row=i, column=4)
+            if i < 14:
+                c.value = '——'
+            else:
+                c.value = float('%.2f' % (kwargs['year_on_year'][i - 14] * 100))
+            c.font = datafont
+
+        # 添加图片
+        img = Image(kwargs['year_on_year_plot'])
+        img.width, img.height = 1200, 300
+        radioplot.add_image(img, 'E8')
+
+        img = Image(kwargs['chain_plot'])
+        img.width, img.height = 1200, 300
+        radioplot.add_image(img, 'E27')  
+ 
+    def SimplyPlot(self, **kwargs):
+        # 参数列表:['url_index_plot','url_block_plot','url_area_plot', 'url_7area_plot', 'url_line_plot', 'url_s_area_plot']
+        simplyplot = self.report['作图（简版）']
+        simplyplot.column_dimensions['A'].height = 4.0
+        titlefont = Font(u'宋体', size=14, bold=True, color='000000')
+        grayfill = PatternFill("solid", fgColor='00C0C0C0')
+
+        fill_line = [(28*i + 1) for i in range(0,6)]
+        # 填充颜色
+        for j in fill_line:
+            for i in range(1, 16):
+                c = simplyplot.cell(row=j, column=i)
+                c.fill = grayfill
+        plot_name = ['全国（简版封面&最简版图1）', '各地区（最简版图2）', '各面积（最简版图3）', 
+        '7区域（最简版图4）', '各线城市（最简版图5）', '重点区域（最简版图6）']
+        url_list = ['url_index_plot','url_block_plot','url_area_plot', 'url_7area_plot', 'url_line_plot', 'url_s_area_plot']
+        # 添加标题、图片，合并单元格
+        for i in range(0,6):
+            c = simplyplot.cell(row=fill_line[i], column=1)
+            c.value = plot_name[i]
+            c.font = titlefont
+            img = Image(kwargs[url_list[i]])
+            img.width, img.height = 1000, 500
+            simplyplot.add_image(img, 'A' + str(fill_line[i] + 1))
+            simplyplot.merge_cells('A' + str(fill_line[i]) + ':F' + str(fill_line[i]))
+
+    def ComplexPlot(self, **kwargs):
+        # 参数列表:['url_index_plot','url_block_plot','url_area_plot', 'url_7area_plot', 'url_line_plot', 'url_s_area_plot']
+        simplyplot = self.report['作图（简版）']
+        simplyplot.column_dimensions['A'].height = 4.0
+        titlefont = Font(u'宋体', size=14, bold=True, color='000000')
+        grayfill = PatternFill("solid", fgColor='00C0C0C0')
+
+        fill_line = [(28*i + 1) for i in range(0,6)]
+        # 填充颜色
+        for j in fill_line:
+            for i in range(1, 16):
+                c = simplyplot.cell(row=j, column=i)
+                c.fill = grayfill
+        plot_name = ['全国（详细）', '各地区（详细）', '各面积（详细）', 
+        '7区域（详细）', '各线城市（详细）', '重点区域（详细）']
+        url_list = ['url_index_plot','url_block_plot','url_area_plot', 'url_7area_plot', 'url_line_plot', 'url_s_area_plot']
+        # 添加标题、图片，合并单元格
+        for i in range(0,6):
+            c = simplyplot.cell(row=fill_line[i], column=1)
+            c.value = plot_name[i]
+            c.font = titlefont
+            img = Image(kwargs[url_list[i]])
+            img.width, img.height = 1000, 500
+            simplyplot.add_image(img, 'A' + str(fill_line[i] + 1))
+            simplyplot.merge_cells('A' + str(fill_line[i]) + ':F' + str(fill_line[i]))
+
+    def CitySummary(self, informationlist: list):
+        # list每项的参数列表:{'city_name','index_this_month','index_last_month','index_last_year',
+        # 'chain_radio','year_on_year','volumn_chain','volumn_year'}
+
+        # 表格基本格式设置
+        citysummary = self.report['城市汇总']
+        citysummary.freeze_panes = 'C2'
+        citysummary.column_dimensions['A'].width = 5.0
+        datafont = Font(u'宋体', size=10, bold=False, color='000000')
+        col_max = 10
+        row_max = len(informationlist) + 2
+
+        # 表格边框加粗
+        for i in range(1, row_max):
+            for j in range(1, col_max):
+                c = citysummary.cell(row=i, column=j)
+                c.border = self.border
+
+        # 填入表头
+        col_name_list = ['当月指数值', '上月指数值', '去年同月指数值',
+                         '环比', '同比', '交易量环比', '交易量同比']
+        for i in range(3, col_max):
+            c = citysummary.cell(row=1, column=i)
+            c.value = col_name_list[i - 3]
+            c.font = datafont
+
+        # 填入数据
+        col_data_list = ['city_name', 'index_this_month', 'index_last_month', 'index_last_year',
+                         'chain_radio', 'year_on_year', 'volumn_chain', 'volumn_year']
+        for i in range(2, row_max):
+            c = citysummary.cell(row=i, column=1)
+            c.value = i - 1
+            c.font = datafont
+            for j in range(2, col_max):
+                c = citysummary.cell(row=i, column=j)
+                if j == 2:
+                    c.value = informationlist[i - 2]['city_name']
+                elif j < 6:
+                    c.value = float('%.2f' % informationlist[i - 2][col_data_list[j - 2]])
+                else:
+                    c.value = '%.2f' % (informationlist[i - 2][col_data_list[j - 2]] * 100) + '%'
+                c.font = datafont
+    
+    def LineSummary(self, linelist: list):
+        # list每个项的参数：{'index', 'chain', 'year_on_year'}
+        linesummary = self.report['各线城市汇总']
+        titlefont = Font(u'宋体', size=12, bold=True, color='000000')
+        datafont = Font(u'宋体', size=10, bold=True, color='000000')
+        # 填入表头
+        c = linesummary.cell(row=1, column=2)
+        c.value = '当月指数值'
+        c.font = titlefont
+
+        c = linesummary.cell(row=1, column=3)
+        c.value = '环比'
+        c.font = titlefont
+
+        c = linesummary.cell(row=1, column=4)
+        c.value = '同比'
+        c.font = titlefont
+
+        c = linesummary.cell(row=2, column=1)
+        c.value = '一线城市'
+        c.font = datafont
+
+        c = linesummary.cell(row=3, column=1)
+        c.value = '二线城市'
+        c.font = datafont
+
+        c = linesummary.cell(row=4, column=1)
+        c.value = '三线城市'
+        c.font = datafont
+
+        c = linesummary.cell(row=5, column=1)
+        c.value = '四线城市'
+        c.font = datafont
+
+        # 填入数据
+        for i in range(0,4):
+            c = linesummary.cell(row=2 + i, column=1)
+            c.value = float('%.3f' % linelist[i]['index'])
+            c.font = datafont
+            c = linesummary.cell(row=2 + i, column=2)
+            c.value = '{:.2%}'.format(linelist[i]['chain'])
+            c.font = datafont
+            c = linesummary.cell(row=2 + i, column=3)
+            c.value = '{:.2%}'.format(linelist[i]['year_on_year'])
+            c.font = datafont
+
+    def CitySort(self, month: int, cityinformation: list):
+        # 列表中每个元素应有参数:{'city_name','chain0','chain1' ,'chain2',
+        # 'chain3' 'year0' ,'year1' ,'year2','year3'}
+
+        # 表格基本格式设置
+        citysort = self.report['城市排序']
+        datafont = Font(u'宋体', size=10, bold=True, color='000000')
+        Reddatafont = Font(u'宋体', size=10, bold=False, color='FF0000')
+        bluefill = PatternFill("solid", fgColor='FF3299CC')
+        rowmax = len(cityinformation) + 3
+        colmax = 11
+        align = Alignment(horizontal='center', vertical='center')
+
+        # 表格边框加粗
+        for i in range(1, rowmax):
+            for j in range(1, colmax):
+                c = citysort.cell(row=i, column=j)
+                c.border = self.border
+
+        # 颜色填充
+        for j in range(1, colmax):
+            for i in [1, 2]:
+                c = citysort.cell(row=i, column=j)
+                c.fill = bluefill
+
+        # 添加表头
+        c = citysort.cell(row=1, column=3)
+        c.value = '环比'
+        c.font = datafont
+        c.alignment = align
+        citysort.merge_cells('C1:F1')
+
+        c = citysort.cell(row=1, column=7)
+        c.value = '同比'
+        c.font = datafont
+        c.alignment = align
+        citysort.merge_cells('G1:J1')
+
+        c = citysort.cell(row=2, column=1)
+        c.value = '编号'
+        c.font = datafont
+
+        c = citysort.cell(row=2, column=2)
+        c.value = '城市'
+        c.font = datafont
+
+        for i in range(0, 4):
+            c = citysort.cell(row=2, column=3 + i)
+            if month - i > 0:
+                c.value = str(month - i) + '月'
+            else:
+                c.value = str(12 + month - i) + '月'
+            c.font = datafont
+            c = citysort.cell(row=2, column=7 + i)
+            if month - i > 0:
+                c.value = str(month - i) + '月'
+            else:
+                c.value = str(12 + month - i) + '月'
+            c.font = datafont
+
+        # 填入数据
+        col_data_list = ['city_name', 'chain0', 'chain1', 'chain2', 'chain3', 'year0', 'year1', 'year2', 'year3']
+        for i in range(3, rowmax):
+            c = citysort.cell(row=i, column=1)
+            c.value = i - 2
+            c.font = datafont
+            for j in range(2, colmax):
+                c = citysort.cell(row=i, column=j)
+                if j == 2:
+                    c.value = cityinformation[i - 3]['city_name']
+                else:
+                    c.value = float('%.2f' % (cityinformation[i - 3][col_data_list[j - 2]] * 100))
+                    if c.value == 0 or c.value == -100:
+                        c.value = ''
+                    elif c.value < 0:
+                        c.font = Reddatafont
+
+        # 添加排序功能
+        citysort.auto_filter.ref = "A2:J" + str(colmax - 1)
+        citysort.auto_filter.add_sort_condition("A3:A" + str(colmax - 1))
+
+    def CityIndex(self, citylist: list, **kwargs):
+        # 参数列表citylist中的城市的数据
+
+        # 表格基本格式设置
+        cityindex = self.report['各城市指数']
+        cityindex.freeze_panes = 'D3'
+        cityindex.column_dimensions['A'].width = 5.0
+        datafont = Font(u'宋体', size=10, bold=False, color='000000')
+        col_max = len(kwargs[citylist[0]]) + 3
+        row_max = len(citylist) + 2
+
+        # 填入表头时间
+        for i in range(3, col_max):
+            c = cityindex.cell(row=1, column=i)
+            c.value = self.to_date(i - 3)
+            c.font = datafont
+        # 填入序号
+        for i in range(2, row_max):
+            c = cityindex.cell(row=i, column=1)
+            c.value = i - 1
+            c.font = datafont
+            c = cityindex.cell(row=i, column=2)
+            c.value = citylist[i - 2]
+            c.font = datafont
+        # 填入数据
+        for i in range(2, row_max):
+            for j in range(3, col_max):
+                c = cityindex.cell(row=i, column=j)
+                c.value = float('%.2f' % kwargs[citylist[i - 2]][j - 3])
+                c.font = datafont
+
+    def CityVolumn(self, citylist: list, **kwargs):
+        # 参数列表citylist中的城市的数据
+
+        # 表格基本格式设置
+        cityvolumn = self.report['各城市样本量']
+        cityvolumn.freeze_panes = 'D3'
+        cityvolumn.column_dimensions['A'].width = 5.0
+        datafont = Font(u'宋体', size=10, bold=False, color='000000')
+        col_max = len(kwargs[citylist[0]]) + 3
+        row_max = len(citylist) + 2
+
+        # 填入表头时间
+        for i in range(3, col_max):
+            c = cityvolumn.cell(row=1, column=i)
+            c.value = self.to_date(i - 3)
+            c.font = datafont
+        # 填入序号
+        for i in range(2, row_max):
+            c = cityvolumn.cell(row=i, column=1)
+            c.value = i - 1
+            c.font = datafont
+            c = cityvolumn.cell(row=i, column=2)
+            c.value = citylist[i - 2]
+            c.font = datafont
+        # 填入数据
+        for i in range(2, row_max):
+            for j in range(3, col_max):
+                c = cityvolumn.cell(row=i, column=j)
+                c.value = kwargs[citylist[i - 2]][j - 3]
+                c.font = datafont
+
+    def CityPlot(self, citylist: list, poltlist: list):
+        cityindex = self.report['各城市作图']
+        datafont = Font(u'宋体', size=10, bold=False, color='000000')
+
+        # 25
+        for i in range(0, len(citylist)):
+            c = cityindex.cell(row=25 * i + 1, column=1)
+            c.value = '图' + str(i + 1) + ' ' + citylist[i] + '\"城房指数\"'
+            c.font = datafont
+            img = Image(poltlist[i])
+            img.width, img.height = 1600, 400
+            cityindex.add_image(img, 'A' + str(25 * i + 2))
+    
+    def LineCity(self, citylist: list, linelist: list):
+        # citylist中参数: {'name', 'line', 'index', 'chain', 'year_on_year'}
+        # linelist中参数: {'index', 'chain', 'year_on_year'}
+        linecity = self.report['各线城市子市场']
+        titlefont = Font(u'宋体', size=12, bold=True, color='000000')
+        datafont = Font(u'宋体', size=10, bold=True, color='000000')
+        city_line = [[],[],[],[]]
+        line_name = ['一线城市','二线城市','三线城市','四线城市']
+        for city in citylist:
+                city_line[city['line'] - 1].append(city)
+        name_list = ['各线城市子市场','指数值','同比','环比']
+        key_list = ['name' ,'index', 'chain', 'year_on_year']
+        for i in range(0,4):
+            c = linecity.cell(row=1, column=i + 1)
+            c.value = name_list[i]
+            c.font = titlefont
+        row_num = 2
+        for i in range(0,4):
+            c = linecity.cell(row=row_num, column=1)
+            c.value = line_name[i]
+            c.font = titlefont
+            c = linecity.cell(row=row_num, column=2)
+            c.value = linelist[i]['index']
+            c.font = titlefont
+            c = linecity.cell(row=row_num, column=3)
+            c.value = linelist[i]['chain']
+            c.font = titlefont
+            c = linecity.cell(row=row_num, column=4)
+            c.value = linelist[i]['year_on_year']
+            c.font = titlefont
+            row_num += 1
+            for city in city_line[i]:
+                c = linecity.cell(row=row_num, column=1)
+                c.value = city['name']
+                c.font = datafont
+                c = linecity.cell(row=row_num, column=2)
+                c.value = city['index']
+                c.font = datafont
+                c = linecity.cell(row=row_num, column=3)
+                c.value = city['chain']
+                c.font = datafont
+                c = linecity.cell(row=row_num, column=4)
+                c.value = city['year_on_year']
+                c.font = datafont
+                row_num += 1
+
 
 
 class GenWordReport90:
