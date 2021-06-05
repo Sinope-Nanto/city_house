@@ -55,10 +55,9 @@ def check_auth(mobile, verify_code) -> (bool, str):
 
 
 def create_token(mobile):
-    
     user_profile = UserProfile.objects.get(mobile=mobile)
     token = UserSession.generate_token()
-  
+
     user_session, created = UserSession.objects.get_or_create(user_id=user_profile.user_id_id)
     user_session.token = token
     user_session.expire = timezone.now() + datetime.timedelta(minutes=60)
@@ -75,18 +74,11 @@ def register(**kwargs) -> (bool, str):
     identity_image = kwargs.get("identity_image")
     new_user = User.objects.create_user(username=name, is_active=False)
     user_id = new_user.id
-    image_file = decode_image(identity_image, identity)
     try:
-        user_profile = UserProfile(user_id_id=user_id, name=name, mobile=mobile, city_id=city, identity=identity, identity_image=image_file)
+        user_profile = UserProfile(user_id_id=user_id, name=name, mobile=mobile, city_id=city, identity=identity,
+                                   identity_image=identity_image)
         user_profile.set_to_wait()
         user_profile.save()
     except Exception as ex:
         return False, str(ex)
     return True, ""
-
-
-def decode_image(encoded_image, file_name):
-    print('1')
-    decoded_bytes = base64.decodebytes(encoded_image.encode())
-    image_file = ContentFile(decoded_bytes, file_name)
-    return image_file
