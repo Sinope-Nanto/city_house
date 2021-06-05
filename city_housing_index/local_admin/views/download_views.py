@@ -114,6 +114,7 @@ class DownLoadbyCityTime(APIView):
             return APIResponse.create_fail(code=400,msg='Bad Request')
         url = 'http://' + getIP()+ '/v1/admin/download_files/'
         all_file = DataFile.objects.filter(city_id=city_int)
+        filelist = []
         for i in all_file:
             data = i.start
             dataf = data.split('-')

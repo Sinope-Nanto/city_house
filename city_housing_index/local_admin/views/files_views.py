@@ -37,6 +37,5 @@ def getfilelist(year:int , month:int):
                 continue
             if int(data[0]) == year and int(data[1]) == month:
                 file_id = f.id
-                break
-        responsedata.append({'city_id':i.code,'city_name':i.name,'file_id':int(file_id)})
+                responsedata.append({'city_id':i.code,'city_name':i.name,'file_id':int(file_id)})
     return responsedata
