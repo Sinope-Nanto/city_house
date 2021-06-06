@@ -18,8 +18,8 @@ def getIP():
 
 # 将用户请求的文件打包为zip并提供下载
 class DownLoadViews(APIView):
-    authentication_classes = [CityIndexAuthentication]
-    permission_classes = [CityIndexAdminPermission]
+    # authentication_classes = [CityIndexAuthentication]
+    # permission_classes = [CityIndexAdminPermission]
     def get(self,request,filenames):
         fileidlist = filenames.split('+')
         filelist = []
@@ -43,8 +43,8 @@ class DownLoadViews(APIView):
 
 # 返回用户要求的数据的下载地址 by id
 class DownLoadbyIDViews(APIView):
-    authentication_classes = [CityIndexAuthentication]
-    permission_classes = [CityIndexAdminPermission]
+    # authentication_classes = [CityIndexAuthentication]
+    # permission_classes = [CityIndexAdminPermission]
     def get(self,request,fileid):
         return APIResponse.create_success(data = 'http://' + getIP()+ '/v1/admin/download_files/' + str(fileid))
 
