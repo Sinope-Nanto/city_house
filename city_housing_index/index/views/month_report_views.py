@@ -18,7 +18,7 @@ class GenReportViews(APIView):
     def post(self, request):
         year = int(request.data['year'])
         month = int(request.data['month'])
-        # plot(year, month)
+        plot(year, month)
         if (
                 getReport(year, month)
                 and getReport90(year, month)
