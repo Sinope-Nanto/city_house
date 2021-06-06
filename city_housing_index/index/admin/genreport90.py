@@ -102,10 +102,10 @@ class GenExcelReport90:
                 c.fill = yellowfill
 
         # 表格边框加粗
-        borderrow = [i for i in range(2, 10)] + [11, 12] + [i for i in range(16, 21)] + [i for i in range(22, 30)]
+        borderrow = ([i for i in range(2, 10)] + [11, 12] + [i for i in range(16, 21)] + [i for i in range(22, 30)]
         + [31, 32, 33, 34] + [i for i in range(36, 42)] + [i for i in range(44, 59)] + [i for i in range(61, 69)] 
         + [i for i in range(70, 84)] + [i for i in range(85, 90)] + [i for i in range(91, 99)] + [i for i in range(100, 104)]
-        + [i for i in range(105, 111)]
+        + [i for i in range(105, 111)])
         for i in borderrow:
             for j in range(1, col_max):
                 c = indexsummary.cell(row=i, column=j)
@@ -139,8 +139,7 @@ class GenExcelReport90:
                          '西南环比涨幅', '西北环比涨幅', '一线城市环比涨幅', '二线城市环比涨幅', '三线城市环比涨幅', '四线城市环比涨幅', 
                          '珠三角环比涨幅', '长三角环比涨幅', '环渤海环比涨幅']
         int_row_list = [i for i in range(3, 10)] + [i for i in range(45, 59)]
-        float_row_list = [17, 18, 19, 20, 32, 33, 34] + [i for i in range(62, 69)] + [i for i in range(86, 90)] 
-        + [101, 102, 103] 
+        float_row_list = [17, 18, 19, 20, 32, 33, 34] + [i for i in range(62, 69)] + [i for i in range(86, 90)] + [101, 102, 103] 
         year_row_list = [11, 22, 24, 26, 28, 36, 38, 40, 70, 72, 74, 76, 78, 80, 82, 91, 93, 95, 97, 105, 107, 109]
         chain_row_list = [(i + 1) for i in year_row_list]
 
