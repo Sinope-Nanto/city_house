@@ -7,8 +7,6 @@ import json
 
 
 def create_upload_file(user, file, name, code, city_id, start, end):
-    from django.contrib.auth.models import User
-    user = User.objects.get(id=1)
     try:
         data_file = DataFile(user=user, file=file, name=name, code=code, city_id=city_id, start=start, end=end)
         data_file.save()
