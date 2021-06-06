@@ -6,16 +6,24 @@ from city.models import City
 from city.enums import CityArea
 from index.admin.addinfo import add_new_month
 
+def id_to_code(city_id):
+    city = City.objects.get(id=city_id)
+    return int(city.code)
+
+def code_to_id(city_code):
+    city = City.objects.get(code=city_code)
+    return city.id
 
 def CalculateCityIndex(city_id: int, year: int, month: int):
     index = 0
     index_under_90 = 0
     index_above_144 = 0
     index_90_144 = 0
-    result = CalculateResult.objects.get(city_or_area=True, city=city_id, year=year, month=month)
+    city_code = id_to_code(city_id)
+    result = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
     if result is None:
         add_new_month(year, month)
-        result = CalculateResult.objects.get(city_or_area=True, city=city_id, year=year, month=month)
+        result = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
     try:
         now = CityIndex.objects.get(city_id=city_id, year=year, month=month)
         result.area_volume = now.area_volume
@@ -44,8 +52,8 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
         now_trade_volumn_90_144 = 0
         now_trade_volumn_above_144 = 0
 
-    base = CalculateResult.objects.get(city_or_area=True, city=city_id, year=2006, month=1)
-    base09 = CalculateResult.objects.get(city_or_area=True, city=city_id, year=2009, month=1)
+    base = CalculateResult.objects.get(city_or_area=True, city=city_code, year=2006, month=1)
+    base09 = CalculateResult.objects.get(city_or_area=True, city=city_code, year=2009, month=1)
     try:
         index = now_price / base.price
     except ZeroDivisionError:
@@ -96,11 +104,11 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
     result.save()
 
     last_value = CalculateResult.objects.get(city_or_area=True,
-                                            city=city_id,
+                                            city=city_code,
                                             year=year if month > 1 else year - 1,
                                             month=month if month > 1 else 12)
     last_year = CalculateResult.objects.get(city_or_area=True,
-                                            city=city_id,
+                                            city=city_code,
                                             year=year - 1,
                                             month=month)
     if last_value is None or last_value.index_value == 0:
@@ -141,7 +149,7 @@ def CalculateAreaIndex(areaType: str, areaID: int, year: int, month: int):
     total_trade_volumn_90_144 = 0
     total_trade_volumn_above_144 = 0
     for city in city_list:
-        city_id = int(city.code)
+        city_id = code_to_id(city.code)
         try:
             nowdata = CityIndex.objects.get(city_id=city_id, year=year, month=month)
             total_number += nowdata.area_volume
