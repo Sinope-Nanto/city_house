@@ -408,12 +408,12 @@ def getReport90(year: int, month: int):
     # 填入地区数据
     for i in range(1,len(dataList)):
         for j in range(0, len(datarow[dataList[0]])):
-            kwargs[dataList[i] + '_volumn'].append(datarow[areaList[i]][j].trade_volume)
-            kwargs[dataList[i] + '_index'].append(datarow[areaList[i]][j].index_value_base09)
+            kwargs[dataList[i] + '_volumn'].append(datarow[dataList[i]][j].trade_volume)
+            kwargs[dataList[i] + '_index'].append(datarow[dataList[i]][j].index_value_base09)
             if i > 11:
-                kwargs[dataList[i] + '_year_on_year'].append(datarow[areaList[i]][j].year_on_year_index)
+                kwargs[dataList[i] + '_year_on_year'].append(datarow[dataList[i]][j].year_on_year_index)
             if i > 0:
-                kwargs[dataList[i] + '_chain'].append(datarow[areaList[i]][j].chain_index)
+                kwargs[dataList[i] + '_chain'].append(datarow[dataList[i]][j].chain_index)
     
     report.IndexSummary(**kwargs)
     report.EndReport()
