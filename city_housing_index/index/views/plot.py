@@ -69,6 +69,11 @@ def plot(year, month):
     for i in range(0, lenth_90):
         index_90.append(data_90[i].index_value_base09)
     p.plot_index_90(data=index_90, saveurl=('media/image/' + str(year) + '_' + str(month) + 'index_90.png'))
+    # 绘制销量-指数图
+    vol_90 = []
+    for i in range(0, lenth_90):
+        vol_90.append(data_90[i].trade_volume)
+    p.plot_vol_index(volume=vol, index=index, saveurl=('media/image/' + str(year) + '_' + str(month) + 'volindex_90.png'))
 
     # 绘制全国指数图 - 按面积分片 -简版与完整版
     index_area = [[], [], []]

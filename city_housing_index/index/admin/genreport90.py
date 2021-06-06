@@ -76,7 +76,7 @@ class GenExcelReport90:
         indexsummary.freeze_panes = 'C1'
         indexsummary.column_dimensions['A'].width = 20.0
         titlefont = Font(u'宋体', size=12, bold=True, color='000000')
-        datafont = Font(u'宋体', size=10, bold=True, color='000000')
+        datafont = Font(u'宋体', size=10, bold=False, color='000000')
         grayfill = PatternFill("solid", fgColor='00C0C0C0')
         yellowfill = PatternFill("solid", fgColor='FFFFFF00')
         col_max = len(kwargs['volumn']) + 2
@@ -180,6 +180,7 @@ class GenExcelReport90:
                      'DONGBEI_year_on_year', 'HUABEI_year_on_year', 'HUADONG_year_on_year', 'HUAZHONG_year_on_year', 'HUANAN_year_on_year', 'XINAN_year_on_year', 'XIBEI_year_on_year', 
                      'firstline_year_on_year', 'secondline_year_on_year', 'thirdline_year_on_year', 'forth_year_on_year', 'ZSJ_year_on_year', 'CSJ_year_on_year', 'HBH_year_on_year']
         for i in range(0, len(year_row_list)):
+            # print(len(kwargs[data_name[i]]))
             for j in range(2, 14):
                 c = indexsummary.cell(row=year_row_list[i], column=j)
                 c.value = '——'
@@ -299,29 +300,29 @@ class GenExcelReport90:
 
     def ComplexPlot(self, **kwargs):
         # 参数列表:['url_index_plot','url_block_plot','url_area_plot', 'url_7area_plot', 'url_line_plot', 'url_s_area_plot']
-        simplyplot = self.report['作图（简版）']
-        simplyplot.column_dimensions['A'].height = 4.0
+        complexplot = self.report['作图（详细）']
+        complexplot.column_dimensions['A'].height = 4.0
         titlefont = Font(u'宋体', size=14, bold=True, color='000000')
         grayfill = PatternFill("solid", fgColor='00C0C0C0')
 
         fill_line = [(28*i + 1) for i in range(0,6)]
         # 填充颜色
         for j in fill_line:
-            for i in range(1, 16):
-                c = simplyplot.cell(row=j, column=i)
+            for i in range(1, 25):
+                c = complexplot.cell(row=j, column=i)
                 c.fill = grayfill
         plot_name = ['全国（详细）', '各地区（详细）', '各面积（详细）', 
         '7区域（详细）', '各线城市（详细）', '重点区域（详细）']
         url_list = ['url_index_plot','url_block_plot','url_area_plot', 'url_7area_plot', 'url_line_plot', 'url_s_area_plot']
         # 添加标题、图片，合并单元格
         for i in range(0,6):
-            c = simplyplot.cell(row=fill_line[i], column=1)
+            c = complexplot.cell(row=fill_line[i], column=1)
             c.value = plot_name[i]
             c.font = titlefont
             img = Image(kwargs[url_list[i]])
-            img.width, img.height = 1000, 500
-            simplyplot.add_image(img, 'A' + str(fill_line[i] + 1))
-            simplyplot.merge_cells('A' + str(fill_line[i]) + ':F' + str(fill_line[i]))
+            img.width, img.height = 1200, 500
+            complexplot.add_image(img, 'A' + str(fill_line[i] + 1))
+            complexplot.merge_cells('A' + str(fill_line[i]) + ':F' + str(fill_line[i]))
 
     def CitySummary(self, informationlist: list):
         # list每项的参数列表:{'city_name','index_this_month','index_last_month','index_last_year',
@@ -370,7 +371,7 @@ class GenExcelReport90:
         # list每个项的参数：{'index', 'chain', 'year_on_year'}
         linesummary = self.report['各线城市汇总']
         titlefont = Font(u'宋体', size=12, bold=True, color='000000')
-        datafont = Font(u'宋体', size=10, bold=True, color='000000')
+        datafont = Font(u'宋体', size=10, bold=False, color='000000')
         # 填入表头
         c = linesummary.cell(row=1, column=2)
         c.value = '当月指数值'
@@ -402,13 +403,13 @@ class GenExcelReport90:
 
         # 填入数据
         for i in range(0,4):
-            c = linesummary.cell(row=2 + i, column=1)
+            c = linesummary.cell(row=2 + i, column=2)
             c.value = float('%.3f' % linelist[i]['index'])
             c.font = datafont
-            c = linesummary.cell(row=2 + i, column=2)
+            c = linesummary.cell(row=2 + i, column=3)
             c.value = '{:.2%}'.format(linelist[i]['chain'])
             c.font = datafont
-            c = linesummary.cell(row=2 + i, column=3)
+            c = linesummary.cell(row=2 + i, column=4)
             c.value = '{:.2%}'.format(linelist[i]['year_on_year'])
             c.font = datafont
 
@@ -573,7 +574,7 @@ class GenExcelReport90:
         # linelist中参数: {'index', 'chain', 'year_on_year'}
         linecity = self.report['各线城市子市场']
         titlefont = Font(u'宋体', size=12, bold=True, color='000000')
-        datafont = Font(u'宋体', size=10, bold=True, color='000000')
+        datafont = Font(u'宋体', size=10, bold=False, color='000000')
         city_line = [[],[],[],[]]
         line_name = ['一线城市','二线城市','三线城市','四线城市']
         for city in citylist:
@@ -590,13 +591,13 @@ class GenExcelReport90:
             c.value = line_name[i]
             c.font = titlefont
             c = linecity.cell(row=row_num, column=2)
-            c.value = linelist[i]['index']
+            c.value = '%.4f' % linelist[i]['index']
             c.font = titlefont
             c = linecity.cell(row=row_num, column=3)
-            c.value = linelist[i]['chain']
+            c.value = '{:.2%}'.format(linelist[i]['chain'])
             c.font = titlefont
             c = linecity.cell(row=row_num, column=4)
-            c.value = linelist[i]['year_on_year']
+            c.value = '{:.2%}'.format(linelist[i]['year_on_year'])
             c.font = titlefont
             row_num += 1
             for city in city_line[i]:
@@ -604,13 +605,13 @@ class GenExcelReport90:
                 c.value = city['name']
                 c.font = datafont
                 c = linecity.cell(row=row_num, column=2)
-                c.value = city['index']
+                c.value = '%.4f' % city['index']
                 c.font = datafont
                 c = linecity.cell(row=row_num, column=3)
-                c.value = city['chain']
+                c.value = '{:.2%}'.format(city['chain'])
                 c.font = datafont
                 c = linecity.cell(row=row_num, column=4)
-                c.value = city['year_on_year']
+                c.value = '{:.2%}'.format(city['year_on_year'])
                 c.font = datafont
                 row_num += 1
 
