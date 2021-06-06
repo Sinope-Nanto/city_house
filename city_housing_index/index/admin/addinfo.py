@@ -19,7 +19,7 @@ def get_data_info(year: int, month: int, city: int):
         if int(time[0]) == year and int(time[1]) == month:
             url = 'media/' + str(datafile.file)
             exist = True
-            break
+            # break
     if not exist:
         return 0
     data = openpyxl.load_workbook(url)

@@ -4,6 +4,7 @@ from index.models import CalculateResult
 from django.core.exceptions import ObjectDoesNotExist
 from city.models import City
 from city.enums import CityArea
+from index.admin.addinfo import add_new_month
 
 
 def CalculateCityIndex(city_id: int, year: int, month: int):
@@ -12,6 +13,9 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
     index_above_144 = 0
     index_90_144 = 0
     result = CalculateResult.objects.get(city_or_area=True, city=city_id, year=year, month=month)
+    if result is None:
+        add_new_month(year, month)
+        result = CalculateResult.objects.get(city_or_area=True, city=city_id, year=year, month=month)
     try:
         now = CityIndex.objects.get(city_id=city_id, year=year, month=month)
         result.area_volume = now.area_volume
@@ -41,22 +45,31 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
         now_trade_volumn_above_144 = 0
 
     base = CalculateResult.objects.get(city_or_area=True, city=city_id, year=2006, month=1)
+    base09 = CalculateResult.objects.get(city_or_area=True, city=city_id, year=2009, month=1)
     try:
         index = now_price / base.price
+        index_base09 = now_price / base09.price
     except ZeroDivisionError:
         index = 0
+        index_base09 = 0
     try:
         index_90_144 = now_price_90_144 / base.price_90_144
+        index_90_144_base09 = now_price_90_144 / base09.price_90_144
     except ZeroDivisionError:
         index_90_144 = 0
+        index_90_144_base09 = 0
     try:
         index_above_144 = now_price_above_144 / base.price_above_144
+        index_above_144_base09 = now_price_above_144 / base09.price_above_144
     except ZeroDivisionError:
         index_above_144 = 0
+        index_above_144_base09 = 0
     try:
         index_under_90 = now_price_under_90 / base.price_under_90
+        index_under_90_base09 = now_price_under_90 / base09.price_under_90
     except ZeroDivisionError:
         index_under_90 = 0
+        index_under_90_base09 = 0
 
     result.price = now_price
     result.price_under_90 = now_price_under_90
@@ -73,8 +86,23 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
     result.trade_volume_90_144 = now_trade_volumn_90_144
     result.trade_volume_above_144 = now_trade_volumn_above_144
 
+    result.index_value_base09 = index_base09
+    result.index_value_under90_base09 = index_under_90_base09
+    result.index_value_90144_base09 = index_90_144_base09
+    result.index_value_above144_base09 = index_above_144_base09
+
     result.save()
-    return True
+
+    last_value = CalculateResult.objects.get(city_or_area=True,
+                                            city=city_id,
+                                            year=year if month > 1 else year - 1,
+                                            month=month if month > 1 else 12)
+    last_year = CalculateResult.objects.get(city_or_area=True,
+                                            city=city_id,
+                                            year=year - 1,
+                                            month=month)
+
+    return {'index': index, 'volumn': now_trade_volumn, 'price':now_price, 'chain': index/last_value.index_value, 'year_on_year': index/last_year.index_value}
 
 
 def CalculateAreaIndex(areaType: str, areaID: int, year: int, month: int):
