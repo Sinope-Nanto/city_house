@@ -18,14 +18,14 @@ class GenReportViews(APIView):
     def post(self, request):
         year = int(request.data['year'])
         month = int(request.data['month'])
-        plot(year, month)
+        # plot(year, month)
         if (
-                getReport(year, month)
-                and getReport90(year, month)
-                and getWordReport(year, month)
-                and getWordReport90(year, month)
-                and getWordPicture(year, month)
-                and getWordPicture90(year, month)
+                # getReport(year, month)
+                getReport90(year, month)
+                # and getWordReport(year, month)
+                # and getWordReport90(year, month)
+                # and getWordPicture(year, month)
+                # and getWordPicture90(year, month)
         ):
             return APIResponse.create_success()
         else:
