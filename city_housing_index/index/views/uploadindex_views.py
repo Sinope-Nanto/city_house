@@ -48,7 +48,7 @@ class UpdataCityInfoView(APIView):
         city_list = City.objects.filter(ifin90=True)
         unloadcitylist = []
         for city in city_list:
-            if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.code):
+            if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.id):
                 pass
             else:
                 unloadcitylist.append(city.name)
