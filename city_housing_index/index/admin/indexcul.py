@@ -48,9 +48,11 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
     base09 = CalculateResult.objects.get(city_or_area=True, city=city_id, year=2009, month=1)
     try:
         index = now_price / base.price
-        index_base09 = now_price / base09.price
     except ZeroDivisionError:
         index = 0
+    try:
+        index_base09 = now_price / base09.price
+    except ZeroDivisionError:
         index_base09 = 0
     try:
         index_90_144 = now_price_90_144 / base.price_90_144
