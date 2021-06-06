@@ -101,8 +101,15 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
                                             city=city_id,
                                             year=year - 1,
                                             month=month)
-
-    return {'index': index, 'volumn': now_trade_volumn, 'price':now_price, 'chain': index/last_value.index_value, 'year_on_year': index/last_year.index_value}
+    if last_value is None or last_value.index_value == 0:
+        chain = 1
+    else:
+        chain = index/last_value.index_value
+    if last_year is None or last_year.index_value == 0:
+        year_on_year = 1
+    else:
+        year_on_year = index/last_value.index_value
+    return {'index': index, 'volumn': now_trade_volumn, 'price':now_price, 'chain': chain, 'year_on_year': year_on_year}
 
 
 def CalculateAreaIndex(areaType: str, areaID: int, year: int, month: int):
