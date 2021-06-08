@@ -6,26 +6,24 @@ from city.models import City
 from city.enums import CityArea
 from index.admin.addinfo import add_new_month
 
+
 def id_to_code(city_id):
     city = City.objects.get(id=city_id)
     return int(city.code)
+
 
 def code_to_id(city_code):
     city = City.objects.get(code=city_code)
     return city.id
 
-def CalculateCityIndex(city_id: int, year: int, month: int):
-    index = 0
-    index_under_90 = 0
-    index_above_144 = 0
-    index_90_144 = 0
-    city_code = id_to_code(city_id)
+
+def calculate_city_index(city_code: int, year: int, month: int):
     result = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
     if result is None:
         add_new_month(year, month)
         result = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
     try:
-        now = CityIndex.objects.get(city_id=city_id, year=year, month=month)
+        now = CityIndex.objects.get(city=city_code, year=year, month=month)
         result.area_volume = now.area_volume
         result.area_volume_under_90 = now.area_volume_under_90
         result.area_volume_90_144 = now.area_volume_90_144
@@ -104,9 +102,9 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
     result.save()
 
     last_value = CalculateResult.objects.get(city_or_area=True,
-                                            city=city_code,
-                                            year=year if month > 1 else year - 1,
-                                            month=month if month > 1 else 12)
+                                             city=city_code,
+                                             year=year if month > 1 else year - 1,
+                                             month=month if month > 1 else 12)
     last_year = CalculateResult.objects.get(city_or_area=True,
                                             city=city_code,
                                             year=year - 1,
@@ -114,15 +112,16 @@ def CalculateCityIndex(city_id: int, year: int, month: int):
     if last_value is None or last_value.index_value == 0:
         chain = 1
     else:
-        chain = index/last_value.index_value
+        chain = index / last_value.index_value
     if last_year is None or last_year.index_value == 0:
         year_on_year = 1
     else:
-        year_on_year = index/last_value.index_value
-    return {'index': index, 'volumn': now_trade_volumn, 'price':now_price, 'chain': chain, 'year_on_year': year_on_year}
+        year_on_year = index / last_value.index_value
+    return {'index': index, 'volumn': now_trade_volumn, 'price': now_price, 'chain': chain,
+            'year_on_year': year_on_year}
 
 
-def CalculateAreaIndex(areaType: str, areaID: int, year: int, month: int):
+def calculate_area_index(areaType: str, areaID: int, year: int, month: int):
     if areaType == 'block':
         city_list = City.objects.filter(block=areaID, ifin40=True)
     elif areaType == 'area':
