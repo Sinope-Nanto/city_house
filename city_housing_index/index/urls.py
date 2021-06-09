@@ -3,7 +3,7 @@ from index.views.uploadindex_views import UpLoadIndexView
 from index.views.uploadindex_views import AddNewMonthColumnView
 from index.views.uploadindex_views import UpdateAllCityIndexView
 
-from index.views.reportdownlond_views import DownloadReoprt
+from index.views.report_download_views import DownloadReoprt
 from index.views.month_report_views import GenReportViews
 from index.views.uploadindex_views import CalculateCityInfoView
 from index.views.uploadindex_views import GetCityIndexInfoView

@@ -87,7 +87,7 @@ class GenReportTaskStatus:
     SUCCESS = "SUCCESS"
 
 
-class GenReportTask(models.Model):
+class GenReportTaskRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     code = models.CharField(default="", max_length=200, blank=True)
     kwargs = models.JSONField(default=dict, null=False)
@@ -110,6 +110,13 @@ class GenReportTask(models.Model):
         self.progress = 0
         self.save()
 
+    def change_progress(self, current, total, task_name):
+        if not total:
+            self.progress = 0
+        self.progress = (current / total) * 100
+        self.current_task = task_name
+        self.save()
+
     def finish(self, download_url):
         self.end = timezone.now()
         self.status = GenReportTaskStatus.SUCCESS
@@ -127,7 +134,7 @@ class GenReportTask(models.Model):
 
 
 class ReportFile(models.Model):
-    creator_id = models.IntegerField(default=0, verbose_name="创建人id")
+    task_id = models.IntegerField(default=0, verbose_name="生成报告任务ID")
     year = models.IntegerField(default=0, verbose_name="年")
     month = models.IntegerField(default=0, verbose_name="月")
-    report = models.FileField(upload_to="report")
+    report = models.FileField(upload_to="final_report")

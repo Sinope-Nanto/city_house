@@ -4,28 +4,30 @@ from utils.api_response import APIResponse
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
 
-from index.domains.getreport import getWordReport
-from index.domains.getreport import getReport90
-from index.domains.getreport import getReport
-from index.domains.getreport import getWordReport90
-from index.domains.getreport import getWordPicture
-from index.domains.getreport import getWordPicture90
-from index.views.plot import plot
+from index.domains.generate_report import get_word_report_40
+from index.domains.generate_report import get_report_90
+from index.domains.generate_report import get_report_40
+from index.domains.generate_report import get_word_report_90
+from index.domains.generate_report import get_word_picture_40
+from index.domains.generate_report import get_word_picture_90
+from index.domains.plot import plot
 
 
 class GenReportViews(APIView):
+    authentication_classes = [CityIndexAuthentication]
+    permission_classes = [CityIndexAdminPermission]
 
     def post(self, request):
         year = int(request.data['year'])
         month = int(request.data['month'])
         plot(year, month)
         if (
-                getReport(year, month)
-                and getReport90(year, month)
-                and getWordReport(year, month)
-                and getWordReport90(year, month)
-                and getWordPicture(year, month)
-                and getWordPicture90(year, month)
+                get_report_40(year, month)
+                and get_report_90(year, month)
+                and get_word_report_40(year, month)
+                and get_word_report_90(year, month)
+                and get_word_picture_40(year, month)
+                and get_word_picture_90(year, month)
         ):
             return APIResponse.create_success()
         else:

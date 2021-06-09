@@ -1,9 +1,3 @@
-from rest_framework.views import APIView
-from utils.api_response import APIResponse
-
-from local_auth.authentication import CityIndexAuthentication
-from local_admin.permissions import CityIndexAdminPermission
-
 from index.plot import PlotReport
 from index.models import CalculateResult
 from city.models import City

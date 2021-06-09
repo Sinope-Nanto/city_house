@@ -19,7 +19,7 @@ def getLastNMonth(year, month, num):
     return year, month
 
 
-def getReport(year: int, month: int):
+def get_report_40(year: int, month: int):
     report = GenExcelReport('media/report/' + '40_city_report_' + str(year) + '_' + str(month) + '.xlsx')
     report.create_report()
     # 参数列表:['volumn','east_volumn','mid_volumn','west_volumn',
@@ -119,7 +119,7 @@ def getReport(year: int, month: int):
     try:
         report.RadioPlot(**kwargs_2)
     except FileNotFoundError:
-        return False
+        return False, ""
 
     # 参数列表:['url_index_plot','url_block_plot','url_line_plot']
     kwargs_3 = {}
@@ -130,7 +130,7 @@ def getReport(year: int, month: int):
     try:
         report.SimplyPlot(**kwargs_3)
     except FileNotFoundError:
-        return False
+        return False, ""
 
     # 参数列表:['url_index_plot','url_block_plot','url_line_plot']
     kwargs_4 = {}
@@ -141,7 +141,7 @@ def getReport(year: int, month: int):
     try:
         report.ComplexPlot(**kwargs_4)
     except FileNotFoundError:
-        return False
+        return False, ""
 
     # list每项的参数列表:{'city_name','index_this_month','index_last_month','index_last_year',
     # 'chain_radio','year_on_year','volumn_chain','volumn_year'}
@@ -229,13 +229,13 @@ def getReport(year: int, month: int):
             ploturlList.append('media/image/' + str(year) + '_' + str(month) + 'volindex_' + str(i) + '.png')
         report.CityPlot(citynamelist, ploturlList)
     except FileNotFoundError:
-        return False
+        return False, ""
     report.EndReport()
 
-    return True
+    return True, report.url
 
 
-def getWordReport(year: int, month: int):
+def get_word_report_40(year: int, month: int):
     city_list = []
     city_code_list = []
     for city in City.objects.filter(ifin40=True):
@@ -340,11 +340,11 @@ def getWordReport(year: int, month: int):
         report.Attach(year, month, city_list, **kwargs)
         report.EndReport()
     except:
-        return False
-    return True
+        return False, ""
+    return True, report.url
 
 
-def getReport90(year: int, month: int):
+def get_report_90(year: int, month: int):
     report = GenExcelReport90('media/report/' + '90_city_report_' + str(year) + '_' + str(month) + '.xlsx')
 
     report.create_report()
@@ -573,10 +573,10 @@ def getReport90(year: int, month: int):
     report.LineCity(city_list, linelist)
 
     report.EndReport()
-    return True
+    return True, report.url
 
 
-def getWordReport90(year: int, month: int):
+def get_word_report_90(year: int, month: int):
     city_list = []
     city_code_list = []
     for city in City.objects.filter(ifin90=True):
@@ -720,10 +720,10 @@ def getWordReport90(year: int, month: int):
     report.Attach(year, month, city_list, **kwargs)
 
     report.EndReport()
-    return True
+    return True, report.url
 
 
-def getWordPicture90(year: int, month: int):
+def get_word_picture_90(year: int, month: int):
     report = GenWordPicture90('media/report/' + '90_city_picture_' + str(year) + '_' + str(month) + '.docx')
     city_list = []
     city_code_list = []
@@ -742,10 +742,10 @@ def getWordPicture90(year: int, month: int):
     kwargs['index_area_90'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_buildarea_c_90.png'
     report.genpicdoc(year, month, city_list, **kwargs)
     report.EndReport()
-    return True
+    return True, report.url
 
 
-def getWordPicture(year: int, month: int):
+def get_word_picture_40(year: int, month: int):
     report = GenWordPicture('media/report/' + '40_city_picture_' + str(year) + '_' + str(month) + '.docx')
     city_list = []
     city_code_list = []
@@ -764,4 +764,4 @@ def getWordPicture(year: int, month: int):
     kwargs['index_area'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_buildarea_c.png'
     report.genpicdoc(year, month, city_list, **kwargs)
     report.EndReport()
-    return True
+    return True, report.url
