@@ -46,7 +46,7 @@ class DownLoadbyIDViews(APIView):
     # authentication_classes = [CityIndexAuthentication]
     # permission_classes = [CityIndexAdminPermission]
     def get(self,request,fileid):
-        return APIResponse.create_success(data = 'http://' + getIP()+ '/v1/admin/download_files/' + str(fileid))
+        return APIResponse.create_success(data = 'http://' + getIP()+ '/v1/domains/download_files/' + str(fileid))
 
 # 返回用户要求的数据的下载地址 by time
 class DownLoadbyTime(APIView):
@@ -60,7 +60,7 @@ class DownLoadbyTime(APIView):
             month_int = int(month)
         except ValueError:
             return APIResponse.create_fail(code=400,msg='Bad Request')
-        url = 'http://' + getIP()+ '/v1/admin/download_files/'
+        url = 'http://' + getIP()+ '/v1/domains/download_files/'
         filelist = []
         all_file = DataFile.objects.all()
         for i in all_file:
@@ -88,7 +88,7 @@ class DownLoadbyCity(APIView):
             city_int = int(city)
         except ValueError:
             return APIResponse.create_fail(code=400,msg='Bad Request')
-        url = 'http://' + getIP()+ '/v1/admin/download_files/'
+        url = 'http://' + getIP()+ '/v1/domains/download_files/'
         all_file = DataFile.objects.filter(city_id=city_int)
         first = True
         for i in all_file:
@@ -112,7 +112,7 @@ class DownLoadbyCityTime(APIView):
             month_int = int(month)
         except ValueError:
             return APIResponse.create_fail(code=400,msg='Bad Request')
-        url = 'http://' + getIP()+ '/v1/admin/download_files/'
+        url = 'http://' + getIP()+ '/v1/domains/download_files/'
         all_file = DataFile.objects.filter(city_id=city_int)
         filelist = []
         for i in all_file:

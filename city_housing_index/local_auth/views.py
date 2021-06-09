@@ -35,7 +35,7 @@ class LoginView(APIView):
             "token": token,
             "user_id": user_profile.user_id.id,
             "name": user_profile.name,
-            "admin": user_profile.is_admin()
+            "domains": user_profile.is_admin()
         })
 
 

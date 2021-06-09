@@ -19,8 +19,8 @@ class ContactDomainTest(TestCase):
         another_user_profile = UserProfile(user=another, name="another", mobile="2")
         another_user_profile.save()
 
-        admin = User.objects.create_user(username="admin")
-        admin_user_profile = UserProfile(user=admin, name="admin", mobile="3", role=0)
+        admin = User.objects.create_user(username="domains")
+        admin_user_profile = UserProfile(user=admin, name="domains", mobile="3", role=0)
         admin_user_profile.save()
 
         for i in range(0, 5):
@@ -40,7 +40,7 @@ class ContactDomainTest(TestCase):
         self.assertTrue(Domain.check_contact_permission(creator, contact))
 
     def test_check_contact_permission_shouldBeTrue_ifUserAdmin(self):
-        admin = User.objects.get(username="admin")
+        admin = User.objects.get(username="domains")
         contact = Contact.objects.get(name="contact0")
         self.assertTrue(Domain.check_contact_permission(admin, contact))
 

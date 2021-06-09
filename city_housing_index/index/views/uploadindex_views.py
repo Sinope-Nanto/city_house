@@ -8,10 +8,10 @@ from city.models import City
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
 
-from index.admin.addinfo import add_new_month
-from index.admin.addinfo import upload_city_info_to_database
+from index.domains.addinfo import add_new_month
+from index.domains.addinfo import upload_city_info_to_database
 
-from index.admin.indexcul import calculate_city_index
+from index.domains.indexcul import calculate_city_index
 
 
 class UpLoadIndexView(APIView):

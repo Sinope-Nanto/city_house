@@ -4,12 +4,12 @@ from utils.api_response import APIResponse
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
 
-from index.admin.getreport import getWordReport
-from index.admin.getreport import getReport90
-from index.admin.getreport import getReport
-from index.admin.getreport import getWordReport90
-from index.admin.getreport import getWordPicture
-from index.admin.getreport import getWordPicture90
+from index.domains.getreport import getWordReport
+from index.domains.getreport import getReport90
+from index.domains.getreport import getReport
+from index.domains.getreport import getWordReport90
+from index.domains.getreport import getWordPicture
+from index.domains.getreport import getWordPicture90
 from index.views.plot import plot
 
 

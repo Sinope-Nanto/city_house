@@ -6,7 +6,7 @@ from city.models import City
 from django.core.exceptions import ObjectDoesNotExist
 from index.models import CalculateResult
 from city.enums import CityArea
-from index.admin.addinfo import add_new_month
+from index.domains.addinfo import add_new_month
 
 
 def UpdataDatabase(year: int, month: int):

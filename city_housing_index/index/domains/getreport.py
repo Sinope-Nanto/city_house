@@ -3,12 +3,12 @@ from index.models import CalculateResult
 from city.models import City
 from city.enums import CityArea
 
-from index.admin.genreport import GenExcelReport
-from index.admin.genreport import GenWordReport
-from index.admin.genreport90 import GenExcelReport90
-from index.admin.genreport90 import GenWordReport90
-from index.admin.genreport import GenWordPicture
-from index.admin.genreport90 import GenWordPicture90
+from index.domains.genreport import GenExcelReport
+from index.domains.genreport import GenWordReport
+from index.domains.genreport90 import GenExcelReport90
+from index.domains.genreport90 import GenWordReport90
+from index.domains.genreport import GenWordPicture
+from index.domains.genreport90 import GenWordPicture90
 
 
 def getLastNMonth(year, month, num):
@@ -349,39 +349,49 @@ def getReport90(year: int, month: int):
 
     report.create_report()
     keylist = ['volumn', 'east_volumn', 'mid_volumn', 'west_volumn',
-                 'under_90_volumn', '90_144_volumn', 'above_144_volumn',
-                 'DONGBEI_volumn', 'HUABEI_volumn', 'HUADONG_volumn', 'HUAZHONG_volumn', 'HUANAN_volumn', 'XINAN_volumn', 'XIBEI_volumn', 
-                 'firstline_volumn', 'secondline_volumn', 'thirdline_volumn', 'forth_volumn', 'ZSJ_volumn', 'CSJ_volumn', 'HBH_volumn',
-                 'index', 'east_index', 'mid_index', 'west_index',
-                 'index_under_90', 'index_90_144', 'index_above_144',
-                 'DONGBEI_index', 'HUABEI_index', 'HUADONG_index', 'HUAZHONG_index', 'HUANAN_index', 'XINAN_index', 'XIBEI_index', 
-                 'firstline_index', 'secondline_index', 'thirdline_index', 'forth_index', 'ZSJ_index', 'CSJ_index', 'HBH_index',
-                 'volumn_year_on_year',
-                 'year_on_year', 'east_year_on_year', 'mid_year_on_year', 'west_year_on_year',
-                 'year_on_year_under_90', 'year_on_year_90_144', 'year_on_year_above_144',
-                 'DONGBEI_year_on_year', 'HUABEI_year_on_year', 'HUADONG_year_on_year', 'HUAZHONG_year_on_year', 'HUANAN_year_on_year', 'XINAN_year_on_year', 'XIBEI_year_on_year', 
-                 'firstline_year_on_year', 'secondline_year_on_year', 'thirdline_year_on_year', 'forth_year_on_year', 'ZSJ_year_on_year', 'CSJ_year_on_year', 'HBH_year_on_year',
-                 'volumn_chain',
-                 'chain', 'east_chain', 'mid_chain', 'west_chain',
-                 'chain_under_90', 'chain_90_144', 'chain_above_144',
-                 'DONGBEI_chain', 'HUABEI_chain', 'HUADONG_chain', 'HUAZHONG_chain', 'HUANAN_chain', 'XINAN_chain', 'XIBEI_chain', 
-                 'firstline_chain', 'secondline_chain', 'thirdline_chain', 'forth_chain', 'ZSJ_chain', 'CSJ_chain', 'HBH_chain']
+               'under_90_volumn', '90_144_volumn', 'above_144_volumn',
+               'DONGBEI_volumn', 'HUABEI_volumn', 'HUADONG_volumn', 'HUAZHONG_volumn', 'HUANAN_volumn', 'XINAN_volumn',
+               'XIBEI_volumn',
+               'firstline_volumn', 'secondline_volumn', 'thirdline_volumn', 'forth_volumn', 'ZSJ_volumn', 'CSJ_volumn',
+               'HBH_volumn',
+               'index', 'east_index', 'mid_index', 'west_index',
+               'index_under_90', 'index_90_144', 'index_above_144',
+               'DONGBEI_index', 'HUABEI_index', 'HUADONG_index', 'HUAZHONG_index', 'HUANAN_index', 'XINAN_index',
+               'XIBEI_index',
+               'firstline_index', 'secondline_index', 'thirdline_index', 'forth_index', 'ZSJ_index', 'CSJ_index',
+               'HBH_index',
+               'volumn_year_on_year',
+               'year_on_year', 'east_year_on_year', 'mid_year_on_year', 'west_year_on_year',
+               'year_on_year_under_90', 'year_on_year_90_144', 'year_on_year_above_144',
+               'DONGBEI_year_on_year', 'HUABEI_year_on_year', 'HUADONG_year_on_year', 'HUAZHONG_year_on_year',
+               'HUANAN_year_on_year', 'XINAN_year_on_year', 'XIBEI_year_on_year',
+               'firstline_year_on_year', 'secondline_year_on_year', 'thirdline_year_on_year', 'forth_year_on_year',
+               'ZSJ_year_on_year', 'CSJ_year_on_year', 'HBH_year_on_year',
+               'volumn_chain',
+               'chain', 'east_chain', 'mid_chain', 'west_chain',
+               'chain_under_90', 'chain_90_144', 'chain_above_144',
+               'DONGBEI_chain', 'HUABEI_chain', 'HUADONG_chain', 'HUAZHONG_chain', 'HUANAN_chain', 'XINAN_chain',
+               'XIBEI_chain',
+               'firstline_chain', 'secondline_chain', 'thirdline_chain', 'forth_chain', 'ZSJ_chain', 'CSJ_chain',
+               'HBH_chain']
     kwargs = {}
     for key in keylist:
         kwargs[key] = []
     # 取区域数据
     datarow = {}
-    dataList = ['QUANGUO','east','mid','west','DONGBEI','HUABEI','HUADONG','HUAZHONG','HUANAN','XINAN','XIBEI'
-    ,'firstline','secondline','thirdline','forth','ZSJ','CSJ','HBH']
+    dataList = ['QUANGUO', 'east', 'mid', 'west', 'DONGBEI', 'HUABEI', 'HUADONG', 'HUAZHONG', 'HUANAN', 'XINAN', 'XIBEI'
+        , 'firstline', 'secondline', 'thirdline', 'forth', 'ZSJ', 'CSJ', 'HBH']
     for i in dataList:
         datarow[i] = []
     areaList = [CityArea.QUANGUO_90] + [i for i in range(CityArea.DONGBU_90, CityArea.QUANGUO_90)]
     for i in range(0, len(dataList)):
         for y in range(2009, year):
             for m in range(1, 13):
-                datarow[dataList[i]].append(CalculateResult.objects.get(city_or_area=False, area=areaList[i], year=y, month=m))
+                datarow[dataList[i]].append(
+                    CalculateResult.objects.get(city_or_area=False, area=areaList[i], year=y, month=m))
         for m in range(1, month + 1):
-            datarow[dataList[i]].append(CalculateResult.objects.get(city_or_area=False, area=areaList[i], year=year, month=m))
+            datarow[dataList[i]].append(
+                CalculateResult.objects.get(city_or_area=False, area=areaList[i], year=year, month=m))
     # 填入全国数据
     for i in range(0, len(datarow[dataList[0]])):
         kwargs['volumn'].append(datarow['QUANGUO'][i].trade_volume)
@@ -403,10 +413,10 @@ def getReport90(year: int, month: int):
             kwargs['chain'].append(datarow['QUANGUO'][i].chain_index)
             kwargs['chain_under_90'].append(datarow['QUANGUO'][i].chain_index_under90)
             kwargs['chain_90_144'].append(datarow['QUANGUO'][i].chain_index_90144)
-            kwargs['chain_above_144'].append(datarow['QUANGUO'][i].chain_index_above144)        
+            kwargs['chain_above_144'].append(datarow['QUANGUO'][i].chain_index_above144)
 
-    # 填入地区数据
-    for i in range(1,len(dataList)):
+            # 填入地区数据
+    for i in range(1, len(dataList)):
         for j in range(0, len(datarow[dataList[0]])):
             kwargs[dataList[i] + '_volumn'].append(datarow[dataList[i]][j].trade_volume)
             kwargs[dataList[i] + '_index'].append(datarow[dataList[i]][j].index_value_base09)
@@ -414,7 +424,7 @@ def getReport90(year: int, month: int):
                 kwargs[dataList[i] + '_year_on_year'].append(datarow[dataList[i]][j].year_on_year_index)
             if j > 0:
                 kwargs[dataList[i] + '_chain'].append(datarow[dataList[i]][j].chain_index)
-    
+
     report.IndexSummary(**kwargs)
 
     # 参数列表:['index','year_on_year','chain','year_on_year_plot','chain_plot']
@@ -456,7 +466,7 @@ def getReport90(year: int, month: int):
     kwargs_4['url_line_plot'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_line_c.png'
     kwargs_4['url_s_area_plot'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_s_area_c.png'
     report.ComplexPlot(**kwargs_4)
-    
+
     # list每项的参数列表:{'city_name','index_this_month','index_last_month','index_last_year',
     # 'chain_radio','year_on_year','volumn_chain','volumn_year'}
 
@@ -549,16 +559,17 @@ def getReport90(year: int, month: int):
         report.CityPlot(citynamelist, ploturlList)
     except FileNotFoundError:
         return False
-    
+
     linelist = []
     # list每个项的参数：{'index', 'chain', 'year_on_year'}
     for i in range(CityArea.FIRSTLINE, CityArea.FORTHLINE + 1):
         linedata = CalculateResult.objects.get(city_or_area=False, area=i, year=y, month=m)
-        linelist.append({'index':linedata.index_value_base09, 'chain':linedata.chain_index, 'year_on_year':linedata.year_on_year_index})
+        linelist.append({'index': linedata.index_value_base09, 'chain': linedata.chain_index,
+                         'year_on_year': linedata.year_on_year_index})
     report.LineSummary(linelist)
     # citylist中参数: {'name', 'line', 'index', 'chain', 'year_on_year'}
     # linelist中参数: {'index', 'chain', 'year_on_year'}
-    
+
     report.LineCity(city_list, linelist)
 
     report.EndReport()
@@ -730,7 +741,7 @@ def getWordPicture90(year: int, month: int):
     kwargs['index_block_90'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_block_c_90.png'
     kwargs['index_area_90'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_buildarea_c_90.png'
     report.genpicdoc(year, month, city_list, **kwargs)
-    report.EndReport()        
+    report.EndReport()
     return True
 
 

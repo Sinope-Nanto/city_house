@@ -1,4 +1,7 @@
+from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
+
 from city.models import City
 from city.enums import CityArea
 
@@ -75,3 +78,56 @@ class CalculateResult(models.Model):
     chain_index_under90 = models.FloatField(default=0)
     year_on_year_index_90144 = models.FloatField(default=0)
     chain_index_90144 = models.FloatField(default=0)
+
+
+class GenReportTaskStatus:
+    START = "START"
+    RUNNING = "RUNNING"
+    ERROR = "ERROR"
+    SUCCESS = "SUCCESS"
+
+
+class GenReportTask(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    code = models.CharField(default="", max_length=200, blank=True)
+    kwargs = models.JSONField(default=dict, null=False)
+    result = models.JSONField(default=dict, null=False)
+    progress = models.IntegerField(default=0, verbose_name="进度0-100")
+    current_task = models.CharField(default="", max_length=200, verbose_name="当前任务名称")
+    finished = models.BooleanField(default=False, verbose_name="是否完成")
+    start = models.DateTimeField(auto_now_add=True, null=True)
+    end = models.DateTimeField(null=True)
+    status = models.CharField(default=GenReportTaskStatus.START, max_length=200, blank=True)
+
+    @classmethod
+    def generate_code(cls):
+        import uuid
+        return uuid.uuid4().hex
+
+    def execute(self):
+        self.start = timezone.now()
+        self.status = GenReportTaskStatus.RUNNING
+        self.progress = 0
+        self.save()
+
+    def finish(self, download_url):
+        self.end = timezone.now()
+        self.status = GenReportTaskStatus.SUCCESS
+        self.finished = True
+        self.progress = 100
+        self.result = {"download_url": download_url}
+        self.save()
+
+    def fail(self, msg):
+        self.end = timezone.now()
+        self.status = GenReportTaskStatus.ERROR
+        self.result = {"errmsg": msg}
+        self.finished = True
+        self.save()
+
+
+class ReportFile(models.Model):
+    creator_id = models.IntegerField(default=0, verbose_name="创建人id")
+    year = models.IntegerField(default=0, verbose_name="年")
+    month = models.IntegerField(default=0, verbose_name="月")
+    report = models.FileField(upload_to="report")

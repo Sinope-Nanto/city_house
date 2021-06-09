@@ -4,7 +4,7 @@ from index.models import CalculateResult
 from django.core.exceptions import ObjectDoesNotExist
 from city.models import City
 from city.enums import CityArea
-from index.admin.addinfo import add_new_month
+from index.domains.addinfo import add_new_month
 
 
 def id_to_code(city_id):
@@ -148,9 +148,8 @@ def calculate_area_index(areaType: str, areaID: int, year: int, month: int):
     total_trade_volumn_90_144 = 0
     total_trade_volumn_above_144 = 0
     for city in city_list:
-        city_id = code_to_id(city.code)
         try:
-            nowdata = CityIndex.objects.get(city_id=city_id, year=year, month=month)
+            nowdata = CityIndex.objects.get(city=city.code, year=year, month=month)
             total_number += nowdata.area_volume
             total_price += (nowdata.area_volume * nowdata.price)
             total_number_under_90 += nowdata.area_volume_under_90

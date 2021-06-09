@@ -22,7 +22,7 @@ urlpatterns = [
                   path('v1/cities/', include('city.urls')),
                   path('v1/contacts/', include('contacts.urls')),
                   path('v1/calculate/', include('calculate.urls')),
-                  path('v1/admin/', include('local_admin.urls')),
+                  path('v1/domains/', include('local_admin.urls')),
                   path('v1/index/', include('index.urls')),
                   path('v1/init_data/', include('init_data.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
