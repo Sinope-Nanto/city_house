@@ -8,7 +8,7 @@ import zipfile
 import datetime
 from rest_framework.views import APIView
 from utils.api_response import APIResponse
-from local_admin.views.files_views import getfilelist
+from local_admin.views.files_views import get_file_list
 
 def getIP():
     f = open('setting.txt')

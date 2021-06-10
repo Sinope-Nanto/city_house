@@ -51,7 +51,7 @@ class UpdateAllCityIndexView(APIView):
         city_list = City.objects.filter(ifin90=True)
         uploaded_city_list = []
         for city in city_list:
-            if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.id):
+            if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.code):
                 pass
             else:
                 uploaded_city_list.append(city.name)
