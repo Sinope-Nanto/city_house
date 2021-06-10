@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djcelery',
     'rest_framework',
     'local_auth',
     'city',
@@ -141,9 +140,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 # SITE_DOMAIN = "http://182.92.239.90:80"
 SITE_DOMAIN = "http://localhost:8000"
-import djcelery
-
-djcelery.setup_loader()
 
 # LOGGING = {
 #     'version': 1,

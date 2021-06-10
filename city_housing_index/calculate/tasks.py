@@ -1,4 +1,4 @@
-from celery.task import Task
+from celery import Task
 
 from calculate.task_utils import ModelCalculateUtils, PriceSequenceUtils
 from calculate.models import DataFile, FileContent, CalculateTask, ModelCalculateResult, PriceSequenceCalculateResult

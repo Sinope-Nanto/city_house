@@ -8,7 +8,7 @@ django-filter
 openpyxl
 gunicorn
 mysqlclient
-django-celery
+celery
 redis
 
 pycryptodome

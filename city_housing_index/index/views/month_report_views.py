@@ -4,9 +4,8 @@ from utils.api_response import APIResponse
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
 
-from index.tasks import GenReportTask
+from index.tasks import generate_report
 from ..models import GenReportTaskRecord
-
 
 
 class GenReportViews(APIView):
@@ -18,13 +17,14 @@ class GenReportViews(APIView):
         month = int(request.data['month'])
         user = request.user
 
-        task_record = GenReportTaskRecord(user=user, kwargs={"year": year, "month": month})
+        task_record = GenReportTaskRecord(kwargs={"year": year, "month": month})
         task_record.code = task_record.generate_code()
         task_record.save()
 
-        task_obj = GenReportTask()
-        task_obj.delay(year=year, month=month, task_id=task_record.id)
+        print("start delay")
+        generate_report.delay(year=year, month=month, task_id=task_record.id)
 
+        print("delay over")
         result = {
             "task_id": task_record.id
         }
@@ -37,10 +37,8 @@ class QueryReportTaskView(APIView):
 
     def get(self, request):
         from ..serializers import GenReportTaskSerializer
-        task_id = request.data['task_id']
+        print(request.data)
+        task_id = request.GET['task_id']
         task_record = GenReportTaskRecord.objects.get(id=task_id)
         result = GenReportTaskSerializer(task_record).data
         return APIResponse.create_success(result)
-
-
-
