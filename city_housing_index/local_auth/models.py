@@ -48,6 +48,10 @@ class UserProfile(models.Model):
     def get_by_user_id(cls, user_id_id):
         return cls.objects.get(user_id_id=user_id_id)
 
+    @classmethod
+    def is_user_admin(cls, user):
+        return cls.objects.get(user_id=user.id).is_admin()
+
 
 class UserSession(models.Model):
     user = models.ForeignKey(User, on_delete=SET_NULL, null=True)

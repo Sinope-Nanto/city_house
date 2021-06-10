@@ -1,14 +1,12 @@
 from calculate.models import DataFile, FileContent
-from city.models import City
-from city.serializers import CitySerializer
 import traceback
 from utils.excel_utils import read_xls, read_xlsx
-import json
+from local_auth.models import UserProfile
 
 
-def create_upload_file(user, file, name, code, city_id, start, end):
+def create_upload_file(user, file, name, code, city_code, start, end):
     try:
-        data_file = DataFile(user=user, file=file, name=name, code=code, city_id=city_id, start=start, end=end)
+        data_file = DataFile(user=user, file=file, name=name, code=code, city_code=city_code, start=start, end=end)
         data_file.save()
 
         file_type = data_file.file.url.split(".")[1]
@@ -32,22 +30,12 @@ def list_upload_files(user):
     from calculate.serializers import DataFileSerializer
     data_file_queryset = DataFile.objects.filter(user=user, deleted=False)
     raw_data = DataFileSerializer(data_file_queryset, many=True).data
-
-    city_id_list = [str(item["city_id"]) for item in raw_data]
-    # city_queryset = City.objects.filter(code__in=city_id_list)
-    city_queryset = City.objects.filter(id__in=city_id_list)
-
-    city_data_list = CitySerializer(city_queryset, many=True).data
-
-    city_dict = {item["id"]: item for item in city_data_list}
-
-    for item in raw_data:
-        item.update({"city": city_dict[item["city_id"]]})
-
     return raw_data
 
 
 def check_file_permission(user, file_id):
+    if UserProfile.is_user_admin(user):
+        return True
     data_file = DataFile.objects.get(id=file_id)
     return data_file.user_id == user.id
 

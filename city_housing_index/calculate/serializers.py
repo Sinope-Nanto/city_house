@@ -1,11 +1,22 @@
 from rest_framework import serializers
 from .models import DataFile, FileContent, ModelCalculateResult, PriceSequenceCalculateResult, CalculateTask
+from city.models import City
 
 
 class DataFileSerializer(serializers.ModelSerializer):
+    city = serializers.SerializerMethodField()
+
     class Meta:
         model = DataFile
-        fields = ['id', "name", "file", "code", "city_id", "start", "end"]
+        fields = ['id', "name", "file", "code", "city_code", "start", "end"]
+
+    def get_city(self, obj: DataFile):
+        city = City.objects.get(code=obj.city_code)
+        return {
+            "id": city.id,
+            "name": city.name,
+            "code": city.code
+        }
 
 
 class FileContentSerializer(serializers.ModelSerializer):

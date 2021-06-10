@@ -12,7 +12,7 @@ class DataFile(models.Model):
     name = models.CharField(default="", max_length=200, blank=True)
     file = models.FileField(upload_to="origin_data")
     code = models.CharField(default="", max_length=100, blank=True)
-    city_id = models.IntegerField(default=0)
+    city_code = models.IntegerField(default=0)
     start = models.CharField(default="", max_length=100, blank=True)
     end = models.CharField(default="", max_length=100, blank=True)
     upload_date = models.DateTimeField(auto_now_add=True, null=True)
