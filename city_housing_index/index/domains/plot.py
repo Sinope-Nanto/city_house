@@ -7,11 +7,11 @@ from city.enums import CityArea
 def plot(year, month):
     # 绘制全国图
     data = []
-    for _year in range(2006, year):
-        for _month in range(1, 13):
-            data.append(CalculateResult.objects.get(city_or_area=False, area=CityArea.QUNGUO, year=_year, month=_month))
-    for _month in range(1, month + 1):
-        data.append(CalculateResult.objects.get(city_or_area=False, area=CityArea.QUNGUO, year=year, month=_month))
+    data.extend(
+        list(CalculateResult.objects.filter(city_or_area=False, area=CityArea.QUNGUO, year__in=range(2006, year),
+                                            month__in=(1, 13)).order_by('year', 'month')))
+    data.extend(list(CalculateResult.objects.filter(city_or_area=False, area=CityArea.QUNGUO, year=year,
+                                                    month__in=range(1, month + 1)).order_by('year', 'month')))
     lenth = len(data)
     # 绘制全国同比图
     year_on_year_index = []
@@ -38,13 +38,11 @@ def plot(year, month):
 
     # 绘制全国图 90
     data_90 = []
-    for _year in range(2009, year):
-        for _month in range(1, 13):
-            data_90.append(
-                CalculateResult.objects.get(city_or_area=False, area=CityArea.QUANGUO_90, year=_year, month=_month))
-    for _month in range(1, month + 1):
-        data_90.append(
-            CalculateResult.objects.get(city_or_area=False, area=CityArea.QUANGUO_90, year=year, month=_month))
+    data_90.extend(
+        list(CalculateResult.objects.filter(city_or_area=False, area=CityArea.QUANGUO_90, year__in=range(2009, year),
+                                            month__in=(1, 13)).order_by('year', 'month')))
+    data_90.extend((list(CalculateResult.objects.filter(city_or_area=False, area=CityArea.QUANGUO_90, year=year,
+                                                        month__in=(1, month + 1)).order_by('year', 'month'))))
     lenth_90 = len(data_90)
     # 绘制全国同比图
     year_on_year_index_90 = []
@@ -67,7 +65,8 @@ def plot(year, month):
     vol_90 = []
     for i in range(0, lenth_90):
         vol_90.append(data_90[i].trade_volume)
-    p.plot_vol_index_90(volume=vol, index=index, saveurl=('media/image/' + str(year) + '_' + str(month) + 'volindex_90.png'))
+    p.plot_vol_index_90(volume=vol, index=index,
+                        saveurl=('media/image/' + str(year) + '_' + str(month) + 'volindex_90.png'))
 
     # 绘制全国指数图 - 按面积分片 -简版与完整版
     index_area = [[], [], []]
@@ -103,10 +102,8 @@ def plot(year, month):
     vol_block = [[], [], []]
     block = [CityArea.DONGBU, CityArea.ZHONGBU, CityArea.XIBU]
     for i in range(0, 3):
-        data = []
-        for _year in range(2006, year):
-            for _month in range(1, 13):
-                data.append(CalculateResult.objects.get(city_or_area=False, area=block[i], year=_year, month=_month))
+        data = list(CalculateResult.objects.filter(city_or_area=False, area=block[i], year__in=range(2006, year),
+                                                   month__in=range(1, 13)).order_by('year', 'month'))
         lenth = len(data)
         for j in range(0, lenth):
             index_block[i].append(data[j].index_value)
@@ -120,12 +117,9 @@ def plot(year, month):
     vol_block_90 = [[], [], []]
     block_90 = [CityArea.DONGBU_90, CityArea.ZHONGBU_90, CityArea.XIBU_90]
     for i in range(0, 3):
-        data = []
-        for _year in range(2009, year):
-            for _month in range(1, 13):
-                data.append(CalculateResult.objects.get(city_or_area=False, area=block_90[i], year=_year, month=_month))
-        lenth = len(data)
-        for j in range(0, lenth):
+        data = list(CalculateResult.objects.filter(city_or_area=False, area=block_90[i], year__in=(2009, year),
+                                                   month__in=(1, 13)).order_by('year', 'month'))
+        for j in range(0, len(data)):
             index_block_90[i].append(data[j].index_value_base09)
             vol_block_90[i].append(data[j].trade_volume)
     p.plot_index_by_block_90(index_block_90,
@@ -138,12 +132,9 @@ def plot(year, month):
     vol_block_90 = [[], [], [], []]
     block_90 = [CityArea.FIRSTLINE, CityArea.SECONDLINE, CityArea.THIRDLINE, CityArea.FORTHLINE]
     for i in range(0, 4):
-        data = []
-        for _year in range(2009, year):
-            for _month in range(1, 13):
-                data.append(CalculateResult.objects.get(city_or_area=False, area=block_90[i], year=_year, month=_month))
-        lenth = len(data)
-        for j in range(0, lenth):
+        data = list(CalculateResult.objects.filter(city_or_area=False, area=block_90[i], year__in=range(2009, year),
+                                                   month__in=range(1, 13)).order_by('year', 'month'))
+        for j in range(0, len(data)):
             index_block_90[i].append(data[j].index_value_base09)
             vol_block_90[i].append(data[j].trade_volume)
     p.plot_index_by_line(index_block_90, saveurl=('media/image/' + str(year) + '_' + str(month) + 'index_by_line.png'))
@@ -155,12 +146,9 @@ def plot(year, month):
     vol_block_90 = [[], [], []]
     block_90 = [CityArea.ZHUSANJIAO, CityArea.CHANGSANJIAO_90, CityArea.HUANBOHAI]
     for i in range(0, 3):
-        data = []
-        for _year in range(2009, year):
-            for _month in range(1, 13):
-                data.append(CalculateResult.objects.get(city_or_area=False, area=block_90[i], year=_year, month=_month))
-        lenth = len(data)
-        for j in range(0, lenth):
+        data = list(CalculateResult.objects.filter(city_or_area=False, area=block_90[i], year__in=range(2009, year),
+                                                   month__in=range(1, 13)).order_by('year', 'month'))
+        for j in range(0, len(data)):
             index_block_90[i].append(data[j].index_value_base09)
             vol_block_90[i].append(data[j].trade_volume)
     p.plot_index_by_block_90(index_block_90,
@@ -174,10 +162,8 @@ def plot(year, month):
     block_90 = [CityArea.DONGBEI, CityArea.HUABEI, CityArea.HUADONG, CityArea.HUAZHONG, CityArea.HUANAN, CityArea.XINAN,
                 CityArea.XIBEI]
     for i in range(0, 7):
-        data = []
-        for _year in range(2009, year):
-            for _month in range(1, 13):
-                data.append(CalculateResult.objects.get(city_or_area=False, area=block_90[i], year=_year, month=_month))
+        data = list(CalculateResult.objects.filter(city_or_area=False, area=block_90[i], year__in=range(2009, year),
+                                                   month__in=range(1, 13)).order_by('year', 'month'))
         lenth = len(data)
         for j in range(0, lenth):
             index_block_90[i].append(data[j].index_value_base09)
@@ -191,20 +177,16 @@ def plot(year, month):
     city_list = City.objects.filter(ifin40=True)
     city_list_90 = City.objects.filter(ifin90=True)
     for city in city_list:
-        data = []
-        for _year in range(2006, year):
-            for _month in range(1, 13):
-                data.append(
-                    CalculateResult.objects.get(city_or_area=True, city=int(city.code), year=_year, month=_month))
-        for _month in range(1, month + 1):
-            data.append(CalculateResult.objects.get(city_or_area=True, city=int(city.code), year=year, month=_month))
-        lenth = len(data)
+        data = list(CalculateResult.objects.filter(city_or_area=True, city=int(city.code), year__in=range(2006, year),
+                                                   month__in=range(1, 13)).order_by('year', 'month'))
+        data.extend(list(CalculateResult.objects.filter(city_or_area=True, city=int(city.code), year=year,
+                                                        month__in=range(1, month + 1)).order_by('year', 'month')))
         city_index = []
         city_vol = []
         if data[0].index_value == 0:
             data[0].index_value = 100
         last_value = 0
-        for i in range(0, lenth):
+        for i in range(0, len(data)):
             if data[i].index_value == 0:
                 city_index.append(data[last_value].index_value)
             else:
@@ -214,20 +196,16 @@ def plot(year, month):
         p.plot_vol_index(volume=city_vol, index=city_index,
                          saveurl=('media/image/' + str(year) + '_' + str(month) + 'volindex_' + city.code + '.png'))
     for city in city_list_90:
-        data = []
-        for _year in range(2009, year):
-            for _month in range(1, 13):
-                data.append(
-                    CalculateResult.objects.get(city_or_area=True, city=int(city.code), year=_year, month=_month))
-        for _month in range(1, month + 1):
-            data.append(CalculateResult.objects.get(city_or_area=True, city=int(city.code), year=year, month=_month))
-        lenth = len(data)
+        data = list(CalculateResult.objects.filter(city_or_area=True, city=int(city.code), year__in=range(2009, year),
+                                                   month__in=range(1, 13)).order_by('year', 'month'))
+        data.extend(list(CalculateResult.objects.filter(city_or_area=True, city=int(city.code), year=year,
+                                                        month__in=range(1, month + 1)).order_by('year', 'month')))
         city_index = []
         city_vol = []
         if data[0].index_value == 0:
             data[0].index_value = 100
         last_value = 0
-        for i in range(0, lenth):
+        for i in range(0, len(data)):
             if data[i].index_value == 0:
                 city_index.append(data[last_value].index_value_base09)
             else:
@@ -235,5 +213,5 @@ def plot(year, month):
                 last_value = i
             city_vol.append(data[i].trade_volume)
         p.plot_vol_index_90(volume=city_vol, index=city_index, saveurl=(
-                    'media/image/' + str(year) + '_' + str(month) + 'volindex_' + city.code + '_90.png'))
+                'media/image/' + str(year) + '_' + str(month) + 'volindex_' + city.code + '_90.png'))
     return True

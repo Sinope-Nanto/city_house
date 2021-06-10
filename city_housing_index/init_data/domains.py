@@ -1,7 +1,3 @@
-from django.contrib import admin
-
-# Register your models here.
-
 from city.models import City
 from django.core.exceptions import ObjectDoesNotExist
 from index.models import CalculateResult
@@ -9,7 +5,7 @@ from city.enums import CityArea
 from index.domains.addinfo import add_new_month
 
 
-def UpdataDatabase(year: int, month: int):
+def init_database(year: int, month: int):
     for i in range(2006, year):
         for j in range(1, 13):
             add_new_month(i, j)
@@ -18,7 +14,7 @@ def UpdataDatabase(year: int, month: int):
     return True
 
 
-def UpdataCityIndex():
+def init_city_index():
     data_file = open('media/init_data/cityindexdata.csv', encoding='gbk')
     volumn_file = open('media/init_data/cityvolumndata.csv', encoding='gbk')
     code = 1
@@ -56,7 +52,7 @@ def UpdataCityIndex():
     return True
 
 
-def UpdataTotalData():
+def init_total_data():
     data_file = open('media/init_data/totaldata.csv', encoding='gbk')
     data = []
     data_90 = []
@@ -102,7 +98,7 @@ def UpdataTotalData():
     return True
 
 
-def UpdataCityList():
+def init_city_list():
     city_file = open('media/init_data/citylist.csv', encoding='utf-8')
     city_file.readline()
     while True:
@@ -122,7 +118,7 @@ def UpdataCityList():
     return True
 
 
-def UpdataAreaIndex():
+def init_area_index():
     data_file = open('media/init_data/areadata.csv', encoding='utf-8')
     data = []
     for i in range(0, 84):
@@ -146,7 +142,7 @@ def UpdataAreaIndex():
     return True
 
 
-def UpdataBaseprice_06():
+def init_base_price_06():
     data_file = open('media/init_data/basedata.csv', encoding='gbk')
     while True:
         row = data_file.readline()

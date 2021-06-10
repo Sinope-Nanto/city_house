@@ -3,12 +3,12 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from utils.api_response import APIResponse
 
-from init_data.admin import UpdataDatabase
-from init_data.admin import UpdataCityIndex
-from init_data.admin import UpdataTotalData
-from init_data.admin import UpdataCityList
-from init_data.admin import UpdataAreaIndex
-from init_data.admin import UpdataBaseprice_06
+from init_data.domains import init_database
+from init_data.domains import init_city_index
+from init_data.domains import init_total_data
+from init_data.domains import init_city_list
+from init_data.domains import init_area_index
+from init_data.domains import init_base_price_06
 
 
 # Create your views here.
@@ -18,11 +18,6 @@ class InitSystemViews(APIView):
     def post(self, request):
         year = int(request.data['year'])
         month = int(request.data['month'])
-        UpdataCityList()
-        UpdataDatabase(year, month)
-        UpdataTotalData()
-        UpdataCityIndex()
-        UpdataAreaIndex()
-        UpdataBaseprice_06()
+
 
         return APIResponse.create_success()
