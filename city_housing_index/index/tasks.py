@@ -27,6 +27,10 @@ class GenReportTask(Task):
             gen_report_task.change_progress(0, 7, "绘制报告所需图表")
             plot(year, month)
 
+            report_dir = os.path.join(settings.MEDIA_ROOT, "report/")
+            if not os.path.isdir(report_dir):
+                os.mkdir(report_dir)
+
             gen_report_task.change_progress(1, 7, "生成40城市EXCEL表")
             success, report_40_url = get_report_40(year, month)
             if not success:

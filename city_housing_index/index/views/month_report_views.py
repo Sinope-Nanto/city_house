@@ -4,31 +4,43 @@ from utils.api_response import APIResponse
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
 
-from index.domains.generate_report import get_word_report_40
-from index.domains.generate_report import get_report_90
-from index.domains.generate_report import get_report_40
-from index.domains.generate_report import get_word_report_90
-from index.domains.generate_report import get_word_picture_40
-from index.domains.generate_report import get_word_picture_90
-from index.domains.plot import plot
+from index.tasks import GenReportTask
+from ..models import GenReportTaskRecord
+
 
 
 class GenReportViews(APIView):
-    authentication_classes = [CityIndexAuthentication]
-    permission_classes = [CityIndexAdminPermission]
+    # authentication_classes = [CityIndexAuthentication]
+    # permission_classes = [CityIndexAdminPermission]
 
     def post(self, request):
         year = int(request.data['year'])
         month = int(request.data['month'])
-        plot(year, month)
-        if (
-                get_report_40(year, month)
-                and get_report_90(year, month)
-                and get_word_report_40(year, month)
-                and get_word_report_90(year, month)
-                and get_word_picture_40(year, month)
-                and get_word_picture_90(year, month)
-        ):
-            return APIResponse.create_success()
-        else:
-            return APIResponse.create_fail(code=404, msg="some sourence does not exist")
+        user = request.user
+
+        task_record = GenReportTaskRecord(user=user, kwargs={"year": year, "month": month})
+        task_record.code = task_record.generate_code()
+        task_record.save()
+
+        task_obj = GenReportTask()
+        task_obj.delay(year=year, month=month, task_id=task_record.id)
+
+        result = {
+            "task_id": task_record.id
+        }
+        return APIResponse.create_success(result)
+
+
+class QueryReportTaskView(APIView):
+    # authentication_classes = [CityIndexAuthentication]
+    # permission_classes = [CityIndexAdminPermission]
+
+    def get(self, request):
+        from ..serializers import GenReportTaskSerializer
+        task_id = request.data['task_id']
+        task_record = GenReportTaskRecord.objects.get(id=task_id)
+        result = GenReportTaskSerializer(task_record).data
+        return APIResponse.create_success(result)
+
+
+
