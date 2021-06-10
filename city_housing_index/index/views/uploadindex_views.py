@@ -49,16 +49,16 @@ class UpdateAllCityIndexView(APIView):
 
     def post(self, request):
         city_list = City.objects.filter(ifin90=True)
-        unloadcitylist = []
+        uploaded_city_list = []
         for city in city_list:
             if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.id):
                 pass
             else:
-                unloadcitylist.append(city.name)
-        if len(unloadcitylist) == 0:
+                uploaded_city_list.append(city.name)
+        if len(uploaded_city_list) == 0:
             return APIResponse.create_success(data='所有城市均已上传')
         else:
-            return APIResponse.create_success(data='未上传城市有:' + str(unloadcitylist))
+            return APIResponse.create_success(data='未上传城市有:' + str(uploaded_city_list))
 
 
 class CalculateCityInfoView(APIView):
