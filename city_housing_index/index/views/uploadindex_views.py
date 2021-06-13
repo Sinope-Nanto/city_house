@@ -100,6 +100,8 @@ class ListCityIndexInfoView(APIView):
                 'index': calculate_result.index_value,
                 'chain': calculate_result.chain_index,
                 'year_on_year': calculate_result.year_on_year_index,
-                'volumn': calculate_result.trade_volume
+                'volumn': calculate_result.trade_volume,
+                'year': calculate_result.year,
+                'month': calculate_result.month
             })
         return APIResponse.create_success(result)
