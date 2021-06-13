@@ -1,4 +1,4 @@
-from calculate.models import DataFile, FileContent
+from calculate.models import DataFile, FileContent, TemplateFiles
 import traceback
 from utils.excel_utils import read_xls, read_xlsx
 from local_auth.models import UserProfile
@@ -56,3 +56,8 @@ def delete_data_file(file_id):
     data_file.deleted = True
     data_file.save()
     return True
+
+
+def get_template_file():
+    template_file = TemplateFiles.objects.all().first()
+    return template_file.file.url

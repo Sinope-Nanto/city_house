@@ -92,7 +92,7 @@ class ListCityIndexInfoView(APIView):
     authentication_classes = [CityIndexAuthentication]
 
     def get(self, request):
-        city_code = request.data['code']
+        city_code = request.GET['code']
         calculate_results = CalculateResult.objects.filter(city=city_code, city_or_area=True).order_by('year', 'month')
         result = []
         for calculate_result in calculate_results:
