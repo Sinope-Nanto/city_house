@@ -18,7 +18,7 @@ def code_to_id(city_code):
 
 
 def calculate_city_index(city_code: int, year: int, month: int):
-    result = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
+    result = CalculateResult.objects.filter(city_or_area=True, city=city_code, year=year, month=month).first()
     if result is None:
         add_new_month(year, month)
         result = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
