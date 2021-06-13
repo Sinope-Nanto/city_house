@@ -8,7 +8,7 @@ class DataFileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DataFile
-        fields = ['id', "name", "file", "code", "city_code", "start", "end"]
+        fields = ['id', "name", "file", "code", "city_code", "start", "end", "city"]
 
     def get_city(self, obj: DataFile):
         city = City.objects.get(code=obj.city_code)
