@@ -13,14 +13,15 @@ basedir="$(cd "$(dirname "$0")" && cd .. && pwd)"
 cd "${basedir}" || exit 1
 
 bin_path='/root/venv/bin/python'
+pip_path='/root/venv/bin/pip'
 #bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
 
 log_dir="${basedir}/log"
 
 # 安装python依赖
 
-if [ "$(${bin_path}/pip freeze)" != "$(cat ${basedir}/requirement.txt)" ]; then
-  ${bin_path}/pip install -r "${basedir}/requirement.txt"
+if [ "${pip_path} freeze)" != "$(cat ${basedir}/requirement.txt)" ]; then
+  pip_path install -r "${basedir}/requirement.txt"
 else
   echo "all requirement satisified"
 fi
