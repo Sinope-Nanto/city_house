@@ -70,13 +70,10 @@ def register(**kwargs) -> (bool, str):
     mobile = kwargs.get("mobile")
     name = kwargs.get("name")
     city = kwargs.get("city")
-    identity = kwargs.get("identity")
-    identity_image = kwargs.get("identity_image")
     new_user = User.objects.create_user(username=name, is_active=False)
     user_id = new_user.id
     try:
-        user_profile = UserProfile(user_id_id=user_id, name=name, mobile=mobile, city_id=city, identity=identity,
-                                   identity_image=identity_image)
+        user_profile = UserProfile(user_id_id=user_id, name=name, mobile=mobile, city_id=city)
         user_profile.set_to_wait()
         user_profile.save()
     except Exception as ex:

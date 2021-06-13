@@ -47,13 +47,11 @@ class RegisterView(ViewSet):
         mobile = request.data['mobile']
         name = request.data['name']
         city = int(request.data['city'])
-        identity = request.data['identity']
-        identity_image = request.FILES.get('identity_image')
 
         if check_login_mobile(mobile):
             return APIResponse.create_fail(400, "该手机号已被注册")
 
-        created, msg = register(mobile=mobile, name=name, city=city, identity=identity, identity_image=identity_image)
+        created, msg = register(mobile=mobile, name=name, city=city)
 
         if not created:
             return APIResponse.create_fail(400, msg)
