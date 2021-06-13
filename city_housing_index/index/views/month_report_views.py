@@ -16,11 +16,10 @@ class GenReportViews(APIView):
         year = int(request.data['year'])
         month = int(request.data['month'])
         user = request.user
-        running_task = GenReportTaskRecord.objects.filter(kwargs={"year": year, "month": month},
-                                                          finished=False).first()
+        running_task = None
         if running_task:
             result = {
-                "task_id": running_task.id
+                "task_id": ""
             }
         else:
             task_record = GenReportTaskRecord(kwargs={"year": year, "month": month})
