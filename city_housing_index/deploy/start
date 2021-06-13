@@ -9,9 +9,9 @@ set -x
 basedir="$(cd "$(dirname "$0")" && cd .. && pwd)"
 cd "${basedir}" || exit 1
 
-sh bin/build
+sh deploy/build
 
-bin_path="/root/venv/bin/python"
+bin_path="/root/venv/bin/"
 #bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
 pyuwsgi="${bin_path}/uwsgi"
 

@@ -21,7 +21,7 @@ log_dir="${basedir}/log"
 # 安装python依赖
 
 if [ "${pip_path} freeze)" != "$(cat ${basedir}/requirement.txt)" ]; then
-  pip_path install -r "${basedir}/requirement.txt"
+  $pip_path install -r "${basedir}/requirement.txt"
 else
   echo "all requirement satisified"
 fi
