@@ -9,7 +9,7 @@ def plot(year, month):
     data = []
     data.extend(
         list(CalculateResult.objects.filter(city_or_area=False, area=CityArea.QUNGUO, year__in=range(2006, year),
-                                            month__in=(1, 13)).order_by('year', 'month')))
+                                            month__in=range(1, 13)).order_by('year', 'month')))
     data.extend(list(CalculateResult.objects.filter(city_or_area=False, area=CityArea.QUNGUO, year=year,
                                                     month__in=range(1, month + 1)).order_by('year', 'month')))
     lenth = len(data)
@@ -40,9 +40,9 @@ def plot(year, month):
     data_90 = []
     data_90.extend(
         list(CalculateResult.objects.filter(city_or_area=False, area=CityArea.QUANGUO_90, year__in=range(2009, year),
-                                            month__in=(1, 13)).order_by('year', 'month')))
+                                            month__in=range(1, 13)).order_by('year', 'month')))
     data_90.extend((list(CalculateResult.objects.filter(city_or_area=False, area=CityArea.QUANGUO_90, year=year,
-                                                        month__in=(1, month + 1)).order_by('year', 'month'))))
+                                                        month__in=range(1, month + 1)).order_by('year', 'month'))))
     lenth_90 = len(data_90)
     # 绘制全国同比图
     year_on_year_index_90 = []
