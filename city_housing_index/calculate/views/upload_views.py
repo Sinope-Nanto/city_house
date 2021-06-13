@@ -6,7 +6,8 @@ from calculate.models import DataFile
 from local_auth.authentication import CityIndexAuthentication
 from utils.api_response import APIResponse
 from calculate.domains.upload_domain import create_upload_file, list_upload_files, check_file_permission, \
-    review_file_content, delete_data_file
+    review_file_content, delete_data_file, get_template_file
+from django.conf import settings
 
 
 class DataFileUploadView(ViewSet):
@@ -64,3 +65,10 @@ class DeleteDataFileView(APIView):
             return APIResponse.create_fail(403, "您没有预览该文件的权限")
         delete_data_file(file_id)
         return APIResponse.create_success()
+
+
+class GetTemplateDataFileView(APIView):
+
+    def get(self, request):
+        url = settings.SITE_DOMAIN + get_template_file()
+        return APIResponse.create_success(url)

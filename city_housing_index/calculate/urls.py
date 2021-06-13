@@ -11,6 +11,7 @@ urlpatterns = [
     path("data_files/", upload_views.DataFileListView.as_view()),
     path("data_file/content/<int:file_id>/", upload_views.ReviewFileContentView.as_view()),
     path("data_file/delete/<int:file_id>/", upload_views.DeleteDataFileView.as_view()),
+    path("data_file/template/", upload_views.GetTemplateDataFileView.as_view()),
 
     path("model/task/execute/", model_views.ExecuteModelCalculateView.as_view()),
     path("model/tasks/", model_views.ListModelCalculateTaskView.as_view()),

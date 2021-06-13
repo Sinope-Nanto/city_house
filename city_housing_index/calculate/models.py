@@ -25,6 +25,10 @@ class FileContent(models.Model):
     content = JSONField(default=[], null=False)
 
 
+class TemplateFiles(models.Model):
+    file = models.FileField(upload_to="template_file")
+
+
 class CalculateTask(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     code = models.CharField(default="", max_length=200, blank=True)
