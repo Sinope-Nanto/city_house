@@ -1,0 +1,455 @@
+[2021-06-13 16:11:53,977: ERROR/MainProcess] Internal Server Error: /v1/index/genreport
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 423, in __call__
+    return self.__value__
+AttributeError: 'ChannelPromise' object has no attribute '__value__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 449, in _ensured
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 177, in _publish
+    channel = self.channel
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 194, in _get_channel
+    channel = self._channel = channel()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 425, in __call__
+    value = self.__value__ = self.__contract__()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 209, in <lambda>
+    channel = ChannelPromise(lambda: connection.default_channel)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 771, in default_channel
+    self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\decorators\csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "D:\city_house\city_housing_index\index\views\month_report_views.py", line 25, in post
+    generate_report.delay(year=year, month=month, task_id=task_record.id)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 461, in delay
+    return self.apply_async(args, kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 570, in apply_async
+    return app.send_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\base.py", line 350, in send_task
+    task_id = P.publish_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\amqp.py", line 300, in publish_task
+    self.publish(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 170, in publish
+    return publish(body, priority, content_type,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 466, in _ensured
+    self.ensure_connection(errback,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 380, in ensure_connection
+    retry_over_time(self.connect, self.recoverable_connection_errors,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 246, in retry_over_time
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 250, in connect
+    return self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+[2021-06-13 16:12:12,217: ERROR/MainProcess] Internal Server Error: /v1/index/genreport
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 423, in __call__
+    return self.__value__
+AttributeError: 'ChannelPromise' object has no attribute '__value__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 449, in _ensured
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 177, in _publish
+    channel = self.channel
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 194, in _get_channel
+    channel = self._channel = channel()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 425, in __call__
+    value = self.__value__ = self.__contract__()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 209, in <lambda>
+    channel = ChannelPromise(lambda: connection.default_channel)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 771, in default_channel
+    self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\decorators\csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "D:\city_house\city_housing_index\index\views\month_report_views.py", line 25, in post
+    generate_report.delay(year=year, month=month, task_id=task_record.id)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 461, in delay
+    return self.apply_async(args, kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 570, in apply_async
+    return app.send_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\base.py", line 350, in send_task
+    task_id = P.publish_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\amqp.py", line 300, in publish_task
+    self.publish(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 170, in publish
+    return publish(body, priority, content_type,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 466, in _ensured
+    self.ensure_connection(errback,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 380, in ensure_connection
+    retry_over_time(self.connect, self.recoverable_connection_errors,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 246, in retry_over_time
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 250, in connect
+    return self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+[2021-06-13 16:15:19,322: ERROR/MainProcess] Internal Server Error: /v1/index/genreport
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 423, in __call__
+    return self.__value__
+AttributeError: 'ChannelPromise' object has no attribute '__value__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 449, in _ensured
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 177, in _publish
+    channel = self.channel
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 194, in _get_channel
+    channel = self._channel = channel()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 425, in __call__
+    value = self.__value__ = self.__contract__()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 209, in <lambda>
+    channel = ChannelPromise(lambda: connection.default_channel)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 771, in default_channel
+    self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\decorators\csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "D:\city_house\city_housing_index\index\views\month_report_views.py", line 25, in post
+    generate_report.delay(year=year, month=month, task_id=task_record.id)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 461, in delay
+    return self.apply_async(args, kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 570, in apply_async
+    return app.send_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\base.py", line 350, in send_task
+    task_id = P.publish_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\amqp.py", line 300, in publish_task
+    self.publish(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 170, in publish
+    return publish(body, priority, content_type,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 466, in _ensured
+    self.ensure_connection(errback,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 380, in ensure_connection
+    retry_over_time(self.connect, self.recoverable_connection_errors,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 246, in retry_over_time
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 250, in connect
+    return self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+[2021-06-13 16:18:08,225: ERROR/MainProcess] Internal Server Error: /v1/index/genreport
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 423, in __call__
+    return self.__value__
+AttributeError: 'ChannelPromise' object has no attribute '__value__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 449, in _ensured
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 177, in _publish
+    channel = self.channel
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 194, in _get_channel
+    channel = self._channel = channel()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 425, in __call__
+    value = self.__value__ = self.__contract__()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 209, in <lambda>
+    channel = ChannelPromise(lambda: connection.default_channel)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 771, in default_channel
+    self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\decorators\csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "D:\city_house\city_housing_index\index\views\month_report_views.py", line 25, in post
+    generate_report.delay(year=year, month=month, task_id=task_record.id)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 461, in delay
+    return self.apply_async(args, kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 570, in apply_async
+    return app.send_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\base.py", line 350, in send_task
+    task_id = P.publish_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\amqp.py", line 300, in publish_task
+    self.publish(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 170, in publish
+    return publish(body, priority, content_type,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 466, in _ensured
+    self.ensure_connection(errback,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 380, in ensure_connection
+    retry_over_time(self.connect, self.recoverable_connection_errors,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 246, in retry_over_time
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 250, in connect
+    return self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+[2021-06-13 16:20:04,883: ERROR/MainProcess] Internal Server Error: /v1/index/genreport
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 423, in __call__
+    return self.__value__
+AttributeError: 'ChannelPromise' object has no attribute '__value__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 449, in _ensured
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 177, in _publish
+    channel = self.channel
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 194, in _get_channel
+    channel = self._channel = channel()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 425, in __call__
+    value = self.__value__ = self.__contract__()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 209, in <lambda>
+    channel = ChannelPromise(lambda: connection.default_channel)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 771, in default_channel
+    self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\decorators\csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "D:\city_house\city_housing_index\index\views\month_report_views.py", line 25, in post
+    generate_report.delay(year=year, month=month, task_id=task_record.id)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 461, in delay
+    return self.apply_async(args, kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\task.py", line 570, in apply_async
+    return app.send_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\base.py", line 350, in send_task
+    task_id = P.publish_task(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\celery\app\amqp.py", line 300, in publish_task
+    self.publish(
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\messaging.py", line 170, in publish
+    return publish(body, priority, content_type,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 466, in _ensured
+    self.ensure_connection(errback,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 380, in ensure_connection
+    retry_over_time(self.connect, self.recoverable_connection_errors,
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\utils\__init__.py", line 246, in retry_over_time
+    return fun(*args, **kwargs)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 250, in connect
+    return self.connection
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 756, in connection
+    self._connection = self._establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\connection.py", line 711, in _establish_connection
+    conn = self.transport.establish_connection()
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\kombu\transport\pyamqp.py", line 116, in establish_connection
+    conn = self.Connection(**opts)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 165, in __init__
+    self.transport = self.Transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\connection.py", line 186, in Transport
+    return create_transport(host, connect_timeout, ssl)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 299, in create_transport
+    return TCPTransport(host, connect_timeout)
+  File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
+    raise socket.error(last_err)
+OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
