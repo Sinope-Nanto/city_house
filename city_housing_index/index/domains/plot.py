@@ -118,7 +118,7 @@ def plot(year, month):
     block_90 = [CityArea.DONGBU_90, CityArea.ZHONGBU_90, CityArea.XIBU_90]
     for i in range(0, 3):
         data = list(CalculateResult.objects.filter(city_or_area=False, area=block_90[i], year__in=(2009, year),
-                                                   month__in=(1, 13)).order_by('year', 'month'))
+                                                   month__in=range(1, 13)).order_by('year', 'month'))
         for j in range(0, len(data)):
             index_block_90[i].append(data[j].index_value_base09)
             vol_block_90[i].append(data[j].trade_volume)
