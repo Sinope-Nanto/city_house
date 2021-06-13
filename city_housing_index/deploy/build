@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# 运维管理中 "仅发布" 将运行此脚本
+# "发布&重启" 将先运行此脚本，再运行"restart"脚本
+
+# 构建工程
+# 做一些初始化工作，比如安装依赖、创建目录
+# exit 1  # 脚本运行失败
+# 脚本运行成功退出码为0，非0视为失败
+
+set -x
+basedir="$(cd "$(dirname "$0")" && cd .. && pwd)"
+cd "${basedir}" || exit 1
+
+bin_path='/root/venv/bin/python'
+#bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
+
+log_dir="${basedir}/log"
+
+# 安装python依赖
+
+if [ "$(${bin_path}/pip freeze)" != "$(cat ${basedir}/requirements.txt)" ]; then
+  ${bin_path}/pip install -r "${basedir}/requirements.txt"
+else
+  echo "all requirements satisified"
+fi
+
+
+mkdir -p "${log_dir}/uwsgi"
+# mkdir -p "${basedir}/spool"

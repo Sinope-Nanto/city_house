@@ -1,0 +1,42 @@
+#!/bin/bash
+# 运维管理中 "启动" 将运行此脚本
+# 启动服务
+# ****启动服务后脚本必须退出: cmd >run.log 2>&1 &
+# exit 1  # 脚本运行失败
+# 脚本运行成功退出码为0，非0视为失败
+
+#set -x
+basedir="$(cd "$(dirname "$0")" && cd .. && pwd)"
+cd "${basedir}" || exit 1
+
+bin_path="/root/venv/bin/python"
+#bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
+pyuwsgi="${bin_path}/uwsgi"
+
+pid_file="${basedir}/uwsgi.pid"
+config="${basedir}/uwsgi_prd.ini"
+
+echo $pid_file
+
+if [ -f "${pid_file}" ] && ps -p "$(cat ${pid_file})"; then
+  echo "stopping uwsgi process!"
+  # 已经启动此重新加载配置
+  ${pyuwsgi} --stop ${pid_file}
+  echo "uwsgi stopped!"
+else
+  echo "uwsgi is not running, do nothing!"
+fi
+
+worker_pidfile="${basedir}/celery_worker.pid"
+beat_pidfile="${basedir}/celery_beat.pid"
+
+if [ -f "${beat_pidfile}" ] && ps -p "$(cat ${beat_pidfile})"; then
+  echo "stopping beat!"
+  kill $(cat ${beat_pidfile})
+  echo "beat stopped!"
+fi
+if [ -f "${worker_pidfile}" ] && ps -p "$(cat ${worker_pidfile})"; then
+  echo "stopping worker!"
+  kill $(cat ${worker_pidfile})
+  echo "worker stopped!"
+fi

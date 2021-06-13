@@ -1,0 +1,54 @@
+#!/bin/bash
+# 运维管理中 "启动" 将运行此脚本
+# 启动服务
+# ****启动服务后脚本必须退出: cmd >run.log 2>&1 &
+# exit 1  # 脚本运行失败
+# 脚本运行成功退出码为0，非0视为失败
+
+set -x
+basedir="$(cd "$(dirname "$0")" && cd .. && pwd)"
+cd "${basedir}" || exit 1
+
+sh bin/build
+
+bin_path="/root/venv/bin/python"
+#bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
+pyuwsgi="${bin_path}/uwsgi"
+
+pid_file="${basedir}/uwsgi.pid"
+config="${basedir}/uwsgi_prd.ini"
+#config="${basedir}/uwsgi_local.ini"
+
+if [ -f "${pid_file}" ] && ps -p "$(cat ${pid_file})"; then
+  echo "uwsgi is running, call reload !"
+  # 已经启动此重新加载配置
+  ${pyuwsgi} --reload "${pid_file}"
+else
+  echo "uwsgi is not running, start !"
+  # 没有启动则启动之
+  ${pyuwsgi} --ini "${config}"
+fi
+
+celery="${bin_path}/celery"
+worker_pidfile="${basedir}/celery_worker.pid"
+worker_logfile="${basedir}/log/celery_worker.log"
+beat_pidfile="${basedir}/celery_beat.pid"
+beat_logfile="${basedir}/log/celery_beat.log"
+
+
+if [ -f "${beat_pidfile}" ] && ps -p "$(cat ${beat_pidfile})"; then
+  echo "stopping beat!"
+  kill $(cat ${beat_pidfile})
+  echo "beat stopped!"
+fi
+if [ -f "${worker_pidfile}" ] && ps -p "$(cat ${worker_pidfile})"; then
+  echo "stopping worker!"
+  kill $(cat ${worker_pidfile})
+  echo "worker stopped!"
+fi
+
+
+${celery} -A worker.celery_app worker --detach --pidfile="${worker_pidfile}" --logfile="${worker_logfile}"
+echo "worker started"
+${celery} -A worker.celery_app beat --detach --pidfile="${beat_pidfile}" --logfile="${beat_logfile}"
+echo "beat started"
