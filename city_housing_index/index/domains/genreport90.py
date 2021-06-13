@@ -15,6 +15,7 @@ class GenExcelReport90:
         self.edge = Side(style='thin', color='000000')
         self.border = Border(top=self.edge, bottom=self.edge, left=self.edge, right=self.edge)
         self.url = url
+        self.center = Alignment(horizontal='center')
         self.report = openpyxl.Workbook()
 
     def create_report(self):
@@ -118,6 +119,7 @@ class GenExcelReport90:
                 c = indexsummary.cell(row=j, column=i)
                 c.value = self.to_date(i - 2)
                 c.font = datafont
+                c.alignment = self.center
 
         # 表头单元格合并
         indexsummary.merge_cells('A1:B1')
@@ -161,6 +163,7 @@ class GenExcelReport90:
                 c = indexsummary.cell(row=int_row_list[i], column=j)
                 c.value = kwargs[data_name[i]][j - 2]
                 c.font = datafont
+                c.alignment = self.center
 
         # 填入浮点数型数据
         data_name = ['index', 'east_index', 'mid_index', 'west_index',
@@ -172,6 +175,7 @@ class GenExcelReport90:
                 c = indexsummary.cell(row=float_row_list[i], column=j)
                 c.value = float('%.2f' % kwargs[data_name[i]][j - 2])
                 c.font = datafont
+                c.alignment = self.center
 
         # 填入同比数据
         data_name = ['volumn_year_on_year',
@@ -185,10 +189,12 @@ class GenExcelReport90:
                 c = indexsummary.cell(row=year_row_list[i], column=j)
                 c.value = '——'
                 c.font = datafont
+                c.alignment = self.center
             for j in range(14, col_max):
                 c = indexsummary.cell(row=year_row_list[i], column=j)
                 c.value = '{:.2%}'.format(kwargs[data_name[i]][j - 14])
                 c.font = datafont
+                c.alignment = self.center
 
         # 填入环比数据
         data_name = ['volumn_chain',
@@ -200,10 +206,12 @@ class GenExcelReport90:
             c = indexsummary.cell(row=chain_row_list[i], column=2)
             c.value = '——'
             c.font = datafont
+            c.alignment = self.center
             for j in range(3, col_max):
                 c = indexsummary.cell(row=chain_row_list[i], column=j)
                 c.value = '{:.2%}'.format(kwargs[data_name[i]][j - 3])
                 c.font = datafont
+                c.alignment = self.center
     
     def RadioPlot(self, **kwargs):
         # 参数列表:['index','year_on_year','chain','year_on_year_plot','chain_plot']
@@ -242,12 +250,14 @@ class GenExcelReport90:
             c = radioplot.cell(row=i, column=1)
             c.value = self.to_date(i - 2)
             c.font = titlefont
+            c.alignment = self.center
 
         # 填入数据
         for i in range(2, rowmax):
             c = radioplot.cell(row=i, column=2)
             c.value = float('%.2f' % kwargs['index'][i - 2])
             c.font = datafont
+            c.alignment = self.center
 
             c = radioplot.cell(row=i, column=3)
             if i < 3:
@@ -357,6 +367,7 @@ class GenExcelReport90:
             c = citysummary.cell(row=i, column=1)
             c.value = i - 1
             c.font = datafont
+            c.alignment = self.center
             for j in range(2, col_max):
                 c = citysummary.cell(row=i, column=j)
                 if j == 2:
@@ -366,6 +377,7 @@ class GenExcelReport90:
                 else:
                     c.value = '%.2f' % (informationlist[i - 2][col_data_list[j - 2]] * 100) + '%'
                 c.font = datafont
+                c.alignment = self.center
     
     def LineSummary(self, linelist: list):
         # list每个项的参数：{'index', 'chain', 'year_on_year'}
@@ -406,12 +418,15 @@ class GenExcelReport90:
             c = linesummary.cell(row=2 + i, column=2)
             c.value = float('%.3f' % linelist[i]['index'])
             c.font = datafont
+            c.alignment = self.center
             c = linesummary.cell(row=2 + i, column=3)
             c.value = '{:.2%}'.format(linelist[i]['chain'])
             c.font = datafont
+            c.alignment = self.center
             c = linesummary.cell(row=2 + i, column=4)
             c.value = '{:.2%}'.format(linelist[i]['year_on_year'])
             c.font = datafont
+            c.alignment = self.center
 
     def CitySort(self, month: int, cityinformation: list):
         # 列表中每个元素应有参数:{'city_name','chain0','chain1' ,'chain2',
@@ -466,12 +481,14 @@ class GenExcelReport90:
             else:
                 c.value = str(12 + month - i) + '月'
             c.font = datafont
+            c.alignment = self.center
             c = citysort.cell(row=2, column=7 + i)
             if month - i > 0:
                 c.value = str(month - i) + '月'
             else:
                 c.value = str(12 + month - i) + '月'
             c.font = datafont
+            c.alignment = self.center
 
         # 填入数据
         col_data_list = ['city_name', 'chain0', 'chain1', 'chain2', 'chain3', 'year0', 'year1', 'year2', 'year3']
@@ -479,8 +496,10 @@ class GenExcelReport90:
             c = citysort.cell(row=i, column=1)
             c.value = i - 2
             c.font = datafont
+            c.alignment = self.center
             for j in range(2, colmax):
                 c = citysort.cell(row=i, column=j)
+                c.alignment = self.center
                 if j == 2:
                     c.value = cityinformation[i - 3]['city_name']
                 else:
@@ -510,6 +529,7 @@ class GenExcelReport90:
             c = cityindex.cell(row=1, column=i)
             c.value = self.to_date(i - 3)
             c.font = datafont
+            c.alignment = self.center
         # 填入序号
         for i in range(2, row_max):
             c = cityindex.cell(row=i, column=1)
@@ -518,12 +538,14 @@ class GenExcelReport90:
             c = cityindex.cell(row=i, column=2)
             c.value = citylist[i - 2]
             c.font = datafont
+            c.alignment = self.center
         # 填入数据
         for i in range(2, row_max):
             for j in range(3, col_max):
                 c = cityindex.cell(row=i, column=j)
                 c.value = float('%.2f' % kwargs[citylist[i - 2]][j - 3])
                 c.font = datafont
+                c.alignment = self.center
 
     def CityVolumn(self, citylist: list, **kwargs):
         # 参数列表citylist中的城市的数据
@@ -541,6 +563,7 @@ class GenExcelReport90:
             c = cityvolumn.cell(row=1, column=i)
             c.value = self.to_date(i - 3)
             c.font = datafont
+            c.alignment = self.center
         # 填入序号
         for i in range(2, row_max):
             c = cityvolumn.cell(row=i, column=1)
@@ -549,12 +572,14 @@ class GenExcelReport90:
             c = cityvolumn.cell(row=i, column=2)
             c.value = citylist[i - 2]
             c.font = datafont
+            c.alignment = self.center
         # 填入数据
         for i in range(2, row_max):
             for j in range(3, col_max):
                 c = cityvolumn.cell(row=i, column=j)
                 c.value = kwargs[citylist[i - 2]][j - 3]
                 c.font = datafont
+                c.alignment = self.center
 
     def CityPlot(self, citylist: list, poltlist: list):
         cityindex = self.report['各城市作图']
