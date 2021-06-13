@@ -6,7 +6,7 @@ from index.views.uploadindex_views import UpdateAllCityIndexView
 from index.views.report_download_views import DownloadReoprt
 from index.views.month_report_views import GenReportViews, QueryReportTaskView
 from index.views.uploadindex_views import CalculateCityInfoView
-from index.views.uploadindex_views import GetCityIndexInfoView
+from index.views.uploadindex_views import GetCityIndexInfoView, ListCityIndexInfoView
 
 urlpatterns = [
     path("upload_index", UpLoadIndexView.as_view()),
@@ -17,4 +17,5 @@ urlpatterns = [
     path("downloadreport", DownloadReoprt.as_view()),
     path("calculate_city_info", CalculateCityInfoView.as_view()),
     path("get_city_info", GetCityIndexInfoView.as_view()),
+    path("get_city_info_list", ListCityIndexInfoView.as_view())
 ]
