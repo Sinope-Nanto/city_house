@@ -29,13 +29,14 @@ class LoginView(APIView):
         check_status, msg = check_auth(mobile, verify_code)
         if not check_status:
             return APIResponse.create_fail(403, msg)
-
+        from city.serializers import CitySerializer
         token, user_profile = create_token(mobile)
         return APIResponse.create_success(data={
             "token": token,
             "user_id": user_profile.user_id.id,
             "name": user_profile.name,
-            "domains": user_profile.is_admin()
+            "admin": user_profile.is_admin(),
+            "city": CitySerializer(user_profile.city).data
         })
 
 

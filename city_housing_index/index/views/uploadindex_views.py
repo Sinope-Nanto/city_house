@@ -86,3 +86,20 @@ class GetCityIndexInfoView(APIView):
             return APIResponse.create_success(
                 data={'index': city.index_value, 'chain': city.chain_index, 'year_on_year': city.year_on_year_index,
                       'volumn': city.trade_volume})
+
+
+class ListCityIndexInfoView(APIView):
+    authentication_classes = [CityIndexAuthentication]
+
+    def get(self, request):
+        city_code = request.data['code']
+        calculate_results = CalculateResult.objects.filter(city=city_code, city_or_area=True).order_by('year', 'month')
+        result = []
+        for calculate_result in calculate_results:
+            result.append({
+                'index': calculate_result.index_value,
+                'chain': calculate_result.chain_index,
+                'year_on_year': calculate_result.year_on_year_index,
+                'volumn': calculate_result.trade_volume
+            })
+        return APIResponse.create_success(result)
