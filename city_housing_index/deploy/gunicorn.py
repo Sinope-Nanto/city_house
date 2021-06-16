@@ -1,9 +1,9 @@
 import multiprocessing
 
-bind = "0.0.0.0:80"
+bind = "0.0.0.0:3000"
 workers = multiprocessing.cpu_count() * 2 + 1
-timeout = 30
-BASE_DIR = "/root/city_housing_index/city_housing_index"
+timeout = 300
+BASE_DIR = "/root/city_house/city_housing_index"
 accesslog = '/var/log/gunicorn/city_index_access.log'
 errorlog = '/var/log/gunicorn/city_index_error.log'
 # access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
