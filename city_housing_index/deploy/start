@@ -14,20 +14,23 @@ sh deploy/build
 bin_path="/root/venv/bin/"
 #bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
 pyuwsgi="${bin_path}/uwsgi"
+pygunicorn="${bin_path}/gunicorn"
 
-pid_file="${basedir}/uwsgi.pid"
-config="${basedir}/uwsgi_prd.ini"
+#pid_file="${basedir}/uwsgi.pid"
+pid_file="${basedir}/gunicorn.pid"
+#config="${basedir}/uwsgi_prd.ini"
 #config="${basedir}/uwsgi_local.ini"
+config="${basedir}/deploy/gunicorn.py"
 
 if [ -f "${pid_file}" ] && ps -p "$(cat ${pid_file})"; then
-  echo "uwsgi is running, call reload !"
+  echo "gunicorn is running, stop it first!"
   # 已经启动此重新加载配置
-  ${pyuwsgi} --reload "${pid_file}"
-else
-  echo "uwsgi is not running, start !"
-  # 没有启动则启动之
-  ${pyuwsgi} --ini "${config}"
+  kill $(cat ${pid_file})
 fi
+
+echo "now start gunicorn !"
+# 没有启动则启动之
+${pygunicorn} -c "${config}" --pid="${pid_file}" --reload --daemon "${basedir}/city_housing_index.wsgi"
 
 celery="${bin_path}/celery"
 worker_pidfile="${basedir}/celery_worker.pid"

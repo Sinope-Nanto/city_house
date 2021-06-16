@@ -12,19 +12,19 @@ cd "${basedir}" || exit 1
 bin_path="/root/venv/bin/"
 #bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
 pyuwsgi="${bin_path}/uwsgi"
+pygunicorn="${bin_path}/gunicorn"
 
-pid_file="${basedir}/uwsgi.pid"
-config="${basedir}/uwsgi_prd.ini"
+pid_file="${basedir}/gunicorn.pid"
+config="${basedir}/deploy/gunicorn.py"
 
 echo $pid_file
 
 if [ -f "${pid_file}" ] && ps -p "$(cat ${pid_file})"; then
-  echo "stopping uwsgi process!"
+  echo "gunicorn is running, stop it first!"
   # 已经启动此重新加载配置
-  ${pyuwsgi} --stop ${pid_file}
-  echo "uwsgi stopped!"
+  kill $(cat ${pid_file})
 else
-  echo "uwsgi is not running, do nothing!"
+  echo "gunicorn is not running, do nothing!"
 fi
 
 worker_pidfile="${basedir}/celery_worker.pid"
