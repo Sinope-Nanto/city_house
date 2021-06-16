@@ -9,7 +9,7 @@
 basedir="$(cd "$(dirname "$0")" && cd .. && pwd)"
 cd "${basedir}" || exit 1
 
-bin_path="/root/venv/bin/"
+bin_path="/root/venv/bin"
 #bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
 pyuwsgi="${bin_path}/uwsgi"
 pygunicorn="${bin_path}/gunicorn"

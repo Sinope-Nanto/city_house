@@ -11,7 +11,7 @@ cd "${basedir}" || exit 1
 
 sh deploy/build
 
-bin_path="/root/venv/bin/"
+bin_path="/root/venv/bin"
 #bin_path="/Users/wangshanhan/mydev/pyenvs/wx_work_agent/bin/"
 pyuwsgi="${bin_path}/uwsgi"
 pygunicorn="${bin_path}/gunicorn"
