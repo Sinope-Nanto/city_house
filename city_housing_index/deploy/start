@@ -30,7 +30,7 @@ fi
 
 echo "now start gunicorn !"
 # 没有启动则启动之
-${pygunicorn} -c "${config}" --pid="${pid_file}" --reload --daemon "${basedir}/city_housing_index.wsgi"
+${pygunicorn} -c "${config}" --pid="${pid_file}" --reload --daemon "city_housing_index.wsgi"
 
 celery="${bin_path}/celery"
 worker_pidfile="${basedir}/celery_worker.pid"
