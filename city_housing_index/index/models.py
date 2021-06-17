@@ -28,6 +28,9 @@ class CityIndex(models.Model):
     price_above_144 = models.FloatField(default=0, null=False)
     price_90_144 = models.FloatField(default=0, null=False)
 
+    max_area = models.FloatField(default=0, help_text="本月交易最大面积")
+    max_price = models.IntegerField(default=0, help_text="本月交易最高单价")
+
 
 class CalculateResult(models.Model):
     # 表头基本信息字段，创建行时即要填入
@@ -46,6 +49,9 @@ class CalculateResult(models.Model):
     price_under_90 = models.FloatField(default=0)
     price_above_144 = models.FloatField(default=0)
     price_90_144 = models.FloatField(default=0)
+    max_area = models.FloatField(default=0, help_text="本月交易最大面积")
+    max_price = models.IntegerField(default=0, help_text="本月交易最高单价")
+
 
     index_value = models.FloatField(default=0, help_text='指数值')
     index_value_under90 = models.FloatField(default=0, help_text='90平米以下指数值')

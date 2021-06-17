@@ -453,3 +453,4 @@ Traceback (most recent call last):
   File "C:\Users\SaraHammer\miniconda3\envs\city_house\lib\site-packages\amqp\transport.py", line 95, in __init__
     raise socket.error(last_err)
 OSError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+[2021-06-13 19:55:46,372: WARNING/MainProcess] Unauthorized: /v1/index/get_city_info
