@@ -13,4 +13,4 @@ class City(models.Model):
     ifin40 = models.BooleanField(default=False, help_text="是否属于40城市")
     ifin90 = models.BooleanField(default=False, help_text="是否属于90城市")
     num_block = models.IntegerField(default=1, help_text="城市区块数")
-    info_block = models.JSONField(help_text="城市区块信息")
+    info_block = models.JSONField(help_text="城市区块信息", null=True)

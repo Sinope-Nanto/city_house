@@ -191,7 +191,7 @@ def init_city_complex_info():
     data_under_90_index = open('media/init_data/citycomplexdata_under90_index.csv', encoding='gbk')
     data_90_144_index = open('media/init_data/citycomplexdata_90144_index.csv', encoding='gbk')
     data_above_144_index = open('media/init_data/citycomplexdata_above144_index.csv', encoding='gbk')
-    data = {'under_90_vol':[], 'data_90_144_vol':[], 'above_144_vol':[], 'under_90_index':[], '90_144_index':[], 'above_144_index':[]}
+    data = {'under_90_vol':[], '90_144_vol':[], 'above_144_vol':[], 'under_90_index':[], '90_144_index':[], 'above_144_index':[]}
     for i in range(0,90):
         data['under_90_vol'].append(data_under_90_vol.readline().split(','))
         data['90_144_vol'].append(data_90_144_vol.readline().split(','))
