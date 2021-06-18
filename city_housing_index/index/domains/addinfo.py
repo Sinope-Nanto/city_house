@@ -7,9 +7,17 @@ from city.enums import CityArea
 from calculate.models import DataFile
 import openpyxl
 
+def id_to_code(city_id):
+    city = City.objects.get(id=city_id)
+    return int(city.code)
+
+
+def code_to_id(city_code):
+    city = City.objects.get(code=city_code)
+    return city.id
 
 def get_data_info(year: int, month: int, city: int):
-    datafile_list = DataFile.objects.filter(city_code=city)
+    datafile_list = DataFile.objects.filter(city_code=code_to_id(city))
     url = ''
     exist = False
     for datafile in datafile_list:

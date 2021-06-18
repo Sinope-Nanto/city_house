@@ -13,22 +13,15 @@ from index.domains.addinfo import upload_city_info_to_database
 
 from index.domains.indexcul import calculate_city_index
 
+def id_to_code(city_id):
+    city = City.objects.get(id=city_id)
+    return int(city.code)
 
-class UpLoadIndexView(APIView):
-    authentication_classes = [CityIndexAuthentication]
-    permission_classes = [CityIndexAdminPermission]
 
-    def post(self, request):
-        try:
-            year = int(request.data['year'])
-            month = int(request.data['month'])
-            city_id = int(request.data['city_id'])
-            index = float(request.data['index'])
-        except ValueError:
-            return APIResponse.create_fail(code=400, msg='bad Request')
-        newdata = CityIndex(year=year, month=month, city=city_id, value=index)
-        newdata.save()
-        return APIResponse.create_success()
+def code_to_id(city_code):
+    city = City.objects.get(code=city_code)
+    return city.id
+
 
 
 class AddNewMonthColumnView(APIView):
@@ -65,10 +58,9 @@ class CalculateCityInfoView(APIView):
     authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
-        if upload_city_info_to_database(int(request.data['year']), int(request.data['month']),
-                                        int(request.data['code'])):
-            data = calculate_city_index(int(request.data['code']), int(request.data['year']),
-                                        int(request.data['month']))
+        city_code = id_to_code(int(request.data['code']))
+        if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city_code):
+            data = calculate_city_index(int(request.data['code']), int(request.data['year']),city_code)
             return APIResponse.create_success(data=data)
         else:
             return APIResponse.create_fail(code=400, msg='bad request')
@@ -78,8 +70,9 @@ class GetCityIndexInfoView(APIView):
     authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
+        city_code = id_to_code(int(request.data['code']))
         city = CalculateResult.objects.get(year=int(request.data['year']), month=int(request.data['month']),
-                                           city_or_area=True, city=int(request.data['code']))
+                                           city_or_area=True, city=city_code)
         if city is None:
             return APIResponse.create_fail(code=400, msg='当月城市数据未计算')
         else:
@@ -93,6 +86,7 @@ class ListCityIndexInfoView(APIView):
 
     def get(self, request):
         city_code = request.GET['code']
+        city_code = id_to_code(city_code)
         calculate_results = CalculateResult.objects.filter(city=city_code, city_or_area=True).order_by('year', 'month')
         result = []
         for calculate_result in calculate_results:

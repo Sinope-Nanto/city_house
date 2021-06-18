@@ -66,7 +66,6 @@ class CalculateResult(models.Model):
     trade_volume_above_144 = models.FloatField(default=0)
     trade_volume_90_144 = models.FloatField(default=0)
 
-    # 在执行CalculateXXXIndex_base09时填入的字段
     # 该段中字段的含义与CityIndex中同名字段相同
     index_value_base09 = models.FloatField(default=0, help_text='指数值')
     index_value_under90_base09 = models.FloatField(default=0, help_text='90平米以下指数值')

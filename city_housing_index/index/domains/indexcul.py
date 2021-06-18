@@ -112,11 +112,11 @@ def calculate_city_index(city_code: int, year: int, month: int):
                                             year=year - 1,
                                             month=month)
     if last_value is None or last_value.index_value == 0:
-        chain = 1
+        chain = 0
     else:
         chain = index / last_value.index_value
     if last_year is None or last_year.index_value == 0:
-        year_on_year = 1
+        year_on_year = 0
     else:
         year_on_year = index / last_value.index_value
     return {'index': index, 'volumn': now_trade_volumn, 'price': now_price, 'chain': chain,
@@ -126,14 +126,24 @@ def calculate_city_index(city_code: int, year: int, month: int):
 def calculate_area_index(areaType: str, areaID: int, year: int, month: int):
     if areaType == 'block':
         city_list = City.objects.filter(block=areaID, ifin40=True)
+    elif areaType == 'block_90':
+        city_list = City.objects.filter(block=areaID - 4, ifin90=True)
     elif areaType == 'area':
-        city_list = City.objects.filter(area=areaID, ifin40=True)
+        city_list = City.objects.filter(area=areaID, ifin90=True)
     elif areaType == 'all':
         city_list = City.objects.filter(ifin40=True)
+    elif areaType == 'all_90':
+        city_list = City.objects.filter(ifin90=True)
     elif areaType == 's_area':
         city_list = City.objects.filter(special_area=areaID, ifin40=True)
+    elif areaType == 's_area_90':
+        if areaID == 20:
+            city_area = 4
+        else:
+            city_area = areaID
+        city_list = City.objects.filter(special_area=city_area, ifin90=True)
     elif areaType == 'line':
-        city_list = City.objects.filter(line=areaID, ifin40=True)
+        city_list = City.objects.filter(line=areaID, ifin90=True)
     else:
         return False
     total_number = 0.0
@@ -200,21 +210,38 @@ def calculate_area_index(areaType: str, areaID: int, year: int, month: int):
     result.area_volume_90_144 = total_number_above_144
 
     base = CalculateResult.objects.get(city_or_area=False, area=areaID, year=2006, month=1)
+    base_09 = CalculateResult.objects.get(city_or_area=False, area=areaID, year=2009, month=1)
     try:
         result.index_value = bar_price / base.price
     except ZeroDivisionError:
         result.index_value = 0
     try:
+        result.index_value_base09 = bar_price / base_09.price
+    except ZeroDivisionError:
+        result.index_value_base09 = 0
+    try:
         result.index_value_under90 = bar_price_under_90 / base.price_under_90
     except ZeroDivisionError:
         result.index_value_under90 = 0
+    try:
+        result.index_value_under90_base09 = bar_price_under_90 / base_09.price_under_90
+    except ZeroDivisionError:
+        result.index_value_under90_base09 = 0
     try:
         result.index_value_90144 = bar_price_90_144 / base.price_90_144
     except ZeroDivisionError:
         result.index_value_90144 = 0
     try:
+        result.index_value_90144_base09 = bar_price_90_144 / base_09.price_90_144
+    except ZeroDivisionError:
+        result.index_value_90144_base09 = 0
+    try:
         result.index_value_above144 = bar_price_above_144 / base.price_above_144
     except ZeroDivisionError:
         result.index_value_above144 = 0
+    try:
+        result.index_value_above144_base09 = bar_price_above_144 / base_09.price_above_144
+    except ZeroDivisionError:
+        result.index_value_above144_base09 = 0
     result.save()
     return True
