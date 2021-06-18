@@ -19,7 +19,7 @@ def id_to_code(city_id):
 
 
 def code_to_id(city_code):
-    city = City.objects.get(code=city_code)
+    city = City.objects.get(code=str(city_code))
     return city.id
 
 
