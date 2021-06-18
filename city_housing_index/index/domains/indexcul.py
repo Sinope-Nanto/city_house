@@ -7,21 +7,11 @@ from city.enums import CityArea
 from index.domains.addinfo import add_new_month
 
 
-def id_to_code(city_id):
-    city = City.objects.get(id=city_id)
-    return int(city.code)
-
-
-def code_to_id(city_code):
-    city = City.objects.get(code=city_code)
-    return city.id
-
-
 def calculate_city_index(city_code: int, year: int, month: int):
     result = CalculateResult.objects.filter(city_or_area=True, city=city_code, year=year, month=month).first()
     if result is None:
         add_new_month(year, month)
-        result = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)
+        result = CalculateResult.objects.get(city_or_area=True, city=city_code, year=year, month=month)  
     try:
         now = CityIndex.objects.get(city=city_code, year=year, month=month)
         result.area_volume = now.area_volume
@@ -86,27 +76,27 @@ def calculate_city_index(city_code: int, year: int, month: int):
     result.price_90_144 = now_price_90_144
     result.price_above_144 = now_price_above_144
 
-    result.index_value = index
-    result.index_value_90144 = index_90_144
-    result.index_value_above144 = index_above_144
-    result.index_value_under90 = index_under_90
+    result.index_value = index * 100
+    result.index_value_90144 = index_90_144 * 100
+    result.index_value_above144 = index_above_144 * 100
+    result.index_value_under90 = index_under_90 * 100
 
     result.trade_volume = now_trade_volumn
     result.trade_volume_under_90 = now_trade_volumn_under_90
     result.trade_volume_90_144 = now_trade_volumn_90_144
     result.trade_volume_above_144 = now_trade_volumn_above_144
 
-    result.index_value_base09 = index_base09
-    result.index_value_under90_base09 = index_under_90_base09
-    result.index_value_90144_base09 = index_90_144_base09
-    result.index_value_above144_base09 = index_above_144_base09
+    result.index_value_base09 = index_base09 * 100
+    result.index_value_under90_base09 = index_under_90_base09 * 100
+    result.index_value_90144_base09 = index_90_144_base09 * 100
+    result.index_value_above144_base09 = index_above_144_base09 * 100
 
     result.save()
 
     last_value = CalculateResult.objects.get(city_or_area=True,
                                              city=city_code,
                                              year=year if month > 1 else year - 1,
-                                             month=month if month > 1 else 12)
+                                             month=month - 1 if month > 1 else 12)
     last_year = CalculateResult.objects.get(city_or_area=True,
                                             city=city_code,
                                             year=year - 1,
@@ -114,12 +104,12 @@ def calculate_city_index(city_code: int, year: int, month: int):
     if last_value is None or last_value.index_value == 0:
         chain = 0
     else:
-        chain = index / last_value.index_value
+        chain = (index * 100/ last_value.index_value - 1) * 100
     if last_year is None or last_year.index_value == 0:
         year_on_year = 0
     else:
-        year_on_year = index / last_value.index_value
-    return {'index': index, 'volumn': now_trade_volumn, 'price': now_price, 'chain': chain,
+        year_on_year = (index * 100/ last_year.index_value - 1) * 100
+    return {'index': index * 100, 'volumn': now_trade_volumn, 'price': now_price, 'chain': chain,
             'year_on_year': year_on_year}
 
 

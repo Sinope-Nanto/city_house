@@ -1,5 +1,4 @@
 from django.urls import path
-from index.views.uploadindex_views import UpLoadIndexView
 from index.views.uploadindex_views import AddNewMonthColumnView
 from index.views.uploadindex_views import UpdateAllCityIndexView
 
@@ -9,13 +8,12 @@ from index.views.uploadindex_views import CalculateCityInfoView
 from index.views.uploadindex_views import GetCityIndexInfoView, ListCityIndexInfoView
 
 urlpatterns = [
-    path("upload_index", UpLoadIndexView.as_view()),
-    path("add_new_month", AddNewMonthColumnView.as_view()),
+    path("add_new_month", AddNewMonthColumnView.as_view()), # ok
     path("update_city_info", UpdateAllCityIndexView.as_view()),
-    path("genreport", GenReportViews.as_view()),
-    path("query_task", QueryReportTaskView.as_view()),
-    path("downloadreport", DownloadReoprt.as_view()),
-    path("calculate_city_info", CalculateCityInfoView.as_view()),
-    path("get_city_info", GetCityIndexInfoView.as_view()),
-    path("get_city_info_list", ListCityIndexInfoView.as_view())
+    path("genreport", GenReportViews.as_view()), # ok
+    path("query_task", QueryReportTaskView.as_view()), # ok
+    path("downloadreport", DownloadReoprt.as_view()), # ok
+    path("calculate_city_info", CalculateCityInfoView.as_view()), # ok
+    path("get_city_info", GetCityIndexInfoView.as_view()), # ok
+    path("get_city_info_list", ListCityIndexInfoView.as_view()) # ok
 ]

@@ -1,17 +1,17 @@
 from rest_framework.views import APIView
 from utils.api_response import APIResponse
 
-from index.models import CityIndex
-from index.models import CalculateResult
+from index.models import CalculateResult, CityinfoCalculateTaskRecord
 from city.models import City
 
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
 
-from index.domains.addinfo import add_new_month
-from index.domains.addinfo import upload_city_info_to_database
+from index.domains.addinfo import add_new_month, upload_city_info_to_database
 
 from index.domains.indexcul import calculate_city_index
+from index.tasks import city_calculate
+
 
 def id_to_code(city_id):
     city = City.objects.get(id=city_id)
@@ -37,30 +37,48 @@ class AddNewMonthColumnView(APIView):
 
 
 class UpdateAllCityIndexView(APIView):
-    authentication_classes = [CityIndexAuthentication]
-    permission_classes = [CityIndexAdminPermission]
+    # authentication_classes = [CityIndexAuthentication]
+    # permission_classes = [CityIndexAdminPermission]
 
     def post(self, request):
-        city_list = City.objects.filter(ifin90=True)
-        uploaded_city_list = []
-        for city in city_list:
-            if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.code):
-                pass
-            else:
-                uploaded_city_list.append(city.name)
-        if len(uploaded_city_list) == 0:
-            return APIResponse.create_success(data='所有城市均已上传')
+        running_task = None
+        if running_task:
+            result = {
+                "task_id": ""
+            }
         else:
-            return APIResponse.create_success(data='未上传城市有:' + str(uploaded_city_list))
+            task_record = CityinfoCalculateTaskRecord(kwargs={"year": int(request.data['year']), "month": request.data['month']})
+            task_record.code = task_record.generate_code()
+            task_record.save()
+
+            print("start delay")
+            city_calculate.delay(year=int(request.data['year']), month=request.data['month'], task_id=task_record.id)
+
+            print("delay over")
+            result = {
+                "task_id": task_record.id
+            }
+        return APIResponse.create_success(result)
+        # city_list = City.objects.filter(ifin90=True)
+        # uploaded_city_list = []
+        # for city in city_list:
+        #     if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.code):
+        #         pass
+        #     else:
+        #         uploaded_city_list.append(city.name)
+        # if len(uploaded_city_list) == 0:
+        #     return APIResponse.create_success(data='所有城市均已上传')
+        # else:
+        #     return APIResponse.create_success(data='未上传城市有:' + str(uploaded_city_list))
 
 
 class CalculateCityInfoView(APIView):
-    authentication_classes = [CityIndexAuthentication]
+    # authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
         city_code = id_to_code(int(request.data['code']))
         if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city_code):
-            data = calculate_city_index(int(request.data['code']), int(request.data['year']),city_code)
+            data = calculate_city_index(city_code, int(request.data['year']), int(request.data['month']))
             return APIResponse.create_success(data=data)
         else:
             return APIResponse.create_fail(code=400, msg='bad request')

@@ -1,9 +1,11 @@
+from city.models import City
 from worker.celery_app import app
-from .models import GenReportTaskRecord, ReportFile
+from .models import GenReportTaskRecord, ReportFile, CityinfoCalculateTaskRecord
 import traceback
 
 from .domains.generate_report import get_report_40, get_report_90, get_word_report_40, get_word_report_90, \
     get_word_picture_40, get_word_picture_90, get_origindata_report
+from .domains.addinfo import upload_city_info_to_database
 
 from django.conf import settings
 import os
@@ -97,3 +99,28 @@ def get_zip_report_file(task_id, year, month, urls):
     report_file = ReportFile(task_id=task_id, year=year, month=month)
     report_file.report.save("{}年{}月成房指数报告汇总-{}.zip".format(year, month, task_id), zip_rb_file)
     return report_file
+
+@app.task
+def city_calculate(year, month, task_id):
+
+    city_calculate_task = CityinfoCalculateTaskRecord.objects.get(id=task_id)
+    city_calculate_task.execute()
+
+    try:
+        uploaded_city_list = []
+        for i in range(0,90):
+            city_calculate_task.change_progress(i, 90, "计算第" + str(i + 1) + "个城市文件")
+            if upload_city_info_to_database(year=year, month=month, city=i):
+                pass
+            else:
+                city = City.objects.get(code=str(i))
+                uploaded_city_list.append(city.name)
+       
+
+        if len(uploaded_city_list) == 0:
+            return '所有城市均已上传'
+        else:
+            return '未上传城市有:' + str(uploaded_city_list)
+    except:
+        city_calculate_task.fail(traceback.format_exc())
+        return ""
