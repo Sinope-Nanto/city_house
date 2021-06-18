@@ -109,7 +109,7 @@ def city_calculate(year, month, task_id):
     try:
         uploaded_city_list = []
         for i in range(1,90):
-            city_calculate_task.change_progress(i, 90, "计算第" + str(i + 1) + "个城市文件")
+            city_calculate_task.change_progress(i, 90, "现在i是"+str(i))
             if upload_city_info_to_database(year=year, month=month, city=(i + 1)):
                 pass
             else:
