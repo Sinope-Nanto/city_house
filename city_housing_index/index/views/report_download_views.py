@@ -24,6 +24,7 @@ class DownloadReoprt(APIView):
         filename.append('media/report/' + '90_city_report_' + str(year) + '_' + str(month) + '.xlsx')
         filename.append('media/report/' + '40_city_picture_' + str(year) + '_' + str(month) + '.docx')
         filename.append('media/report/' + '90_city_picture_' + str(year) + '_' + str(month) + '.docx')
+        filename.append('media/report/' + 'origin_data_report_' + str(year) + '_' + str(month) + '.xlsx')
         s = io.BytesIO()
         zip = zipfile.ZipFile(s, 'w')
         for f in filename:

@@ -1,4 +1,3 @@
-from index.plot import PlotReport
 from index.models import CalculateResult
 from city.models import City
 from city.enums import CityArea
@@ -9,6 +8,7 @@ from index.domains.genreport90 import GenExcelReport90
 from index.domains.genreport90 import GenWordReport90
 from index.domains.genreport import GenWordPicture
 from index.domains.genreport90 import GenWordPicture90
+from index.domains.genreport_origindata import GenOriginalReport
 
 
 def getLastNMonth(year, month, num):
@@ -763,5 +763,41 @@ def get_word_picture_40(year: int, month: int):
     kwargs['index_block'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_block_c.png'
     kwargs['index_area'] = 'media/image/' + str(year) + '_' + str(month) + 'index_by_buildarea_c.png'
     report.genpicdoc(year, month, city_list, **kwargs)
+    report.EndReport()
+    return True, report.url
+
+def get_origindata_report(year: int, month: int):
+    report = GenOriginalReport('media/report/' + 'origin_data_report_' + str(year) + '_' + str(month) + '.xlsx')
+    city_list = []
+    city_code_list = []
+    for city in City.objects.filter(ifin90=True):
+        city_list.append(city.name)
+        city_code_list.append(city.code)
+    cityList = []
+    for i in range(0, len(city_code_list)):
+        newcity = {}
+        newcity['code'] = city_code_list[i]
+        newcity['name'] = city_list[i]
+        keys = ['trade_vol', 'trade_vol_under_90', 'trade_vol_90_144', 'trade_vol_above_144', 'index', 'index_under_90', 'index_90_144', 'index_above_144']
+        data_key = ['trade_volume', 'trade_volume_under_90', 'trade_volume_90_144', 'trade_volume_above_144', 'index_value', 'index_value_under90', 'index_value_90144', 'index_value_above144']
+        for key in keys:
+            newcity[key] = []
+        citydata = list(CalculateResult.objects.filter(city_or_area=True, city=int(city_code_list[i]), year__in=range(2006, year),
+                                                   month__in=range(1, 13)).order_by('year', 'month'))
+        citydata.extend(list(CalculateResult.objects.filter(city_or_area=True, city=int(city_code_list[i]), year=year,
+                                                        month__in=range(1, month + 1)).order_by('year', 'month')))
+        for data_row in citydata:
+            for i in range(0,len(keys)):
+                newcity[keys[i]].append(getattr(data_row, data_key[i]))
+        
+        citydata =  CalculateResult.objects.get(city_or_area=True, city=city_code_list[i], year=year, month=month)
+        keys = ['chain', 'volumn', 'chain_under_90', 'vol_under_90', 'chain_90_144', 'vol_90_144', 'chain_above_144', 'vol_above_144', 'max_area', 'max_price']
+        data_key = ['chain_index', 'trade_volume', 'chain_index_under90', 'trade_volume_under_90', 'chain_index_90144', 'trade_volume_90_144', 'chain_index_above144', 'trade_volume_above_144', 'max_area', 'max_price']
+        for i in range(0,len(keys)):
+            newcity[keys[i]] = getattr(data_row, data_key[i])
+        cityList.append(newcity)
+    
+    report.Market(cityList)
+    report.Check(cityList)
     report.EndReport()
     return True, report.url

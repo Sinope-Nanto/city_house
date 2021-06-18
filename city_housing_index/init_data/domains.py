@@ -152,6 +152,9 @@ def init_base_price_06():
         if data[0] == '1':
             data_row = CalculateResult.objects.get(city_or_area=True, city=int(data[1]), year=2006, month=1)
             data_row.price = float(data[3])
+            data_row.price_under_90 = float(data[4])
+            data_row.price_90_144 = float(data[5])
+            data_row.price_above_144 = float(data[6])
         else:
             data_row = CalculateResult.objects.get(city_or_area=False, area=int(data[2]), year=2006, month=1)
             data_row.price = float(data[3])
@@ -159,3 +162,83 @@ def init_base_price_06():
             data_row.price_90_144 = float(data[5])
             data_row.price_above_144 = float(data[6])
         data_row.save()
+
+def init_base_price_09():
+    data_file = open('media/init_data/basedata09.csv', encoding='gbk')
+    while True:
+        row = data_file.readline()
+        if row == '':
+            break
+        data = row.split(',')
+        if data[0] == '1':
+            data_row = CalculateResult.objects.get(city_or_area=True, city=int(data[1]), year=2009, month=1)
+            data_row.price = float(data[3])
+            data_row.price_under_90 = float(data[4])
+            data_row.price_90_144 = float(data[5])
+            data_row.price_above_144 = float(data[6])
+        else:
+            data_row = CalculateResult.objects.get(city_or_area=False, area=int(data[2]), year=2009, month=1)
+            data_row.price = float(data[3])
+            data_row.price_under_90 = float(data[4])
+            data_row.price_90_144 = float(data[5])
+            data_row.price_above_144 = float(data[6])
+        data_row.save()
+
+def init_city_complex_info():
+    data_under_90_vol = open('media/init_data/citycomplexdata_under90_vol.csv', encoding='gbk')
+    data_90_144_vol = open('media/init_data/citycomplexdata_90144_vol.csv', encoding='gbk')
+    data_above_144_vol = open('media/init_data/citycomplexdata_above144_vol.csv', encoding='gbk')
+    data_under_90_index = open('media/init_data/citycomplexdata_under90_index.csv', encoding='gbk')
+    data_90_144_index = open('media/init_data/citycomplexdata_90144_index.csv', encoding='gbk')
+    data_above_144_index = open('media/init_data/citycomplexdata_above144_index.csv', encoding='gbk')
+    data = {'under_90_vol':[], '90_144_vol':[], 'above_144_vol':[], 'under_90_index':[], '90_144_index':[], 'above_144_index':[]}
+    for i in range(0,90):
+        data['under_90_vol'].append(data_under_90_vol.readline().split(','))
+        data['90_144_vol'].append(data_90_144_vol.readline().split(','))
+        data['above_144_vol'].append(data_above_144_vol.readline().split(','))
+        data['under_90_index'].append(data_under_90_index.readline().split(','))
+        data['90_144_index'].append(data_90_144_index.readline().split(','))
+        data['above_144_index'].append(data_above_144_index.readline().split(','))
+    for t in range(1,len(data['90_144_index'][0])):
+        year = (t - 1) // 12 + 2006
+        month = (t - 1) % 12 + 1
+        for c in range(0,90):
+            datarow = CalculateResult.objects.get(city_or_area=True, city=int(data['90_144_index'][c][0]), year=year, month=month)
+            datarow.index_value_under90 = float(data['under_90_index'][c][t])
+            datarow.index_value_90144 = float(data['90_144_index'][c][t])
+            datarow.index_value_above144 = float(data['above_144_index'][c][t])
+            datarow.trade_volume_under_90 = int(data['under_90_vol'][c][t])
+            datarow.trade_volume_90_144 = int(data['90_144_vol'][c][t])
+            datarow.trade_volume_above_144 = int(data['above_144_vol'][c][t])
+            if t < 2:
+                pass
+            else:
+                try:
+                    datarow.chain_index_under90 = float(data['under_90_index'][c][t]) / float(data['under_90_index'][c][t - 1]) - 1
+                except ZeroDivisionError:
+                    datarow.chain_index_under90 = 0
+                try:
+                    datarow.chain_index_90144 = float(data['90_144_index'][c][t]) / float(data['90_144_index'][c][t - 1]) - 1
+                except ZeroDivisionError:
+                    datarow.chain_index_90144 = 0
+                try:
+                    datarow.chain_index_above144 = float(data['above_144_index'][c][t]) / float(data['above_144_index'][c][t - 1]) - 1
+                except ZeroDivisionError:
+                    datarow.chain_index_above144 = 0
+            if t < 13:
+                pass
+            else:
+                try:
+                    datarow.year_on_year_index_under90 = float(data['under_90_index'][c][t]) / float(data['under_90_index'][c][t - 12]) - 1
+                except ZeroDivisionError:
+                    datarow.year_on_year_index_under90 = 0
+                try:
+                    datarow.year_on_year_index_90144 = float(data['90_144_index'][c][t]) / float(data['90_144_index'][c][t - 12]) - 1
+                except ZeroDivisionError:
+                    datarow.year_on_year_index_90144 = 0
+                try:
+                    datarow.year_on_year_index_above144 = float(data['above_144_index'][c][t]) / float(data['above_144_index'][c][t - 12]) - 1
+                except ZeroDivisionError:
+                    datarow.year_on_year_index_above144 = 0
+            datarow.save()
+

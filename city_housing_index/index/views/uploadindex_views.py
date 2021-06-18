@@ -1,34 +1,27 @@
 from rest_framework.views import APIView
 from utils.api_response import APIResponse
 
-from index.models import CityIndex
-from index.models import CalculateResult
+from index.models import CalculateResult, CityinfoCalculateTaskRecord
 from city.models import City
 
 from local_auth.authentication import CityIndexAuthentication
 from local_admin.permissions import CityIndexAdminPermission
 
-from index.domains.addinfo import add_new_month
-from index.domains.addinfo import upload_city_info_to_database
+from index.domains.addinfo import add_new_month, upload_city_info_to_database
 
 from index.domains.indexcul import calculate_city_index
+from index.tasks import city_calculate
 
 
-class UpLoadIndexView(APIView):
-    authentication_classes = [CityIndexAuthentication]
-    permission_classes = [CityIndexAdminPermission]
+def id_to_code(city_id):
+    city = City.objects.get(id=city_id)
+    return int(city.code)
 
-    def post(self, request):
-        try:
-            year = int(request.data['year'])
-            month = int(request.data['month'])
-            city_id = int(request.data['city_id'])
-            index = float(request.data['index'])
-        except ValueError:
-            return APIResponse.create_fail(code=400, msg='bad Request')
-        newdata = CityIndex(year=year, month=month, city=city_id, value=index)
-        newdata.save()
-        return APIResponse.create_success()
+
+def code_to_id(city_code):
+    city = City.objects.get(code=city_code)
+    return city.id
+
 
 
 class AddNewMonthColumnView(APIView):
@@ -44,32 +37,54 @@ class AddNewMonthColumnView(APIView):
 
 
 class UpdateAllCityIndexView(APIView):
-    authentication_classes = [CityIndexAuthentication]
-    permission_classes = [CityIndexAdminPermission]
+    # authentication_classes = [CityIndexAuthentication]
+    # permission_classes = [CityIndexAdminPermission]
 
     def post(self, request):
-        city_list = City.objects.filter(ifin90=True)
-        uploaded_city_list = []
-        for city in city_list:
-            if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.code):
-                pass
-            else:
-                uploaded_city_list.append(city.name)
-        if len(uploaded_city_list) == 0:
-            return APIResponse.create_success(data='所有城市均已上传')
+        running_task = None
+        if running_task:
+            result = {
+                "task_id": ""
+            }
         else:
-            return APIResponse.create_success(data='未上传城市有:' + str(uploaded_city_list))
+            task_record = CityinfoCalculateTaskRecord(kwargs={"year": int(request.data['year']), "month": request.data['month']})
+            task_record.code = task_record.generate_code()
+            task_record.save()
+
+            print("start delay")
+            city_calculate.delay(year=int(request.data['year']), month=request.data['month'], task_id=task_record.id)
+
+            print("delay over")
+            result = {
+                "task_id": task_record.id
+            }
+        return APIResponse.create_success(result)
+        # city_list = City.objects.filter(ifin90=True)
+        # uploaded_city_list = []
+        # for city in city_list:
+        #     if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city.code):
+        #         pass
+        #     else:
+        #         uploaded_city_list.append(city.name)
+        # if len(uploaded_city_list) == 0:
+        #     return APIResponse.create_success(data='所有城市均已上传')
+        # else:
+        #     return APIResponse.create_success(data='未上传城市有:' + str(uploaded_city_list))
 
 
 class CalculateCityInfoView(APIView):
-    authentication_classes = [CityIndexAuthentication]
+    # authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
-        print(request.data)
-        if upload_city_info_to_database(int(request.data['year']), int(request.data['month']),
-                                        int(request.data['code'])):
-            data = calculate_city_index(int(request.data['code']), int(request.data['year']),
-                                        int(request.data['month']))
+<<<<<<< HEAD
+        city_code = id_to_code(int(request.data['code']))
+        if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city_code):
+            data = calculate_city_index(city_code, int(request.data['year']), int(request.data['month']))
+=======
+        city_code = id_to_code(int(request.data['code']))
+        if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city_code):
+            data = calculate_city_index(city_code, int(request.data['year']), int(request.data['month']))
+>>>>>>> 3f810fda2a04d6840bc0c8ef4aac063e7a62a067
             return APIResponse.create_success(data=data)
         else:
             return APIResponse.create_fail(code=400, msg='bad request')
@@ -79,8 +94,9 @@ class GetCityIndexInfoView(APIView):
     authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
+        city_code = id_to_code(int(request.data['code']))
         city = CalculateResult.objects.get(year=int(request.data['year']), month=int(request.data['month']),
-                                           city_or_area=True, city=int(request.data['code']))
+                                           city_or_area=True, city=city_code)
         if city is None:
             return APIResponse.create_fail(code=400, msg='当月城市数据未计算')
         else:
@@ -94,6 +110,7 @@ class ListCityIndexInfoView(APIView):
 
     def get(self, request):
         city_code = request.GET['code']
+        city_code = id_to_code(city_code)
         calculate_results = CalculateResult.objects.filter(city=city_code, city_or_area=True).order_by('year', 'month')
         result = []
         for calculate_result in calculate_results:

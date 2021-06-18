@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
-from city.models import City
 from city.enums import CityArea
 
 
@@ -28,6 +27,9 @@ class CityIndex(models.Model):
     price_above_144 = models.FloatField(default=0, null=False)
     price_90_144 = models.FloatField(default=0, null=False)
 
+    max_area = models.FloatField(default=0, help_text="本月交易最大面积")
+    max_price = models.IntegerField(default=0, help_text="本月交易最高单价")
+
 
 class CalculateResult(models.Model):
     # 表头基本信息字段，创建行时即要填入
@@ -46,6 +48,9 @@ class CalculateResult(models.Model):
     price_under_90 = models.FloatField(default=0)
     price_above_144 = models.FloatField(default=0)
     price_90_144 = models.FloatField(default=0)
+    max_area = models.FloatField(default=0, help_text="本月交易最大面积")
+    max_price = models.IntegerField(default=0, help_text="本月交易最高单价")
+
 
     index_value = models.FloatField(default=0, help_text='指数值')
     index_value_under90 = models.FloatField(default=0, help_text='90平米以下指数值')
@@ -60,7 +65,6 @@ class CalculateResult(models.Model):
     trade_volume_above_144 = models.FloatField(default=0)
     trade_volume_90_144 = models.FloatField(default=0)
 
-    # 在执行CalculateXXXIndex_base09时填入的字段
     # 该段中字段的含义与CityIndex中同名字段相同
     index_value_base09 = models.FloatField(default=0, help_text='指数值')
     index_value_under90_base09 = models.FloatField(default=0, help_text='90平米以下指数值')
@@ -138,3 +142,49 @@ class ReportFile(models.Model):
     year = models.IntegerField(default=0, verbose_name="年")
     month = models.IntegerField(default=0, verbose_name="月")
     report = models.FileField(upload_to="final_report")
+
+
+class CityinfoCalculateTaskRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    code = models.CharField(default="", max_length=200, blank=True)
+    kwargs = models.JSONField(default=dict, null=False)
+    result = models.JSONField(default=dict, null=False)
+    progress = models.IntegerField(default=0, verbose_name="进度0-100")
+    current_task = models.CharField(default="", max_length=200, verbose_name="当前任务名称")
+    finished = models.BooleanField(default=False, verbose_name="是否完成")
+    start = models.DateTimeField(auto_now_add=True, null=True)
+    end = models.DateTimeField(null=True)
+    status = models.CharField(default=GenReportTaskStatus.START, max_length=200, blank=True)
+
+    @classmethod
+    def generate_code(cls):
+        import uuid
+        return uuid.uuid4().hex
+
+    def execute(self):
+        self.start = timezone.now()
+        self.status = GenReportTaskStatus.RUNNING
+        self.progress = 0
+        self.save()
+
+    def change_progress(self, current, total, task_name):
+        if not total:
+            self.progress = 0
+        self.progress = (current / total) * 100
+        self.current_task = task_name
+        self.save()
+
+    def finish(self, upload_status):
+        self.end = timezone.now()
+        self.status = GenReportTaskStatus.SUCCESS
+        self.finished = True
+        self.progress = 100
+        self.result = {"upload_status": upload_status}
+        self.save()
+
+    def fail(self, msg):
+        self.end = timezone.now()
+        self.status = GenReportTaskStatus.ERROR
+        self.result = {"errmsg": msg}
+        self.finished = True
+        self.save()
