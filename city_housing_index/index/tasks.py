@@ -121,6 +121,6 @@ def city_calculate(year, month, task_id):
             return '所有城市均已上传'
         else:
             return '未上传城市有:' + str(uploaded_city_list)
-    except:
-        city_calculate_task.fail(traceback.format_exc())
+    except Exception:
+        city_calculate_task.fail(Exception.__str__())
         return ""

@@ -15,9 +15,10 @@ def id_to_code(city_id):
 def code_to_id(city_code):
     try:
         city = City.objects.get(code=str(city_code))
+        return city.id
     except:
         raise Exception(str(city_code))
-    return city.id
+    
 
 def get_data_info(year: int, month: int, city: int):
     datafile_list = DataFile.objects.filter(city_code=code_to_id(city))
