@@ -48,7 +48,7 @@ class GenOriginalReport:
         key_list = ['totalmarket_vol','totalmarket_index','area1_vol','area1_index','area2_vol', 'area2_index','area3_vol','area3_index']
         table_name = ['整体市场-样本量','整体市场-原始指数', '面积1-样本量', '面积1-原始指数', '面积2-样本量', '面积2-原始指数', '面积3-样本量', '面积3-原始指数']
         for i in range(0,len(key_list)):
-            table[key_list[i]] = self.report[table_name[i]]
+            table[key_list[i]] = self.report.worksheets[i]
 
         # 表格格式设置
         datafont = Font(u'Times New Roman', size=10, bold=False, color='000000')
