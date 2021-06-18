@@ -76,15 +76,9 @@ class CalculateCityInfoView(APIView):
     # authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
-<<<<<<< HEAD
         city_code = id_to_code(int(request.data['code']))
         if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city_code):
             data = calculate_city_index(city_code, int(request.data['year']), int(request.data['month']))
-=======
-        city_code = id_to_code(int(request.data['code']))
-        if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city_code):
-            data = calculate_city_index(city_code, int(request.data['year']), int(request.data['month']))
->>>>>>> 3f810fda2a04d6840bc0c8ef4aac063e7a62a067
             return APIResponse.create_success(data=data)
         else:
             return APIResponse.create_fail(code=400, msg='bad request')
