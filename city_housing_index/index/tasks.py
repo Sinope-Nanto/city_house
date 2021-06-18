@@ -108,19 +108,21 @@ def city_calculate(year, month, task_id):
 
     try:
         uploaded_city_list = []
-        for i in range(1,90):
-            city_calculate_task.change_progress(i, 90, "现在i是"+str(i))
+        for i in range(0,90):
+            city_calculate_task.change_progress(i, 90, "计算第" + str(i + 1) + '个城市文件')
             if upload_city_info_to_database(year=year, month=month, city=(i + 1)):
                 pass
             else:
                 city = City.objects.get(code=str(i + 1))
                 uploaded_city_list.append(city.name)
        
-
+        
         if len(uploaded_city_list) == 0:
-            return '所有城市均已上传'
+            restr = '所有城市均已上传'
         else:
-            return '未上传城市有:' + str(uploaded_city_list)
-    except Exception:
-        city_calculate_task.fail(Exception.__str__())
+            restr = '未上传城市有:' + str(uploaded_city_list)
+        city_calculate_task.finish(settings.SITE_DOMAIN + restr)
+        return settings.SITE_DOMAIN + restr
+    except:
+        city_calculate_task.fail(traceback.format_exc())
         return ""
