@@ -25,6 +25,8 @@ def calculate_city_index(city_code: int, year: int, month: int):
     try:
         now = CityIndex.objects.get(city=city_code, year=year, month=month)
         result.area_volume = now.area_volume
+        result.max_area = now.max_area
+        result.max_price = now.max_price
         result.area_volume_under_90 = now.area_volume_under_90
         result.area_volume_90_144 = now.area_volume_90_144
         result.area_volume_above_144 = now.area_volume_above_144

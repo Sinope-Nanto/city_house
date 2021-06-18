@@ -43,6 +43,9 @@ def get_data_info(year: int, month: int, city: int):
     volume_90_144 = 0
     volume_above_144 = 0
 
+    max_area = 0
+    max_price = 0
+
     fromdata = {}
     for i in range(1, num_col + 1):
         col_name.append(sheet.cell(row=1, column=i).value.upper())
@@ -51,7 +54,12 @@ def get_data_info(year: int, month: int, city: int):
             fromdata[col_name[i - 1]].append(sheet.cell(row=j, column=i).value)
     for i in range(0, num_row - 1):
         area = float(fromdata['UNIT_AREA'][i])
-        price = area * float(fromdata['UNIT_PRICE'][i])
+        if area > max_area:
+            max_area = area
+        price = float(fromdata['UNIT_PRICE'][i])
+        if price > max_price:
+            max_price = price
+        price = area * price
         total_area += area
         total_price += price
         if area < 0.9:
@@ -95,7 +103,9 @@ def get_data_info(year: int, month: int, city: int):
         'area_volume_90_144': total_area_90_144,
         'price_under_90': price_under_90,
         'price_above_144': price_above_144,
-        'price_90_144': price_90_144
+        'price_90_144': price_90_144,
+        'max_area': max_area,
+        'max_price': max_price
     }
     return re
 
@@ -141,6 +151,8 @@ def upload_city_info_to_database(year, month, city):
                         price_90_144=re['price_90_144'],
                         trade_volume_under_90=re['volume_under_90'],
                         trade_volume_above_144=re['volume_above_144'],
-                        trade_volume_90_144=re['volume_90_144'])
+                        trade_volume_90_144=re['volume_90_144'],
+                        max_area=re['max_area'],
+                        max_price=re['max_price'])
     newline.save()
     return True
