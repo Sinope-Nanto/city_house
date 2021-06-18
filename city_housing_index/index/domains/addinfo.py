@@ -15,7 +15,7 @@ def id_to_code(city_id):
 def code_to_id(city_code):
     try:
         city = City.objects.get(code=str(city_code))
-    except Exception:
+    except:
         raise Exception(str(city_code))
     return city.id
 
