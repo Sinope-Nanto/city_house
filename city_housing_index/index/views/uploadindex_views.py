@@ -65,6 +65,7 @@ class CalculateCityInfoView(APIView):
     authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
+        print(request.data)
         if upload_city_info_to_database(int(request.data['year']), int(request.data['month']),
                                         int(request.data['code'])):
             data = calculate_city_index(int(request.data['code']), int(request.data['year']),

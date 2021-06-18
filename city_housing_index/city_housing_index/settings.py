@@ -138,8 +138,8 @@ CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-# SITE_DOMAIN = "http://182.92.239.90:80"
-SITE_DOMAIN = "http://localhost:8000"
+SITE_DOMAIN = "http://182.92.239.90:80"
+# SITE_DOMAIN = "http://localhost:8000"
 
 # LOGGING = {
 #     'version': 1,
