@@ -13,7 +13,10 @@ def id_to_code(city_id):
 
 
 def code_to_id(city_code):
-    city = City.objects.get(code=str(city_code))
+    try:
+        city = City.objects.get(code=str(city_code))
+    except ObjectDoesNotExist:
+        raise Exception(str(city_code))
     return city.id
 
 def get_data_info(year: int, month: int, city: int):
