@@ -47,7 +47,7 @@ class UpdateAllCityIndexView(APIView):
             task_record.save()
 
             print("start delay")
-            city_calculate.delay(year=int(request.data['year']), month=request.data['month'], task_id=task_record.id)
+            city_calculate.delay(year=int(request.data['year']), month=int(request.data['month']), task_id=task_record.id)
 
             print("delay over")
             result = {
