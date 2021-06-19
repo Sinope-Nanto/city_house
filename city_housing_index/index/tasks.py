@@ -6,6 +6,9 @@ import traceback
 from .domains.generate_report import get_report_40, get_report_90, get_word_report_40, get_word_report_90, \
     get_word_picture_40, get_word_picture_90, get_origindata_report
 from .domains.addinfo import upload_city_info_to_database
+from .domains.indexcul import calculate_city_index, calculate_area_index
+from .domains.ratio import CalculateRelative
+from city.enums import CityArea
 
 from django.conf import settings
 import os
@@ -109,13 +112,53 @@ def city_calculate(year, month, task_id):
     try:
         uploaded_city_list = []
         for i in range(0,90):
-            city_calculate_task.change_progress(i, 90, "计算第" + str(i + 1) + '个城市文件')
+            city_calculate_task.change_progress(i, 210, "计算第" + str(i + 1) + '个城市文件')
             if upload_city_info_to_database(year=year, month=month, city=(i + 1)):
                 pass
             else:
                 city = City.objects.get(code=str(i + 1))
                 uploaded_city_list.append(city.name)
-       
+        
+        for i in range(0,90):
+            calculate_city_index(i + 1, year, month)
+            city_calculate_task.change_progress(i + 90, 210, "计算第" + str(i + 1) + '个城市指数')
+        
+        key_words = ['block', 'block_90', 'area', 'all', 'all_90', 's_area', 's_area_90', 'line']
+        i = 0
+        for areaID in range(CityArea.DONGBU, CityArea.XIBU):
+            calculate_area_index('block', areaID, year, month)
+            city_calculate_task.change_progress(i + 180, 210, "计算第" + str(i + 1) + '个地区指数')
+            i += 1
+        for areaID in range(CityArea.DONGBU_90, CityArea.XIBU_90):
+            calculate_area_index('block_90', areaID, year, month)
+            city_calculate_task.change_progress(i + 180, 210, "计算第" + str(i + 1) + '个地区指数')
+            i += 1
+        for areaID in range(CityArea.DONGBEI, CityArea.XIBEI):
+            calculate_area_index('area', areaID, year, month)
+            city_calculate_task.change_progress(i + 180, 210, "计算第" + str(i + 1) + '个地区指数')
+            i += 1
+        calculate_area_index('all', CityArea.QUNGUO, year, month)
+        city_calculate_task.change_progress(i + 180, 210, "计算第" + str(i + 1) + '个地区指数')
+        i += 1
+        calculate_area_index('all_90', CityArea.QUANGUO_90, year, month)
+        city_calculate_task.change_progress(i + 180, 210, "计算第" + str(i + 1) + '个地区指数')
+        i += 1
+        calculate_area_index('s_area', CityArea.CHANGSANJIAO, year, month)
+        city_calculate_task.change_progress(i + 180, 210, "计算第" + str(i + 1) + '个地区指数')
+        i += 1
+        for areaID in range(CityArea.ZHUSANJIAO, CityArea.HUANBOHAI):
+            calculate_area_index('s_area_90', areaID, year, month)
+            city_calculate_task.change_progress(i + 180, 210, "计算第" + str(i + 1) + '个地区指数')
+            i += 1
+        for areaID in range(CityArea.FIRSTLINE, CityArea.FORTHLINE):
+            calculate_area_index('line', areaID, year, month)
+            city_calculate_task.change_progress(i + 180, 210, "计算第" + str(i + 1) + '个地区指数')
+            i += 1
+        
+        CalculateRelative(year=year, month=month)
+        city_calculate_task.change_progress(210, 210, "计算同比环比指数")
+
+        
         
         if len(uploaded_city_list) == 0:
             restr = '所有城市均已上传'
