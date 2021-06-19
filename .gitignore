@@ -12,3 +12,4 @@ setting.txt
 *.zip
 *.PNG
 *.out
+log/*
