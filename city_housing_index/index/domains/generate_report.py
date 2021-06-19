@@ -768,6 +768,7 @@ def get_word_picture_40(year: int, month: int):
 
 def get_origindata_report(year: int, month: int):
     report = GenOriginalReport('media/report/' + 'origin_data_report_' + str(year) + '_' + str(month) + '.xlsx')
+    report.create_report()
     city_list = []
     city_code_list = []
     for city in City.objects.filter(ifin90=True):
