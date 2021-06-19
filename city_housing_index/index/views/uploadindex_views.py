@@ -42,7 +42,7 @@ class UpdateAllCityIndexView(APIView):
                 "task_id": ""
             }
         else:
-            task_record = CityinfoCalculateTaskRecord(kwargs={"year": int(request.data['year']), "month": request.data['month']})
+            task_record = CityinfoCalculateTaskRecord(kwargs={"year": int(request.data['year']), "month": int(request.data['month'])})
             task_record.code = task_record.generate_code()
             task_record.save()
 
