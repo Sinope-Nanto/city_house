@@ -121,8 +121,8 @@ def city_calculate(year, month, task_id):
             restr = '所有城市均已上传'
         else:
             restr = '未上传城市有:' + str(uploaded_city_list)
-        city_calculate_task.finish(settings.SITE_DOMAIN + restr)
-        return settings.SITE_DOMAIN + restr
+        city_calculate_task.finish(restr)
+        return restr
     except:
         city_calculate_task.fail(traceback.format_exc())
         return ""
