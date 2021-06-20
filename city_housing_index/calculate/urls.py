@@ -1,6 +1,7 @@
 from django.urls import path, include
 import calculate.views.upload_views as upload_views
 import calculate.views.model_views as model_views
+from calculate.views.analyse_views import GetHtmlReportView
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -16,6 +17,7 @@ urlpatterns = [
     path("model/task/execute/", model_views.ExecuteModelCalculateView.as_view()),
     path("model/tasks/", model_views.ListModelCalculateTaskView.as_view()),
     path("model/results/", model_views.ListModelCalculateResultView.as_view()),
-    path("model/results/<int:result_id>/", model_views.GetModelCalculateResultDetailView.as_view())
+    path("model/results/<int:result_id>/", model_views.GetModelCalculateResultDetailView.as_view()),
 
+    path("model/gethtmlreport/", GetHtmlReportView.as_view())
 ]
