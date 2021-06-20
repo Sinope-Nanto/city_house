@@ -76,7 +76,8 @@ def get_model_parameter(num_block:int, data:list[dict]):
         'coef' : {},
         'var_mean_value' : var_mean_value,
         'geometric_mean_value' : geometric_mean_value,
-        'main_var_factors' : main_var_factors
+        'main_var_factors' : main_var_factors,
+        'num_of_data' : num
     }
     for i in range(0, len(block_var + liner_var + quadratic_var)): 
         model_data['coef'][var_list[i]] = reg.coef_[i] 
@@ -117,10 +118,16 @@ def gen_html_report(data_url, last_data_url, save_url, block_num, last_num, temp
         else:
             LRmodel += (' - ' + '%.3f' % (-model['coef'][key]) + ' <i>' + key + '</i>')
     template = template.replace('$$LRMODEL$$', LRmodel)
+
     table1 = ''
     for key in trade_list:
-        table1 += '<tr><td>{}</td><td>{:d}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td></tr>\n'\
-            .format(key, trade_list[key]['num'], trade_list[key]['predict_price'], trade_list[key]['mean_price'], trade_list[key]['radio'])
+        if abs(trade_list[key]['radio']) < 0.5 or (trade_list[key]['num'] / model['num_of_data'] < 0.02):
+            table1 += '<tr><td>{}</td><td>{:d}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td></tr>\n'\
+                .format(key, trade_list[key]['num'], trade_list[key]['predict_price'], trade_list[key]['mean_price'], trade_list[key]['radio'])
+        else:
+            table1 += '<tr bgcolor=\"yellow\"><td>{}</td><td>{:d}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td></tr>\n'\
+                .format(key, trade_list[key]['num'], trade_list[key]['predict_price'], trade_list[key]['mean_price'], trade_list[key]['radio'])
+
     table2 = ''
     structural_factors = 1
     for key in model['coef'].keys():
@@ -132,11 +139,20 @@ def gen_html_report(data_url, last_data_url, save_url, block_num, last_num, temp
             last_val = 0
         rate_of_change = (value - last_val) * coef
         structural_factors *= math.exp(rate_of_change)
-        table2 += '<tr><td>{}</td><td>{:.4f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td>\n'.\
-            format(key, coef, last_val, value, value - last_val, rate_of_change)
+        if abs(rate_of_change) < 0.02:
+            table2 += '<tr><td>{}</td><td>{:.4f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td>\n'.\
+                format(key, coef, last_val, value, value - last_val, rate_of_change)
+        else:
+            table2 += '<tr bgcolor=\"yellow\"><td>{}</td><td>{:.4f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td>\n'.\
+                format(key, coef, last_val, value, value - last_val, rate_of_change)
     rate_of_change = (model['main_var_factors'] - last_model['main_var_factors'])
-    table2 += '<tr><td>主体变量综合效应</td><td>1.0000</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td>\n'.\
-        format(last_model['main_var_factors'], model['main_var_factors'], rate_of_change, rate_of_change)
+    if abs(rate_of_change) < 0.02:
+        table2 += '<tr><td>主体变量综合效应</td><td>1.0000</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td>\n'.\
+            format(last_model['main_var_factors'], model['main_var_factors'], rate_of_change, rate_of_change)
+    else:
+        table2 += '<tr bgcolor=\"yellow\"><td>主体变量综合效应</td><td>1.0000</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2%}</td>\n'.\
+            format(last_model['main_var_factors'], model['main_var_factors'], rate_of_change, rate_of_change)
+
     structural_factors *= math.exp(rate_of_change)
     structural_factors = structural_factors - 1
     template = template.replace('$$TABLE_1$$', table1)
