@@ -4,12 +4,13 @@ from index.views.uploadindex_views import UpdateAllCityIndexView
 
 from index.views.report_download_views import DownloadReoprt
 from index.views.month_report_views import GenReportViews, QueryReportTaskView
-from index.views.uploadindex_views import CalculateCityInfoView
+from index.views.uploadindex_views import CalculateCityInfoView, CalculateTaskView
 from index.views.uploadindex_views import GetCityIndexInfoView, ListCityIndexInfoView
 
 urlpatterns = [
     path("add_new_month", AddNewMonthColumnView.as_view()), # ok
     path("update_city_info", UpdateAllCityIndexView.as_view()),
+    path("calculate_task", CalculateTaskView.as_view()),
     path("genreport", GenReportViews.as_view()), # ok
     path("query_task", QueryReportTaskView.as_view()), # ok
     path("downloadreport", DownloadReoprt.as_view()), # ok

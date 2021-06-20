@@ -112,3 +112,20 @@ class ListCityIndexInfoView(APIView):
                 'month': calculate_result.month
             })
         return APIResponse.create_success(result)
+
+class CalculateTaskView(APIView):
+    # authentication_classes = [CityIndexAuthentication]
+    # permission_classes = [CityIndexAdminPermission]
+
+    def get(self, request):
+        task_id = request.GET['task_id']
+        task_record = CityinfoCalculateTaskRecord.objects.get(id=task_id)
+        data = {
+            "id": task_id,
+            "code": task_record.code, 
+            "progress": task_record.progress, 
+            "current_task": task_record.current_task, 
+            "finished": task_record.finished, 
+            "task_id": task_id
+        }
+        return APIResponse.create_success(data)
