@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>城房指数检查与分析报告</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body alink=blue vlink=blue>
+
+<h1>城房指数检查与分析报告</h1>
+
+<p>本报告需经专业人员判断后方可使用，计算结果仅对输入的数据负责。</p>
+
+<A Name="Cont"><h2>目录</h2></A>
+
+<p>[<a href="#Spill">项目溢价列表</a>] 用于判断当期样本中，是否存在不合理的项目；</p>
+<p>[<a href="#AvgPrice">均价的结构性变化分析</a>] 用于分析哪些结构性因素导致均价和指数背离；</p>
+
+<A Name="Spill"><h2>项目溢价列表</h2></A>
+<P>[<A href="#Cont">返回目录</A>]</P>
+<P>使用第 $$NUMBER$$ 期的模型，进行项目溢价分析。下表中“理论价格”也是指项目在第 $$NUMBER$$ 期的理论价格。</P>
+<P>模型的基本形式如下：</P>
+<P>$$LRMODEL$$</p>
+<table border=1><tr><td width = 120>项目 PRO_ID</td><td width = 120>成交套数</td><td width = 120>理论价格</td><td width = 120>实际价格</td><td width = 120>溢价率</td></tr>
+$$TABLE_1$$
+</table>
+<p>注：用黄色标记的项目为建议检查的项目。</p>
+<A Name="AvgPrice"><h2>均价的结构性变化分析</h2></A>
+<P>[<A href="#Cont">返回目录</A>]</P>
+<P>使用第 $$NUMBER$$ 期的模型，进行均价的结构性变化分析。
+<P>模型的基本形式如下：</P>
+<P>$$LRMODEL$$</p>
+<table border=1><tr><td width=200>结构性变量</td><td width=120>模型系数</td><td width=120>上月取值</td><td width=120>本月取值</td><td width=120>变化量</td><td width=120>均价会因此变化</td>
+$$TABLE_2$$
+</table>
+<p>解读：本月均价（几何平均）变化率为 $$Geometric_mean$$，其中由于结构性因素导致的变化有 $$Structural_factors$$。</p>
+<p>具体来看，上表中用黄色标记的结构性变量，对均价的变化产生了较大的影响。</p>
+<p>报告生成时间：$$DATA$$
+，联系人：$$PERSON$$</p>
+
+
+</body>
+</html>
