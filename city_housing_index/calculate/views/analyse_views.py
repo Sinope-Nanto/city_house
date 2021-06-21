@@ -4,7 +4,7 @@ from city.models import City
 from rest_framework.views import APIView
 from local_auth.authentication import CityIndexAuthentication
 from utils.api_response import APIResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 
 class GetHtmlReportView(APIView):
 
@@ -49,4 +49,4 @@ class GetHtmlReportView(APIView):
             return APIResponse.create_fail(code=404, msg="文件不存在")
         re = gen_html_report(url_now, url_last, 'media/report/' + str(year) + '_' + str(month) + '_ '+ str(cityinfo.code) + 'analysereport.html',
         block_list, block_list, 'media/init_data/reporttemplate.html', year, month)
-        return render_to_response(re)
+        return render(None, re)

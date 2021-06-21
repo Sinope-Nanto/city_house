@@ -68,7 +68,9 @@ class DeleteDataFileView(APIView):
 
 
 class GetTemplateDataFileView(APIView):
+    authentication_classes = [CityIndexAuthentication]
 
     def get(self, request):
-        url = settings.SITE_DOMAIN + get_template_file()
+        user = request.user
+        url = settings.SITE_DOMAIN + get_template_file(user.id)
         return APIResponse.create_success(url)

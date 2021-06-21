@@ -13,7 +13,7 @@ class City(models.Model):
     ifin40 = models.BooleanField(default=False, help_text="是否属于40城市")
     ifin90 = models.BooleanField(default=False, help_text="是否属于90城市")
     num_block = models.IntegerField(default=0, help_text="城市区块数")
-    info_block = models.JSONField(help_text="城市区块信息", null=False, default={'info':[], 'delete_block':[]})
+    info_block = models.JSONField(help_text="城市区块信息", null=False, default={'info': [], 'delete_block': []})
     # 区块信息的字典形式:
     # {'info':[]:list}
     # list中的每一项：{'code':区块代码, 'name':区块名称, 'remark':备注}

@@ -26,6 +26,7 @@ class FileContent(models.Model):
 
 
 class TemplateFiles(models.Model):
+    city_code = models.IntegerField(default=0, verbose_name="城市编号")
     file = models.FileField(upload_to="template_file")
 
 

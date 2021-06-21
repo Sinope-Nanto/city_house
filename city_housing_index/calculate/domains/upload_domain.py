@@ -1,7 +1,8 @@
 from calculate.models import DataFile, FileContent, TemplateFiles
 import traceback
-from utils.excel_utils import read_xls, read_xlsx
+from utils.excel_utils import read_xls, read_xlsx, write_xlsx
 from local_auth.models import UserProfile
+
 
 
 def create_upload_file(user, file, name, code, city_code, start, end):
@@ -58,6 +59,28 @@ def delete_data_file(file_id):
     return True
 
 
-def get_template_file():
-    template_file = TemplateFiles.objects.all().first()
-    return template_file.file.url
+def get_template_file(user_id):
+    user_profile = UserProfile.get_by_user_id(user_id)
+    city = user_profile.city
+    base_template = TemplateFiles.objects.get(city_code=0)
+    generated_file_path = generate_new_template_file(base_template.file.path, city.info_block["info"], city.code)
+    generated_file = open(generated_file_path, 'rb')
+    city_template = TemplateFiles.objects.filter(city_code=city.code).first()
+    if city_template:
+        city_template.file.delete()
+
+    else:
+        city_template = TemplateFiles(city_code=city.code)
+    city_template.file.save("{}模板数据.xlsx".format(city.name), generated_file)
+    return city_template.file.url
+
+def generate_new_template_file(base_file, blocks, city_code):
+    title, content = read_xlsx(base_file)
+    for block in blocks:
+        title.append(block["code"])
+
+    from django.conf import settings
+    import os
+    file_path = os.path.join(settings.MEDIA_ROOT, "template_file/city-{}.xlsx".format(city_code))
+    write_xlsx(file_path, "origin-data", title, content)
+    return file_path

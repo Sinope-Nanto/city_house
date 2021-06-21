@@ -41,10 +41,22 @@ def read_xlsx(file_path):
     return title, content
 
 
-def write_xlsx(file_name, title, content):
+def write_xlsx_contact(file_name, title, content):
     workbook = openpyxl.Workbook()
     sheet = workbook.active
     sheet.title = "通讯录"
+    for i in range(1, len(title) + 1):
+        sheet.cell(1, i).value = title[i - 1]
+
+    for row in range(1, len(content) + 1):
+        for col in range(1, len(content[row]) + 1):
+            sheet.cell(row=row, column=col).value = content[row - 1][col - 1]
+    workbook.save(filename=file_name)
+
+def write_xlsx(file_name, sheet_name, title, content):
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = sheet_name
     for i in range(1, len(title) + 1):
         sheet.cell(1, i).value = title[i - 1]
 
