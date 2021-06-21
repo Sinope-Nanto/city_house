@@ -3,7 +3,7 @@ import openpyxl
 import math
 import time
 
-def get_model_parameter(num_block:int, data:list[dict]):
+def get_model_parameter(block_list:list, data:list[dict]):
     num = len(data)
     switch = num / 10 # 是否设置哑变量的阈值
 
@@ -19,7 +19,7 @@ def get_model_parameter(num_block:int, data:list[dict]):
     dummy_var = []
     dummy_mean_var = {}
     for pro_id in pro_id_list.keys():
-        if pro_id_list[pro_id]['num'] >= switch:
+        if pro_id_list[pro_id]['num'] >= switch and pro_id != '' and pro_id_list[pro_id]['num'] < num:
             dummy_var.append('dummy' + pro_id)
             dummy_mean_var['dummy' + pro_id] = pro_id_list[pro_id]['num'] / num
             for row in data:
@@ -28,8 +28,8 @@ def get_model_parameter(num_block:int, data:list[dict]):
                 data[id]['dummy' + pro_id] = 1
     
     block_var = []
-    for i in range(1, num_block):
-        block_var.append('BLOCK_' + str(i))
+    for i in range(1, len(block_list)):
+        block_var.append(block_list[i])
     
     liner_var = ['PRO_AREA', 'PRO_FLOOR', 'UNIT_DURATION', 'UNIT_FLOOR', 'UNIT_ONSALE', 'ZX_CU', 'ZX_JING']
     quadratic_var = ['PRO_AREA*PRO_AREA', 'PRO_FLOOR*PRO_FLOOR', 'UNIT_DURATION*UNIT_DURATION', 'UNIT_FLOOR*UNIT_FLOOR', 'UNIT_AREA*UNIT_AREA']
@@ -101,15 +101,15 @@ def load_data(url):
                     fromdata[i - 2][col_name[j - 1]] = float(sheet.cell(row=i, column=j).value)
     return fromdata
 
-def gen_html_report(data_url, last_data_url, save_url, block_num, last_num, template_url, year, month):
+def gen_html_report(data_url, last_data_url, save_url, block_list, last_block_list, template_url, year, month):
     template = open(template_url, 'r', encoding='utf-8').read()
     now = int(round(time.time()*1000))
     datatime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(now/1000))
     template = template.replace('$$NUMBER$$','Y'+ str(year - 2000).zfill(2) + str(month).zfill(2))
     template = template.replace('$$DATA$$', datatime)
     template = template.replace('$$PERSON$$', 'XXX')
-    trade_list, model = get_model_parameter(block_num, load_data(data_url))
-    last_trade_list, last_model = get_model_parameter(last_num, load_data(last_data_url))
+    trade_list, model = get_model_parameter(block_list, load_data(data_url))
+    last_trade_list, last_model = get_model_parameter(last_block_list, load_data(last_data_url))
     geometric_mean_radio = model['geometric_mean_value'] / last_model['geometric_mean_value'] - 1
     LRmodel = 'Ln( 理论价格 ) = ' + ('%.2f' % model['intercept']) + '+ (主体变量影响)'
     for key in model['coef'].keys():

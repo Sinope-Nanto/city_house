@@ -14,7 +14,9 @@ class GetHtmlReportView(APIView):
         year = int(request.data['year'])
         month = int(request.data['month'])
         cityinfo = City.objects.get(id=city)
-        block_num = cityinfo.num_block
+        block_list = []
+        for block in cityinfo.info_block['info']:
+            block_list.append(block['code'])
 
         datafile_list = DataFile.objects.filter(city_code=city)
         url_now = ''
@@ -46,5 +48,5 @@ class GetHtmlReportView(APIView):
         if not (exist_now and exist_last):
             return APIResponse.create_fail(code=404, msg="文件不存在")
         re = gen_html_report(url_now, url_last, 'media/report/' + str(year) + '_' + str(month) + '_ '+ str(cityinfo.code) + 'analysereport.html',
-        block_num, block_num, 'media/init_data/reporttemplate.html', year, month)
+        block_list, block_list, 'media/init_data/reporttemplate.html', year, month)
         return render_to_response(re)
