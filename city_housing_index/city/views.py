@@ -3,6 +3,7 @@ from .domain import *
 
 from utils.api_response import APIResponse
 from city.models import City
+from local_auth.authentication import CityIndexAuthentication
 
 
 # Create your views here.
@@ -68,6 +69,14 @@ class DeleteBlockView(APIView):
                 cityinfo.save()
                 return APIResponse.create_success(data={'code':block['code'], 'name':block['name']})
         return APIResponse.create_fail(code=404, msg='区块不存在')
+
+
+class GetCityInfoByUserView(APIView):
+    authentication_classes = [CityIndexAuthentication]
+
+    def get(self, request):
+        user = request.user
+        return APIResponse.create_success(get_city_by_user(user))
 
 
 
