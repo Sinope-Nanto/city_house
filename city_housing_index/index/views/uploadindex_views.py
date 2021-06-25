@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from utils.api_response import APIResponse
 
-from index.models import CalculateResult, CityinfoCalculateTaskRecord
+from index.models import CalculateResult, CityIndexCalculateTaskRecord
 from city.models import City
 
 from local_auth.authentication import CityIndexAuthentication
@@ -42,7 +42,7 @@ class UpdateAllCityIndexView(APIView):
                 "task_id": ""
             }
         else:
-            task_record = CityinfoCalculateTaskRecord(kwargs={"year": int(request.data['year']), "month": int(request.data['month'])})
+            task_record = CityIndexCalculateTaskRecord(kwargs={"year": int(request.data['year']), "month": int(request.data['month'])})
             task_record.code = task_record.generate_code()
             task_record.save()
 
@@ -99,7 +99,6 @@ class ListCityIndexInfoView(APIView):
 
     def get(self, request):
         city_code = request.GET['code']
-        city_code = id_to_code(city_code)
         calculate_results = CalculateResult.objects.filter(city=city_code, city_or_area=True).order_by('year', 'month')
         result = []
         for calculate_result in calculate_results:
@@ -119,7 +118,7 @@ class CalculateTaskView(APIView):
 
     def get(self, request):
         task_id = request.GET['task_id']
-        task_record = CityinfoCalculateTaskRecord.objects.get(id=task_id)
+        task_record = CityIndexCalculateTaskRecord.objects.get(id=task_id)
         data = {
             "id": task_id,
             "code": task_record.code, 

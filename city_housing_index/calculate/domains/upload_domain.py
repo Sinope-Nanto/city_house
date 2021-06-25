@@ -61,6 +61,7 @@ def delete_data_file(file_id):
 
 def get_template_file(user_id):
     user_profile = UserProfile.get_by_user_id(user_id)
+    print(user_profile.user_id_id, user_profile.city)
     city = user_profile.city
     base_template = TemplateFiles.objects.get(city_code=0)
     generated_file_path = generate_new_template_file(base_template.file.path, city.info_block["info"], city.code)

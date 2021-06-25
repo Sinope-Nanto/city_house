@@ -144,7 +144,7 @@ class ReportFile(models.Model):
     report = models.FileField(upload_to="final_report")
 
 
-class CityinfoCalculateTaskRecord(models.Model):
+class CityIndexCalculateTaskRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     code = models.CharField(default="", max_length=200, blank=True)
     kwargs = models.JSONField(default=dict, null=False)

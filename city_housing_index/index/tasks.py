@@ -1,6 +1,6 @@
 from city.models import City
 from worker.celery_app import app
-from .models import GenReportTaskRecord, ReportFile, CityinfoCalculateTaskRecord
+from .models import GenReportTaskRecord, ReportFile, CityIndexCalculateTaskRecord
 import traceback
 
 from .domains.generate_report import get_report_40, get_report_90, get_word_report_40, get_word_report_90, \
@@ -106,7 +106,7 @@ def get_zip_report_file(task_id, year, month, urls):
 @app.task
 def city_calculate(year, month, task_id):
 
-    city_calculate_task = CityinfoCalculateTaskRecord.objects.get(id=task_id)
+    city_calculate_task = CityIndexCalculateTaskRecord.objects.get(id=task_id)
     city_calculate_task.execute()
 
     try:
