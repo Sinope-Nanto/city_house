@@ -21,7 +21,7 @@ def code_to_id(city_code):
     
 
 def get_data_info(year: int, month: int, city: int):
-    datafile_list = DataFile.objects.filter(city_code=code_to_id(city))
+    datafile_list = DataFile.objects.filter(city_code=city)
     url = ''
     exist = False
     for datafile in datafile_list:
