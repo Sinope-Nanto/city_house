@@ -71,7 +71,7 @@ class CalculateCityInfoView(APIView):
     # authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
-        city_code = id_to_code(int(request.data['code']))
+        city_code = int(request.data['code'])
         if upload_city_info_to_database(int(request.data['year']), int(request.data['month']), city_code):
             data = calculate_city_index(city_code, int(request.data['year']), int(request.data['month']))
             return APIResponse.create_success(data=data)
@@ -83,7 +83,7 @@ class GetCityIndexInfoView(APIView):
     authentication_classes = [CityIndexAuthentication]
 
     def post(self, request):
-        city_code = id_to_code(int(request.data['code']))
+        city_code = int(request.data['code'])
         city = CalculateResult.objects.get(year=int(request.data['year']), month=int(request.data['month']),
                                            city_or_area=True, city=city_code)
         if city is None:
