@@ -11,8 +11,8 @@ class UploadStatusViews(APIView):
     permission_classes = [CityIndexAdminPermission]
 
     def get(self, request):
-        year = request.data['year']
-        month = request.data['month']
+        year = request.GET['year']
+        month = request.GET['month']
         data = get_city_upload_status(year, month)
         return APIResponse.create_success(data=data)
 
