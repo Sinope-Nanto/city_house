@@ -18,7 +18,7 @@ def get_city_upload_status(year, month):
     for city in city_list:
         from calculate.models import DataFile
 
-        upload_files = DataFile.objects.filter(city_id=city.id)
+        upload_files = DataFile.objects.filter(city_code=city.code)
         exist = False
         for upload_file in upload_files:
             upload_year, upload_month = parse_year_month(upload_file.start)
