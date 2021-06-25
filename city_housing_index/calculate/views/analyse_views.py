@@ -18,7 +18,7 @@ class GetHtmlReportView(APIView):
         for block in cityinfo.info_block['info']:
             block_list.append(block['code'])
 
-        datafile_list = DataFile.objects.filter(city_code=city)
+        datafile_list = DataFile.objects.filter(city_code=request.data['city'])
         url_now = ''
         url_last = ''
         exist_now = False
