@@ -22,7 +22,7 @@ def get_city_upload_status(year, month):
         exist = False
         for upload_file in upload_files:
             upload_year, upload_month = parse_year_month(upload_file.start)
-            if upload_year == year and upload_month == month:
+            if upload_year == int(year) and upload_month == int(month):
                 exist = True
                 break
         data_list.append(
