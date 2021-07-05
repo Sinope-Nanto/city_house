@@ -168,4 +168,4 @@ def gen_html_report(data_url, last_data_url, save_url, block_list, last_block_li
     template = template.replace('$$Geometric_mean$$', "{:.2%}".format(geometric_mean_radio))
     template = template.replace('$$Structural_factors$$', "{:.2%}".format(structural_factors))
     open(save_url, 'w+', encoding='utf-8').write(template)
-    return save_url
+    return template

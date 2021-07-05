@@ -20,6 +20,8 @@ class DataFileUploadView(ViewSet):
 
     def create(self, request):
         user = request.user
+        # from django.contrib.auth.models import User
+        # user = User.objects.get(id=1)
         file = request.FILES.get('file')
         name = request.data["name"]
         code = request.data["code"]
