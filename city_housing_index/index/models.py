@@ -83,6 +83,20 @@ class CalculateResult(models.Model):
     year_on_year_index_90144 = models.FloatField(default=0)
     chain_index_90144 = models.FloatField(default=0)
 
+    def is_warn(self):
+        yoy = False
+        mom = False
+        yoy = yoy or self.year_on_year_index > 0.2
+        yoy = yoy or self.year_on_year_index_above144 > 0.2
+        yoy = yoy or self.year_on_year_index_under90 > 0.2
+        yoy = yoy or self.year_on_year_index_90144 > 0.2
+
+        mom = mom or self.chain_index > 0.05
+        mom = mom or self.chain_index_under90 > 0.05
+        mom = mom or self.chain_index_90144 > 0.05
+        mom = mom or self.chain_index_above144 > 0.05
+        return yoy, mom
+
 
 class GenReportTaskStatus:
     START = "START"

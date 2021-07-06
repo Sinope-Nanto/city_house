@@ -35,18 +35,21 @@ class CalculateResultSimpleSerializer(serializers.ModelSerializer):
                   'warn']
 
     def get_warn(self, obj: CalculateResult):
-        yoy = False
-        mom = False
-        yoy = yoy or obj.year_on_year_index > 0.2
-        yoy = yoy or obj.year_on_year_index_above144 > 0.2
-        yoy = yoy or obj.year_on_year_index_under90 > 0.2
-        yoy = yoy or obj.year_on_year_index_90144 > 0.2
-
-        mom = mom or obj.chain_index > 0.05
-        mom = mom or obj.chain_index_under90 > 0.05
-        mom = mom or obj.chain_index_90144 > 0.05
-        mom = mom or obj.chain_index_above144 > 0.05
+        yoy, mom = obj.is_warn()
         return {
             "yoy": yoy,
             "mom": mom
         }
+
+
+class CalculateResultYoYWarnSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CalculateResult
+        fields = ['year_on_year_index', 'year_on_year_index_above144',
+                  'year_on_year_index_under90', 'year_on_year_index_90144']
+
+
+class CalculateResultChainWarnSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CalculateResult
+        fields = ['chain_index', 'chain_index_above144', 'chain_index_under90', 'chain_index_90144']
