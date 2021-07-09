@@ -19,5 +19,5 @@ urlpatterns = [
     path("upload_files/download_city", download_views.DownLoadbyCity.as_view()),
     path("upload_files/download_citytime", download_views.DownLoadbyCityTime.as_view()),
     path("result/all", result_views.ListCityCalculateResultView.as_view()),
-    path("result/warn", result_views.ListCityCalculateWarnResultView.as_view())
+    path("result/warning", result_views.ListCityCalculateWarnResultView.as_view())
 ]
