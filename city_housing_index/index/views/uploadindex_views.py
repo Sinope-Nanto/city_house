@@ -118,7 +118,7 @@ class ListCityIndexInfoView(APIView):
                 'month': calculate_result.month
             }
             item_data.update(CalculateResultSimpleSerializer(calculate_result).data)
-            result.append()
+            result.append(item_data)
         return APIResponse.create_success(result)
 
 
