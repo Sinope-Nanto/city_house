@@ -37,6 +37,13 @@ def list_warn_city_calculate_result(year, month):
             yoy, mom = calculate_result.is_warn()
             yoy_data = CalculateResultYoYWarnSerializer(calculate_result).data
             chain_data = CalculateResultChainWarnSerializer(calculate_result).data
+            yoy_data['city_id'] = city_dict[city_code]['id']
+            yoy_data['city_name'] = city_dict[city_code]['name']
+            yoy_data['city_code'] = city_code
+
+            chain_data['city_id'] = city_dict[city_code]['id']
+            chain_data['city_name'] = city_dict[city_code]['name']
+            chain_data['city_code'] = city_code
             if yoy:
                 yoy_list.append(yoy_data)
             if mom:
